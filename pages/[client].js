@@ -54,7 +54,8 @@ export default function ClientPage({ clientId }) {
     if(!convMap[id])convMap[id]={id,rows:[],ts:r['タイムスタンプ（整形済み）']||r['timestamp'],clinic:r[clinicKey]||''};
     convMap[id].rows.push(r);
   });
-  const convList=Object.values(convMap).sort((a,b)=>b.ts>a.ts?1:-1);
+const thirtyDaysAgo=new Date();thirtyDaysAgo.setDate(thirtyDaysAgo.getDate()-30);
+const convList=Object.values(convMap).filter(c=>new Date(c.ts.replace(/\//g,'-'))>=thirtyDaysAgo).sort((a,b)=>b.ts>a.ts?1:-1);
   const filtered=convList.filter(c=>!search||c.rows.some(r=>(r['user_question']||'').includes(search)||(r['ai_answer']||'').includes(search)));
   const kpis=[['利用人数',uniqueUsers,'#2563a8'],['総チャット件数',uniqueChats,'#10b981'],['電話誘導件数',phoneCount,'#f59e0b'],['自己解決率',selfSolveRate+'%','#6366f1']];
   const BarChart=({data,maxVal,color})=>(
