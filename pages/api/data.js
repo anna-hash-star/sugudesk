@@ -13,7 +13,8 @@ export default async function handler(req, res) {
 
   try {
     const rows = await getSheetData(client.spreadsheetId, client.sheetName);
-    res.status(200).json({ rows, clientName: client.name });
+    res.setHeader('Cache-Control', 'no-store');
+res.status(200).json({ rows, clientName: client.name });
   } catch (e) {
     res.status(500).json({ error: 'データ取得失敗: ' + e.message });
   }
