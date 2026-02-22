@@ -51,7 +51,8 @@ export default function ClientPage({ clientId }) {
   rows.forEach(r=>{
     if(!r['user_question']) return;
     const id=r['conversation_id']||r['timestamp'];
-    if(!convMap[id])convMap[id]={id,rows:[],ts:r['タイムスタンプ（整形済み）']||r['timestamp'],clinic:r[clinicKey]||''};
+    if(!convMap[id])convMap[id]={id,rows:[],ts:'',clinic:r[clinicKey]||''};
+convMap[id].ts=r['タイムスタンプ（整形済み）']||r['timestamp'];
     convMap[id].rows.push(r);
   });
 const thirtyDaysAgo=new Date();thirtyDaysAgo.setDate(thirtyDaysAgo.getDate()-30);
