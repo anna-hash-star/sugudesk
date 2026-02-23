@@ -41,12 +41,12 @@ export default function ClientPage({ clientId }) {
   const hourData=Object.entries(hourCounts).sort((a,b)=>parseInt(a[0])-parseInt(b[0])).map(([h,v])=>({label:h+'時',value:v}));
   const maxHour=Math.max(...hourData.map(d=>d.value),1);
   const topicCounts={};
-  rows.forEach(r=>{const t=r['topic_type']||'その他';topicCounts[t]=(topicCounts[t]||0)+1;});
+  rows.forEach(r=>{const t=r['topic_type'];if(t&&t.trim())topicCounts[t]=(topicCounts[t]||0)+1;});
   const topicData=Object.entries(topicCounts).sort((a,b)=>b[1]-a[1]).slice(0,6);
   const colors=['#2563a8','#60a5fa','#34d399','#fbbf24','#f87171','#a78bfa'];
   const clinicCounts={};
   rows.forEach(r=>{const c=r[clinicKey]||'院指定なし';clinicCounts[c]=(clinicCounts[c]||0)+1;});
-  const phoneRows=rows.filter(r=>parseInt(r['is_phone誘導数値'])===1&&r['user_question']);
+  const phoneRows=rows.filter(r=>parseInt(r['is_phone誘導数値'])===1&&r['user_question']).sort((a,b)=>(b['タイムスタンプ（整形済み）']||'')>(a['タイムスタンプ（整形済み）']||'')?1:-1);
   const convMap={};
   rows.forEach(r=>{
     if(!r['user_question']) return;
