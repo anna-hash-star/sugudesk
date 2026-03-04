@@ -27,8 +27,8 @@ export default function ClientPage({ clientId }) {
   );
   const rows = data.rows;
   const clinicKey = Object.keys(rows[0]||{}).find(k=>k.includes('clinic'))||'clinic';
-  const uniqueUsers = new Set(rows.map(r=>r['conversation_id'])).size;
-  const uniqueChats = new Set(rows.map(r=>r['workflow_run_id'])).size;
+  const uniqueUsers = new Set(rows.map(r=>r['conversation_id']).filter(v=>v&&v.trim())).size;
+  const uniqueChats = new Set(rows.map(r=>r['workflow_run_id']).filter(v=>v&&v.trim())).size;
   const phoneCount = rows.reduce((s,r)=>s+(parseInt(r['is_phone誘導数値'])||0),0);
   const selfSolveRate = uniqueChats>0?Math.round((uniqueChats-phoneCount)/uniqueChats*100):0;
   const dateCounts={};
