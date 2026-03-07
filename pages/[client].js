@@ -251,6 +251,7 @@ export default function ClientPage({ clientId }) {
                       </div>
                       {c.clinic&&<div style={{fontSize:10,color:'#2563a8',marginBottom:2}}>{c.clinic}</div>}
                       <div style={{fontSize:13,color:'#555',overflow:'hidden',whiteSpace:'nowrap',textOverflow:'ellipsis'}}>{c.rows[0]?.['user_question']?.slice(0,28)}</div>
+{c.rows[0]?.['note']&&<div style={{fontSize:11,color:'#f59e0b',overflow:'hidden',whiteSpace:'nowrap',textOverflow:'ellipsis',marginTop:2}}>{c.rows[0]['note']}</div>}
                     </div>
                   );
                 })}
