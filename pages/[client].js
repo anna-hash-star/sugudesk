@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 
 const isPhoneEscalation = (r) => {
   const v = r['is_phone_escalation'];
@@ -49,16 +49,13 @@ export default function ClientPage({ clientId }) {
   const allRows = data.rows;
   const clinicKey = Object.keys(allRows[0]||{}).find(k=>k.includes('clinic'))||'clinic';
 
-  const filteredRows = useMemo(() => {
-    if (period === 0) return allRows;
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - period);
-    return allRows.filter(r => {
-      const d = getDate(r);
-      if (!d) return false;
-      return new Date(d.replace(/\//g,'-')) >= cutoff;
-    });
-  }, [allRows, period]);
+ const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - period);
+  const filteredRows = period === 0 ? allRows : allRows.filter(r => {
+    const d = getDate(r);
+    if (!d) return false;
+    return new Date(d.replace(/\//g,'-')) >= cutoff;
+  });
 
   const uniqueUsers = new Set(filteredRows.map(r=>r['conversation_id']).filter(v=>v&&v.trim())).size;
   const uniqueChats = new Set(filteredRows.map(r=>r['workflow_run_id']).filter(v=>v&&v.trim())).size;
