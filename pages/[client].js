@@ -158,7 +158,8 @@ export default function ClientPage({ clientId }) {
   );
 
   const periodLabels = [{v:7,l:'直近7日'},{v:14,l:'直近14日'},{v:30,l:'直近30日'},{v:0,l:'全期間'}];
-  const selectedFirstRow = selectedConv?.rows?.[0];
+  const selectedPhoneRow = selectedConv?.rows?.find(r => isPhoneEscalation(r));
+const selectedFirstRow = selectedPhoneRow || selectedConv?.rows?.[0];
 
   return (
     <div style={{background:'#f8f7f4',minHeight:'100vh',fontFamily:'sans-serif'}}>
