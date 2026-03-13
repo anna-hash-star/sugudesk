@@ -5,15 +5,10 @@ export function middleware(request) {
   const { pathname } = request.nextUrl;
 
   // chat.sugudesk.com/:id → /chat/:id にリライト
-  if (host.startsWith('chat.')) {
-    // ルート → 404回避（将来的にクリニック選択ページ等も可）
+  if (host.includes('chat.sugudesk.com') || host.startsWith('chat.')) {
+    // ルート → 404回避
     if (pathname === '/') {
       return new NextResponse('Not Found', { status: 404 });
-    }
-
-    // _next, api, favicon 等はそのまま通す
-    if (pathname.startsWith('/_next') || pathname.startsWith('/api') || pathname.startsWith('/favicon')) {
-      return NextResponse.next();
     }
 
     // chat.sugudesk.com/luna-ladies → /chat/luna-ladies にリライト
@@ -24,3 +19,7 @@ export function middleware(request) {
 
   return NextResponse.next();
 }
+
+export const config = {
+  matcher: ['/((?!_next/static|_next/image|favicon\\.png).*)'],
+};
