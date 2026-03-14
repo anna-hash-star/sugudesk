@@ -22,14 +22,16 @@ export default function ChatPage({ name, difyToken, brandColor }) {
     <>
       <Head>
         <title>{name}</title>
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
         <meta name="robots" content="noindex, nofollow" />
       </Head>
       <style jsx global>{`
         html, body, #__next {
           margin: 0;
           padding: 0;
+          width: 100%;
           height: 100%;
+          height: 100dvh;
           overflow: hidden;
         }
       `}</style>
@@ -38,7 +40,9 @@ export default function ChatPage({ name, difyToken, brandColor }) {
         style={{
           width: '100%',
           height: '100%',
+          height: '100dvh',
           border: 'none',
+          display: 'block',
         }}
         allow="microphone"
       />
