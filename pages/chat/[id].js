@@ -34,7 +34,7 @@ export default function ChatPage({ name, difyToken, brandColor }) {
         }
       `}</style>
       <iframe
-        src={`https://udify.app/chatbot/${difyToken}`}
+        src={`https://udify.app/chat/${difyToken}`}
         style={{
           width: '100%',
           height: '100%',
