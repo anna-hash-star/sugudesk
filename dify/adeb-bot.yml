@@ -1,0 +1,22 @@
+app:
+  description: 'AdeBクリニック（秋田院）のFAQチャットボットです。
+    予約、診療時間、料金、アクセス、施術内容などお問い合わせをいただくことができます。'
+  icon: c4841d76-ec12-45b6-a2c4-bf39baa49e4a
+  icon_background: null
+  icon_type: image
+  mode: advanced-chat
+  name: AdeBクリニック（秋田院）お問い合わせチャット
+  use_icon_as_answer_icon: true
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: gaurav0651/webhook_sender:1.0.0@6048e051b34d727cd9a3cfafef1bb72334a216c77aa717f183e8434d7943cdd9
+    version: null
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/openai:0.2.10@7ca552fb9e48caa4deddfdef5aa71c200d06d03c26c2e8bb428b3250101b9cb3
+    version: null
+kind: app
+version: 0.6.0
