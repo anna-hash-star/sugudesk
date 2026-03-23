@@ -404,7 +404,7 @@ workflow:
 
     # ========== 多言語回答ノード ==========
     - data:
-        answer: 'Thank you for your inquiry. This chat currently supports Japanese only. Please contact us by phone for assistance in English: 0120-XXX-XXX'
+        answer: 'Thank you for your inquiry. This chat currently supports Japanese only. Please contact us by phone for assistance in English: 050-1730-2768'
         selected: false
         title: English Answer
         type: answer
@@ -416,7 +416,7 @@ workflow:
       type: custom
       width: 244
     - data:
-        answer: '문의해 주셔서 감사합니다. 이 채팅은 현재 일본어만 지원됩니다. 영어로 도움이 필요하시면 전화로 연락해 주세요: 0120-XXX-XXX'
+        answer: '문의해 주셔서 감사합니다. 이 채팅은 현재 일본어만 지원됩니다. 영어로 도움이 필요하시면 전화로 연락해 주세요: 050-1730-2768'
         selected: false
         title: Korean Answer
         type: answer
@@ -428,7 +428,7 @@ workflow:
       type: custom
       width: 244
     - data:
-        answer: '感谢您的咨询。此聊天目前仅支持日语。如需帮助，请拨打电话联系我们：0120-XXX-XXX'
+        answer: '感谢您的咨询。此聊天目前仅支持日语。如需帮助，请拨打电话联系我们：050-1730-2768'
         selected: false
         title: Chinese Simplified Answer
         type: answer
@@ -440,7 +440,7 @@ workflow:
       type: custom
       width: 244
     - data:
-        answer: '感謝您的詢問。此聊天目前僅支持日語。如需協助，請撥打電話聯繫我們：0120-XXX-XXX'
+        answer: '感謝您的詢問。此聊天目前僅支持日語。如需協助，請撥打電話聯繫我們：050-1730-2768'
         selected: false
         title: Chinese Traditional Answer
         type: answer
@@ -656,7 +656,10 @@ workflow:
     # ========== Knowledge Retrieval (改善: score_threshold → 0.4, reranking → true) ==========
     - data:
         dataset_ids:
-        - KNOWLEDGE_BASE_ID_HERE
+        - 61189a3b-a332-4be5-ac22-6df7d3ffc877
+        - 60e45eb1-25a9-4d3c-b238-ed38c93a5bc3
+        - 20f6818b-5287-4298-8c70-56eb922a10a0
+        - cec46fb3-4f19-45fe-8e99-ad176b8c14f3
         multiple_retrieval_config:
           reranking_enable: true
           reranking_mode: reranking_model
@@ -885,7 +888,7 @@ workflow:
         title: Webhook通知
         tool_configurations:
           method: POST
-          url: WEBHOOK_URL_HERE
+          url: https://script.google.com/macros/s/AKfycbwrBD5UCon4gj01vYhytrlgTRwg8sYuEz6Md1FGwJw_siGS2QjnBnzj15vI8iZrhMGNaw/exec
         tool_name: webhook_sender
         tool_parameters:
           body:
