@@ -474,14 +474,14 @@ workflow:
               if query in selections:
                   return {
                       "clinic": selections[query],
-                      "is_selection": True,
+                      "is_selection": "true",
                       "text": f"院選択: {selections[query]}"
                   }
 
               # 現在の院を維持（自由テキストでは院を変更しない）
               return {
                   "clinic": current_clinic if current_clinic else "未選択",
-                  "is_selection": False,
+                  "is_selection": "false",
                   "text": ""
               }
         code_language: python3
@@ -491,7 +491,7 @@ workflow:
             type: string
           is_selection:
             children: null
-            type: boolean
+            type: string
           text:
             children: null
             type: string
