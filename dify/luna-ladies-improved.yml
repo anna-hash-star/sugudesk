@@ -219,12 +219,22 @@ workflow:
       target: '1758709714372'
       targetHandle: target
       type: custom
-    # Answer Generation → 履歴作成 (code)
+    # Answer Generation → 回答出力（即座にユーザーへ表示）
     - data:
         sourceType: llm
-        targetType: code
-      id: answer_gen-history
+        targetType: answer
+      id: answer_gen-answer
       source: '1758709714372'
+      sourceHandle: source
+      target: '1758709800000'
+      targetHandle: target
+      type: custom
+    # 回答出力 → 履歴作成 (code)（回答表示後にバックグラウンド実行）
+    - data:
+        sourceType: answer
+        targetType: code
+      id: answer-history
+      source: '1758709800000'
       sourceHandle: source
       target: '1767679999102'
       targetHandle: target
@@ -239,22 +249,12 @@ workflow:
       target: '17676792629650'
       targetHandle: target
       type: custom
-    # 変数代入(history) → Answer
+    # 変数代入(history) → AUTO_CLASSIFY
     - data:
         sourceType: assigner
-        targetType: answer
-      id: assigner-answer
-      source: '17676792629650'
-      sourceHandle: source
-      target: '1758709800000'
-      targetHandle: target
-      type: custom
-    # Answer → AUTO_CLASSIFY
-    - data:
-        sourceType: answer
         targetType: llm
-      id: answer-auto_classify
-      source: '1758709800000'
+      id: assigner-auto_classify
+      source: '17676792629650'
       sourceHandle: source
       target: '1758710000000'
       targetHandle: target
@@ -591,8 +591,8 @@ workflow:
           completion_params:
             temperature: 0.1
           mode: chat
-          name: gpt-5-mini
-          provider: openai
+          name: gpt-4.1-mini
+          provider: langgenius/openai/openai
         prompt_template:
         - role: system
           text: >
@@ -680,8 +680,8 @@ workflow:
             completion_params:
               temperature: 0.1
             mode: chat
-            name: gpt-5-mini
-            provider: openai
+            name: gpt-4.1-mini
+            provider: langgenius/openai/openai
         title: Knowledge Retrieval
         type: knowledge-retrieval
       height: 90
@@ -703,8 +703,8 @@ workflow:
           completion_params:
             temperature: 0.1
           mode: chat
-          name: gpt-5
-          provider: openai
+          name: gpt-4.1-mini
+          provider: langgenius/openai/openai
         prompt_template:
         - role: system
           text: >
@@ -854,8 +854,8 @@ workflow:
           completion_params:
             temperature: 0.1
           mode: chat
-          name: gpt-5-mini
-          provider: openai
+          name: gpt-4.1-mini
+          provider: langgenius/openai/openai
         prompt_template:
         - role: system
           text: >
