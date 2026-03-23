@@ -1,0 +1,904 @@
+app:
+  description: 'ルナレディースクリニックのFAQチャットボットです。
+
+    予約、診療時間、料金、アクセス、施術内容などお問い合わせをいただくことができます。'
+  icon: fcedf92a-9ed6-40c0-b054-b37195144409
+  icon_background: ''
+  icon_type: image
+  mode: advanced-chat
+  name: ルナレディースクリニックお問い合わせチャット（改善版）
+  use_icon_as_answer_icon: true
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: gaurav0651/webhook_sender:1.0.0@6048e051b34d727cd9a3cfafef1bb72334a216c77aa717f183e8434d7943cdd9
+    version: null
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/openai:0.2.10@7ca552fb9e48caa4deddfdef5aa71c200d06d03c26c2e8bb428b3250101b9cb3
+    version: null
+kind: app
+version: 0.6.0
+workflow:
+  conversation_variables:
+  - description: 選択された院名
+    id: clinic
+    name: clinic
+    value_type: string
+    value: '未選択'
+  - description: 会話履歴テキスト
+    id: query_history_text
+    name: query_history_text
+    value_type: string
+    value: ''
+  - description: 院の選択履歴
+    id: clinic_history
+    name: clinic_history
+    value_type: string
+    value: ''
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions: []
+      allowed_file_types: []
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      max_file_size: 15
+      number_limits: 3
+    opening_statement: 'ルナレディースクリニックへようこそ！
+
+      ご質問がございましたらお気軽にどうぞ。
+
+      まず、ご利用の院をお選びください。'
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    suggested_questions:
+    - 横浜駅前院
+    - 川崎駅前院
+    - 町田駅前院
+    - その他・決まっていない
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+  graph:
+    edges:
+    # Start → DETECT_LANGUAGE (code)
+    - data:
+        sourceType: start
+        targetType: code
+      id: start-detect_lang
+      source: '1758709336672'
+      sourceHandle: source
+      target: '1773189011503'
+      targetHandle: target
+      type: custom
+    # DETECT_LANGUAGE → Language IF-ELSE
+    - data:
+        sourceType: code
+        targetType: if-else
+      id: detect_lang-if_else
+      source: '1773189011503'
+      sourceHandle: source
+      target: '1773189583556'
+      targetHandle: target
+      type: custom
+    # Language IF-ELSE (Japanese=true) → 院ステータス判定 (code)
+    - data:
+        sourceType: if-else
+        targetType: code
+      id: lang_jp-clinic_check
+      source: '1773189583556'
+      sourceHandle: 'true'
+      target: '1767623004293'
+      targetHandle: target
+      type: custom
+    # Language IF-ELSE (English) → English Answer
+    - data:
+        sourceType: if-else
+        targetType: answer
+      id: lang_en-answer
+      source: '1773189583556'
+      sourceHandle: '1773190100001'
+      target: '1773190200001'
+      targetHandle: target
+      type: custom
+    # Language IF-ELSE (Korean) → Korean Answer
+    - data:
+        sourceType: if-else
+        targetType: answer
+      id: lang_ko-answer
+      source: '1773189583556'
+      sourceHandle: '1773190100002'
+      target: '1773190200002'
+      targetHandle: target
+      type: custom
+    # Language IF-ELSE (Chinese Simplified) → Chinese Simplified Answer
+    - data:
+        sourceType: if-else
+        targetType: answer
+      id: lang_zh_cn-answer
+      source: '1773189583556'
+      sourceHandle: '1773190100003'
+      target: '1773190200003'
+      targetHandle: target
+      type: custom
+    # Language IF-ELSE (Chinese Traditional) → Chinese Traditional Answer
+    - data:
+        sourceType: if-else
+        targetType: answer
+      id: lang_zh_tw-answer
+      source: '1773189583556'
+      sourceHandle: '1773190100004'
+      target: '1773190200004'
+      targetHandle: target
+      type: custom
+    # Language IF-ELSE (default/other) → 院ステータス判定 (fallback to JP)
+    - data:
+        sourceType: if-else
+        targetType: code
+      id: lang_default-clinic_check
+      source: '1773189583556'
+      sourceHandle: 'false'
+      target: '1767623004293'
+      targetHandle: target
+      type: custom
+    # 院ステータス判定 → SET_CLINIC_STATE
+    - data:
+        sourceType: code
+        targetType: assigner
+      id: clinic_check-set_state
+      source: '1767623004293'
+      sourceHandle: source
+      target: '1767624898308'
+      targetHandle: target
+      type: custom
+    # SET_CLINIC_STATE → Is Selection IF-ELSE
+    - data:
+        sourceType: assigner
+        targetType: if-else
+      id: set_state-is_selection
+      source: '1767624898308'
+      sourceHandle: source
+      target: '1767625100000'
+      targetHandle: target
+      type: custom
+    # Is Selection (true) → 院選択完了Answer
+    - data:
+        sourceType: if-else
+        targetType: answer
+      id: is_selection_true-answer
+      source: '1767625100000'
+      sourceHandle: 'true'
+      target: '1767625200000'
+      targetHandle: target
+      type: custom
+    # Is Selection (false) → Query Normalization
+    - data:
+        sourceType: if-else
+        targetType: llm
+      id: is_selection_false-query_norm
+      source: '1767625100000'
+      sourceHandle: 'false'
+      target: '1763036637179'
+      targetHandle: target
+      type: custom
+    # Query Normalization → 変数代入(query)
+    - data:
+        sourceType: llm
+        targetType: assigner
+      id: query_norm-assigner
+      source: '1763036637179'
+      sourceHandle: source
+      target: '1763036700000'
+      targetHandle: target
+      type: custom
+    # 変数代入(query) → Knowledge Retrieval
+    - data:
+        sourceType: assigner
+        targetType: knowledge-retrieval
+      id: assigner-knowledge
+      source: '1763036700000'
+      sourceHandle: source
+      target: '1758709510177'
+      targetHandle: target
+      type: custom
+    # Knowledge Retrieval → Answer Generation
+    - data:
+        sourceType: knowledge-retrieval
+        targetType: llm
+      id: knowledge-answer_gen
+      source: '1758709510177'
+      sourceHandle: source
+      target: '1758709714372'
+      targetHandle: target
+      type: custom
+    # Answer Generation → 履歴作成 (code)
+    - data:
+        sourceType: llm
+        targetType: code
+      id: answer_gen-history
+      source: '1758709714372'
+      sourceHandle: source
+      target: '1767679999102'
+      targetHandle: target
+      type: custom
+    # 履歴作成 → 変数代入(history)
+    - data:
+        sourceType: code
+        targetType: assigner
+      id: history-assigner
+      source: '1767679999102'
+      sourceHandle: source
+      target: '17676792629650'
+      targetHandle: target
+      type: custom
+    # 変数代入(history) → Answer
+    - data:
+        sourceType: assigner
+        targetType: answer
+      id: assigner-answer
+      source: '17676792629650'
+      sourceHandle: source
+      target: '1758709800000'
+      targetHandle: target
+      type: custom
+    # Answer → AUTO_CLASSIFY
+    - data:
+        sourceType: answer
+        targetType: llm
+      id: answer-auto_classify
+      source: '1758709800000'
+      sourceHandle: source
+      target: '1758710000000'
+      targetHandle: target
+      type: custom
+    # AUTO_CLASSIFY → Webhook
+    - data:
+        sourceType: llm
+        targetType: tool
+      id: auto_classify-webhook
+      source: '1758710000000'
+      sourceHandle: source
+      target: '1758710100000'
+      targetHandle: target
+      type: custom
+    nodes:
+    # ========== START ==========
+    - data:
+        selected: false
+        title: 開始
+        type: start
+        variables: []
+      height: 54
+      id: '1758709336672'
+      position:
+        x: 80
+        y: 282
+      type: custom
+      width: 244
+
+    # ========== DETECT_LANGUAGE (改善: LLM → コードノード) ==========
+    - data:
+        code: |
+          import re
+
+          def main(query: str) -> dict:
+              """
+              言語判定をコードノードで実行（LLM不要）。
+              日本語・英語・韓国語・中国語（簡体/繁体）を判定。
+              """
+              has_hiragana = bool(re.search(r'[\u3040-\u309F]', query))
+              has_katakana = bool(re.search(r'[\u30A0-\u30FF]', query))
+              has_hangul = bool(re.search(r'[\uAC00-\uD7AF\u1100-\u11FF]', query))
+              has_cjk = bool(re.search(r'[\u4E00-\u9FFF\u3400-\u4DBF]', query))
+              has_latin = bool(re.search(r'[a-zA-Z]', query))
+
+              # 繁体字特有の文字（簡体字には使われない代表的な字）
+              traditional_chars = bool(re.search(r'[\u9AD4\u8B93\u6A23\u8209\u8A72\u5011\u904E\u8B80\u9032\u9032]', query))
+
+              # ひらがな・カタカナがあれば日本語
+              if has_hiragana or has_katakana:
+                  return {"text": "japanese"}
+
+              # ハングルがあれば韓国語
+              if has_hangul:
+                  return {"text": "korean"}
+
+              # CJK漢字のみ（ひらがな/カタカナなし）
+              if has_cjk and not has_hiragana and not has_katakana:
+                  if traditional_chars:
+                      return {"text": "chinese_traditional"}
+                  return {"text": "chinese_simplified"}
+
+              # ラテン文字のみ
+              if has_latin and not has_cjk:
+                  return {"text": "english"}
+
+              # デフォルト: 日本語
+              return {"text": "japanese"}
+        code_language: python3
+        outputs:
+          text:
+            children: null
+            type: string
+        selected: false
+        title: DETECT_LANGUAGE
+        type: code
+        variables:
+        - value_selector:
+          - sys
+          - query
+          variable: query
+      height: 102
+      id: '1773189011503'
+      position:
+        x: 380
+        y: 282
+      type: custom
+      width: 244
+
+    # ========== Language IF-ELSE ==========
+    - data:
+        cases:
+        - case_id: '1773190100001'
+          conditions:
+          - comparison_operator: is
+            id: cond_en
+            value: english
+            variable_selector:
+            - '1773189011503'
+            - text
+          logical_operator: and
+        - case_id: '1773190100002'
+          conditions:
+          - comparison_operator: is
+            id: cond_ko
+            value: korean
+            variable_selector:
+            - '1773189011503'
+            - text
+          logical_operator: and
+        - case_id: '1773190100003'
+          conditions:
+          - comparison_operator: is
+            id: cond_zh_cn
+            value: chinese_simplified
+            variable_selector:
+            - '1773189011503'
+            - text
+          logical_operator: and
+        - case_id: '1773190100004'
+          conditions:
+          - comparison_operator: is
+            id: cond_zh_tw
+            value: chinese_traditional
+            variable_selector:
+            - '1773189011503'
+            - text
+          logical_operator: and
+        conditions:
+        - comparison_operator: is
+          id: cond_jp
+          value: japanese
+          variable_selector:
+          - '1773189011503'
+          - text
+        logical_operator: and
+        selected: false
+        title: DETECT_LANGUAGE分岐
+        type: if-else
+      height: 126
+      id: '1773189583556'
+      position:
+        x: 680
+        y: 282
+      type: custom
+      width: 244
+
+    # ========== 多言語回答ノード ==========
+    - data:
+        answer: 'Thank you for your inquiry. This chat currently supports Japanese only. Please contact us by phone for assistance in English: 0120-XXX-XXX'
+        selected: false
+        title: English Answer
+        type: answer
+      height: 107
+      id: '1773190200001'
+      position:
+        x: 980
+        y: 100
+      type: custom
+      width: 244
+    - data:
+        answer: '문의해 주셔서 감사합니다. 이 채팅은 현재 일본어만 지원됩니다. 영어로 도움이 필요하시면 전화로 연락해 주세요: 0120-XXX-XXX'
+        selected: false
+        title: Korean Answer
+        type: answer
+      height: 107
+      id: '1773190200002'
+      position:
+        x: 980
+        y: 0
+      type: custom
+      width: 244
+    - data:
+        answer: '感谢您的咨询。此聊天目前仅支持日语。如需帮助，请拨打电话联系我们：0120-XXX-XXX'
+        selected: false
+        title: Chinese Simplified Answer
+        type: answer
+      height: 107
+      id: '1773190200003'
+      position:
+        x: 980
+        y: -100
+      type: custom
+      width: 244
+    - data:
+        answer: '感謝您的詢問。此聊天目前僅支持日語。如需協助，請撥打電話聯繫我們：0120-XXX-XXX'
+        selected: false
+        title: Chinese Traditional Answer
+        type: answer
+      height: 107
+      id: '1773190200004'
+      position:
+        x: 980
+        y: -200
+      type: custom
+      width: 244
+
+    # ========== 院ステータス判定 (改善: LLM → コードノード) ==========
+    - data:
+        code: |
+          def main(sys_query: str, current_clinic: str) -> dict:
+              """
+              院の選択判定をコードノードで実行（LLM不要）。
+              ボタン押下（完全一致）のみを院選択として扱う。
+              自由テキスト中の院名は誤判定しない。
+              """
+              selections = {
+                  "横浜駅前院": "横浜駅前院",
+                  "川崎駅前院": "川崎駅前院",
+                  "町田駅前院": "町田駅前院",
+                  "その他・決まっていない": "未定",
+              }
+
+              query = sys_query.strip()
+
+              # 完全一致チェック（ボタン押下時）
+              if query in selections:
+                  return {
+                      "clinic": selections[query],
+                      "is_selection": True,
+                      "text": f"院選択: {selections[query]}"
+                  }
+
+              # 現在の院を維持（自由テキストでは院を変更しない）
+              return {
+                  "clinic": current_clinic if current_clinic else "未選択",
+                  "is_selection": False,
+                  "text": ""
+              }
+        code_language: python3
+        outputs:
+          clinic:
+            children: null
+            type: string
+          is_selection:
+            children: null
+            type: boolean
+          text:
+            children: null
+            type: string
+        selected: false
+        title: 院ステータス判定
+        type: code
+        variables:
+        - value_selector:
+          - sys
+          - query
+          variable: sys_query
+        - value_selector:
+          - conversation
+          - clinic
+          variable: current_clinic
+      height: 102
+      id: '1767623004293'
+      position:
+        x: 980
+        y: 282
+      type: custom
+      width: 244
+
+    # ========== SET_CLINIC_STATE (変数代入) ==========
+    - data:
+        items:
+        - input_type: variable
+          operation: over-write
+          value:
+          - '1767623004293'
+          - clinic
+          variable_selector:
+          - conversation
+          - clinic
+          write_mode: over-write
+        - input_type: variable
+          operation: over-write
+          value:
+          - '1767623004293'
+          - text
+          variable_selector:
+          - conversation
+          - clinic_history
+          write_mode: over-write
+        selected: false
+        title: SET_CLINIC_STATE
+        type: assigner
+      height: 90
+      id: '1767624898308'
+      position:
+        x: 1280
+        y: 282
+      type: custom
+      width: 244
+
+    # ========== Is Selection IF-ELSE ==========
+    - data:
+        conditions:
+        - comparison_operator: is
+          id: cond_is_selection
+          value: 'true'
+          variable_selector:
+          - '1767623004293'
+          - is_selection
+        logical_operator: and
+        selected: false
+        title: 院選択判定
+        type: if-else
+      height: 126
+      id: '1767625100000'
+      position:
+        x: 1580
+        y: 282
+      type: custom
+      width: 244
+
+    # ========== 院選択完了 Answer ==========
+    - data:
+        answer: '{{#conversation.clinic#}}を選択しました。ご質問をどうぞ！'
+        selected: false
+        title: 院選択完了
+        type: answer
+      height: 107
+      id: '1767625200000'
+      position:
+        x: 1880
+        y: 150
+      type: custom
+      width: 244
+
+    # ========== Query Normalization (改善: temperature → 0.1) ==========
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params:
+            temperature: 0.1
+          mode: chat
+          name: gpt-4o-mini
+          provider: openai
+        prompt_template:
+        - role: system
+          text: >
+            ユーザーの質問を正規化してください。
+
+            - 口語的な表現を標準的な質問文に変換
+
+            - 略語を展開
+
+            - 院名が含まれる場合はそのまま残す
+
+            - JSON形式で出力: {"normalized_query": "正規化された質問"}
+        - role: user
+          text: '{{#sys.query#}}'
+        selected: false
+        structured_output_enabled: true
+        structured_output_schema:
+          properties:
+            normalized_query:
+              description: 正規化されたクエリ
+              type: string
+          required:
+          - normalized_query
+          type: object
+        title: Query Normalization
+        type: llm
+        vision:
+          enabled: false
+      height: 98
+      id: '1763036637179'
+      position:
+        x: 1880
+        y: 400
+      type: custom
+      width: 244
+
+    # ========== 変数代入 (query normalization result) ==========
+    - data:
+        items:
+        - input_type: variable
+          operation: over-write
+          value:
+          - '1763036637179'
+          - structured_output
+          - normalized_query
+          variable_selector:
+          - conversation
+          - query_history_text
+          write_mode: over-write
+        selected: false
+        title: 変数代入(query)
+        type: assigner
+      height: 90
+      id: '1763036700000'
+      position:
+        x: 2180
+        y: 400
+      type: custom
+      width: 244
+
+    # ========== Knowledge Retrieval (改善: score_threshold → 0.4, reranking → true) ==========
+    - data:
+        dataset_ids:
+        - KNOWLEDGE_BASE_ID_HERE
+        multiple_retrieval_config:
+          reranking_enable: true
+          reranking_mode: reranking_model
+          reranking_model:
+            model: ''
+            provider: ''
+          score_threshold: 0.4
+          score_threshold_enabled: true
+          top_k: 5
+        query_variable_selector:
+        - '1763036637179'
+        - structured_output
+        - normalized_query
+        retrieval_mode: multiple
+        selected: false
+        single_retrieval_config:
+          model:
+            completion_params:
+              temperature: 0.1
+            mode: chat
+            name: gpt-4o-mini
+            provider: openai
+        title: Knowledge Retrieval
+        type: knowledge-retrieval
+      height: 90
+      id: '1758709510177'
+      position:
+        x: 2480
+        y: 400
+      type: custom
+      width: 244
+
+    # ========== Answer Generation (改善: temperature → 0.1, URLルール冒頭配置) ==========
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1758709510177'
+          - result
+        model:
+          completion_params:
+            temperature: 0.1
+          mode: chat
+          name: gpt-4o
+          provider: openai
+        prompt_template:
+        - role: system
+          text: >
+            あなたはルナレディースクリニックのFAQアシスタントです。
+
+
+            ■ 最重要ルール（URLについて）
+
+            - 回答に含めるURLは、ナレッジベース（context）に記載されているURLのみ使用可。
+
+            - contextに記載のないURLは絶対に生成・推測・創作しないこと。
+
+            - URLが不明な場合は「詳細はクリニックにお問い合わせください」と案内する。
+
+
+            ■ 回答ルール
+
+            - contextの情報のみに基づいて回答する。contextにない情報は「申し訳ございませんが、その情報はお持ちしておりません」と回答。
+
+            - 選択中の院: {{#conversation.clinic#}}
+
+            - 院固有の情報（料金・住所・電話番号等）は選択中の院のものを回答。
+
+            - 丁寧で親しみやすいトーンで回答（です・ます調）。
+
+            - 回答は簡潔に、必要な情報を過不足なく伝える。
+
+            - 電話番号やメールアドレスはcontextに記載のもののみ案内する。
+
+            - 医療的な判断・診断は行わない。必ず「医師にご相談ください」と案内する。
+        - role: user
+          text: '{{#sys.query#}}'
+        selected: false
+        title: Answer Generation
+        type: llm
+        vision:
+          enabled: false
+      height: 98
+      id: '1758709714372'
+      position:
+        x: 2780
+        y: 400
+      type: custom
+      width: 244
+
+    # ========== 履歴作成 (改善: LLM → コードノード) ==========
+    - data:
+        code: |
+          def main(prev_history: str, user_query: str, normalized_query: str, answer_text: str, clinic: str) -> dict:
+              """
+              会話履歴をコードで構築（LLM不要）。
+              """
+              new_entry = f"Q: {user_query}\nNQ: {normalized_query}\nClinic: {clinic}"
+
+              if prev_history and prev_history.strip():
+                  # 直近5件のみ保持（メモリ節約）
+                  entries = prev_history.split("\n---\n")
+                  entries.append(new_entry)
+                  if len(entries) > 5:
+                      entries = entries[-5:]
+                  result = "\n---\n".join(entries)
+              else:
+                  result = new_entry
+
+              return {"text": result}
+        code_language: python3
+        outputs:
+          text:
+            children: null
+            type: string
+        selected: false
+        title: 履歴作成
+        type: code
+        variables:
+        - value_selector:
+          - conversation
+          - query_history_text
+          variable: prev_history
+        - value_selector:
+          - sys
+          - query
+          variable: user_query
+        - value_selector:
+          - '1763036637179'
+          - structured_output
+          - normalized_query
+          variable: normalized_query
+        - value_selector:
+          - '1758709714372'
+          - text
+          variable: answer_text
+        - value_selector:
+          - conversation
+          - clinic
+          variable: clinic
+      height: 102
+      id: '1767679999102'
+      position:
+        x: 3080
+        y: 400
+      type: custom
+      width: 244
+
+    # ========== 変数代入 (history update) ==========
+    - data:
+        items:
+        - input_type: variable
+          operation: over-write
+          value:
+          - '1767679999102'
+          - text
+          variable_selector:
+          - conversation
+          - query_history_text
+          write_mode: over-write
+        selected: false
+        title: 変数代入(history)
+        type: assigner
+      height: 90
+      id: '17676792629650'
+      position:
+        x: 3380
+        y: 400
+      type: custom
+      width: 244
+
+    # ========== Answer (最終回答) ==========
+    - data:
+        answer: '{{#1758709714372.text#}}'
+        selected: false
+        title: 回答出力
+        type: answer
+      height: 107
+      id: '1758709800000'
+      position:
+        x: 3680
+        y: 400
+      type: custom
+      width: 244
+
+    # ========== AUTO_CLASSIFY (自動分類) ==========
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params:
+            temperature: 0.1
+          mode: chat
+          name: gpt-4o-mini
+          provider: openai
+        prompt_template:
+        - role: system
+          text: >
+            以下の問い合わせを分類してください。
+
+            カテゴリ: 予約, 料金, 診療内容, アクセス, その他
+
+            JSON形式で出力: {"category": "カテゴリ名", "summary": "要約"}
+        - role: user
+          text: '{{#sys.query#}}'
+        selected: false
+        title: AUTO_CLASSIFY
+        type: llm
+        vision:
+          enabled: false
+      height: 98
+      id: '1758710000000'
+      position:
+        x: 3980
+        y: 400
+      type: custom
+      width: 244
+
+    # ========== Webhook ==========
+    - data:
+        provider_id: gaurav0651/webhook_sender/webhook_sender
+        provider_name: webhook_sender
+        provider_type: builtin
+        selected: false
+        title: Webhook通知
+        tool_configurations:
+          method: POST
+          url: WEBHOOK_URL_HERE
+        tool_name: webhook_sender
+        tool_parameters:
+          body:
+            type: mixed
+            value: '{"category":"{{#1758710000000.text#}}","clinic":"{{#conversation.clinic#}}","query":"{{#sys.query#}}"}'
+          headers:
+            type: mixed
+            value: '{"Content-Type":"application/json"}'
+        type: tool
+      height: 90
+      id: '1758710100000'
+      position:
+        x: 4280
+        y: 400
+      type: custom
+      width: 244

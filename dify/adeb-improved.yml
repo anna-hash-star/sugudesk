@@ -1,0 +1,409 @@
+app:
+  description: 'AdeBクリニック（秋田院）のFAQチャットボットです。
+
+    予約、診療時間、料金、アクセス、施術内容などお問い合わせをいただくことができます。'
+  icon: c4841d76-ec12-45b6-a2c4-bf39baa49e4a
+  icon_background: null
+  icon_type: image
+  mode: advanced-chat
+  name: AdeBクリニック（秋田院）お問い合わせチャット（改善版）
+  use_icon_as_answer_icon: true
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: gaurav0651/webhook_sender:1.0.0@6048e051b34d727cd9a3cfafef1bb72334a216c77aa717f183e8434d7943cdd9
+    version: null
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/openai:0.2.10@7ca552fb9e48caa4deddfdef5aa71c200d06d03c26c2e8bb428b3250101b9cb3
+    version: null
+kind: app
+version: 0.6.0
+workflow:
+  conversation_variables:
+  - description: 会話履歴テキスト
+    id: query_history_text
+    name: query_history_text
+    value_type: string
+    value: ''
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions: []
+      allowed_file_types: []
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      max_file_size: 15
+      number_limits: 3
+    opening_statement: 'AdeBクリニック（秋田院）へようこそ！
+
+      ご質問がございましたらお気軽にどうぞ。'
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    suggested_questions:
+    - 診療時間を教えてください
+    - 予約方法を知りたいです
+    - 料金について教えてください
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+  graph:
+    edges:
+    # Start → Query Normalization
+    - data:
+        sourceType: start
+        targetType: llm
+      id: start-query_norm
+      source: '1758709336672'
+      sourceHandle: source
+      target: '1763036637179'
+      targetHandle: target
+      type: custom
+    # Query Normalization → 変数代入
+    - data:
+        sourceType: llm
+        targetType: assigner
+      id: query_norm-assigner
+      source: '1763036637179'
+      sourceHandle: source
+      target: '1763036700000'
+      targetHandle: target
+      type: custom
+    # 変数代入 → Knowledge Retrieval
+    - data:
+        sourceType: assigner
+        targetType: knowledge-retrieval
+      id: assigner-knowledge
+      source: '1763036700000'
+      sourceHandle: source
+      target: '1758709510177'
+      targetHandle: target
+      type: custom
+    # Knowledge Retrieval → Answer Generation
+    - data:
+        sourceType: knowledge-retrieval
+        targetType: llm
+      id: knowledge-answer_gen
+      source: '1758709510177'
+      sourceHandle: source
+      target: '1758709714372'
+      targetHandle: target
+      type: custom
+    # Answer Generation → 変数代入(history)
+    - data:
+        sourceType: llm
+        targetType: assigner
+      id: answer_gen-assigner_history
+      source: '1758709714372'
+      sourceHandle: source
+      target: '1758709750000'
+      targetHandle: target
+      type: custom
+    # 変数代入(history) → Answer
+    - data:
+        sourceType: assigner
+        targetType: answer
+      id: assigner_history-answer
+      source: '1758709750000'
+      sourceHandle: source
+      target: '1758709800000'
+      targetHandle: target
+      type: custom
+    # Answer → AUTO_CLASSIFY
+    - data:
+        sourceType: answer
+        targetType: llm
+      id: answer-auto_classify
+      source: '1758709800000'
+      sourceHandle: source
+      target: '1758710000000'
+      targetHandle: target
+      type: custom
+    # AUTO_CLASSIFY → Webhook
+    - data:
+        sourceType: llm
+        targetType: tool
+      id: auto_classify-webhook
+      source: '1758710000000'
+      sourceHandle: source
+      target: '1758710100000'
+      targetHandle: target
+      type: custom
+    nodes:
+    # ========== START ==========
+    - data:
+        selected: false
+        title: 開始
+        type: start
+        variables: []
+      height: 54
+      id: '1758709336672'
+      position:
+        x: 80
+        y: 282
+      type: custom
+      width: 244
+
+    # ========== Query Normalization (改善: temperature 0.7 → 0.1) ==========
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params:
+            temperature: 0.1
+          mode: chat
+          name: gpt-4o-mini
+          provider: openai
+        prompt_template:
+        - role: system
+          text: >
+            ユーザーの質問を正規化してください。
+
+            - 口語的な表現を標準的な質問文に変換
+
+            - 略語を展開
+
+            - JSON形式で出力: {"normalized_query": "正規化された質問"}
+        - role: user
+          text: '{{#sys.query#}}'
+        selected: false
+        structured_output_enabled: true
+        structured_output_schema:
+          properties:
+            normalized_query:
+              description: 正規化されたクエリ
+              type: string
+          required:
+          - normalized_query
+          type: object
+        title: Query Normalization
+        type: llm
+        vision:
+          enabled: false
+      height: 98
+      id: '1763036637179'
+      position:
+        x: 380
+        y: 282
+      type: custom
+      width: 244
+
+    # ========== 変数代入 (query normalization) ==========
+    - data:
+        items:
+        - input_type: variable
+          operation: over-write
+          value:
+          - '1763036637179'
+          - structured_output
+          - normalized_query
+          variable_selector:
+          - conversation
+          - query_history_text
+          write_mode: over-write
+        selected: false
+        title: 変数代入(query)
+        type: assigner
+      height: 90
+      id: '1763036700000'
+      position:
+        x: 680
+        y: 282
+      type: custom
+      width: 244
+
+    # ========== Knowledge Retrieval (改善: score_threshold → 0.4, reranking → true) ==========
+    - data:
+        dataset_ids:
+        - KNOWLEDGE_BASE_ID_HERE
+        multiple_retrieval_config:
+          reranking_enable: true
+          reranking_mode: reranking_model
+          reranking_model:
+            model: ''
+            provider: ''
+          score_threshold: 0.4
+          score_threshold_enabled: true
+          top_k: 5
+        query_variable_selector:
+        - '1763036637179'
+        - structured_output
+        - normalized_query
+        retrieval_mode: multiple
+        selected: false
+        single_retrieval_config:
+          model:
+            completion_params:
+              temperature: 0.1
+            mode: chat
+            name: gpt-4o-mini
+            provider: openai
+        title: Knowledge Retrieval
+        type: knowledge-retrieval
+      height: 90
+      id: '1758709510177'
+      position:
+        x: 980
+        y: 282
+      type: custom
+      width: 244
+
+    # ========== Answer Generation (改善: temperature 0.7 → 0.1, URLルール冒頭配置) ==========
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1758709510177'
+          - result
+        model:
+          completion_params:
+            temperature: 0.1
+          mode: chat
+          name: gpt-4o
+          provider: openai
+        prompt_template:
+        - role: system
+          text: >
+            あなたはAdeBクリニック（秋田院）のFAQアシスタントです。
+
+
+            ■ 最重要ルール（URLについて）
+
+            - 回答に含めるURLは、ナレッジベース（context）に記載されているURLのみ使用可。
+
+            - contextに記載のないURLは絶対に生成・推測・創作しないこと。
+
+            - URLが不明な場合は「詳細はクリニックにお問い合わせください」と案内する。
+
+
+            ■ 回答ルール
+
+            - contextの情報のみに基づいて回答する。contextにない情報は「申し訳ございませんが、その情報はお持ちしておりません」と回答。
+
+            - 丁寧で親しみやすいトーンで回答（です・ます調）。
+
+            - 回答は簡潔に、必要な情報を過不足なく伝える。
+
+            - 電話番号やメールアドレスはcontextに記載のもののみ案内する。
+
+            - 医療的な判断・診断は行わない。必ず「医師にご相談ください」と案内する。
+        - role: user
+          text: '{{#sys.query#}}'
+        selected: false
+        title: Answer Generation
+        type: llm
+        vision:
+          enabled: false
+      height: 98
+      id: '1758709714372'
+      position:
+        x: 1280
+        y: 282
+      type: custom
+      width: 244
+
+    # ========== 変数代入 (history update) ==========
+    - data:
+        items:
+        - input_type: variable
+          operation: over-write
+          value:
+          - '1758709714372'
+          - text
+          variable_selector:
+          - conversation
+          - query_history_text
+          write_mode: over-write
+        selected: false
+        title: 変数代入(history)
+        type: assigner
+      height: 90
+      id: '1758709750000'
+      position:
+        x: 1580
+        y: 282
+      type: custom
+      width: 244
+
+    # ========== Answer (最終回答) ==========
+    - data:
+        answer: '{{#1758709714372.text#}}'
+        selected: false
+        title: 回答出力
+        type: answer
+      height: 107
+      id: '1758709800000'
+      position:
+        x: 1880
+        y: 282
+      type: custom
+      width: 244
+
+    # ========== AUTO_CLASSIFY (改善: temperature → 0.1) ==========
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params:
+            temperature: 0.1
+          mode: chat
+          name: gpt-4o-mini
+          provider: openai
+        prompt_template:
+        - role: system
+          text: >
+            以下の問い合わせを分類してください。
+
+            カテゴリ: 予約, 料金, 診療内容, アクセス, その他
+
+            JSON形式で出力: {"category": "カテゴリ名", "summary": "要約"}
+        - role: user
+          text: '{{#sys.query#}}'
+        selected: false
+        title: AUTO_CLASSIFY
+        type: llm
+        vision:
+          enabled: false
+      height: 98
+      id: '1758710000000'
+      position:
+        x: 2180
+        y: 282
+      type: custom
+      width: 244
+
+    # ========== Webhook ==========
+    - data:
+        provider_id: gaurav0651/webhook_sender/webhook_sender
+        provider_name: webhook_sender
+        provider_type: builtin
+        selected: false
+        title: Webhook通知
+        tool_configurations:
+          method: POST
+          url: WEBHOOK_URL_HERE
+        tool_name: webhook_sender
+        tool_parameters:
+          body:
+            type: mixed
+            value: '{"category":"{{#1758710000000.text#}}","query":"{{#sys.query#}}"}'
+          headers:
+            type: mixed
+            value: '{"Content-Type":"application/json"}'
+        type: tool
+      height: 90
+      id: '1758710100000'
+      position:
+        x: 2480
+        y: 282
+      type: custom
+      width: 244
