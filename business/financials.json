@@ -1,0 +1,34 @@
+{
+  "currency": "JPY",
+  "revenue": {
+    "monthly": [],
+    "note": "月次売上データを {month: '2026-01', amount: 100000, breakdown: [{client: 'xxx', amount: 50000}]} の形式で追加してください"
+  },
+  "expenses": {
+    "monthly": [],
+    "fixedCosts": [
+      {"category": "サーバー・インフラ", "amount": null, "provider": "Vercel / Google Cloud", "note": ""},
+      {"category": "Dify利用料", "amount": null, "provider": "Dify", "note": ""},
+      {"category": "ドメイン", "amount": null, "provider": "", "note": "sugudesk.com"},
+      {"category": "ツール・SaaS", "amount": null, "provider": "", "note": ""}
+    ],
+    "note": "月次経費データを追加してください"
+  },
+  "pricing": {
+    "plans": [
+      {
+        "name": "スタンダード",
+        "monthlyPrice": null,
+        "includes": ["分析ダッシュボード", "チャットボット設置", "月次レポート"],
+        "note": "料金を設定してください"
+      },
+      {
+        "name": "プレミアム",
+        "monthlyPrice": null,
+        "includes": ["スタンダード全機能", "AI改善提案", "優先サポート", "カスタマイズ対応"],
+        "note": "料金を設定してください"
+      }
+    ]
+  },
+  "lastUpdated": "2026-03-24"
+}

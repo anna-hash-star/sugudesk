@@ -1,0 +1,125 @@
+{
+  "currentVersion": "1.0.0",
+  "roadmap": [
+    {
+      "version": "1.1",
+      "title": "分析機能の強化",
+      "targetDate": "2026-Q2",
+      "status": "計画中",
+      "features": [
+        {
+          "title": "月次レポート自動生成",
+          "description": "クライアント向けの月次サマリーレポートをPDF/メールで自動送信",
+          "priority": "high",
+          "status": "planned"
+        },
+        {
+          "title": "AIによる改善提案",
+          "description": "会話データからFAQ改善点を自動抽出・提案",
+          "priority": "high",
+          "status": "planned"
+        },
+        {
+          "title": "リアルタイム通知",
+          "description": "電話誘導や異常パターン検出時にSlack/メール通知",
+          "priority": "medium",
+          "status": "planned"
+        }
+      ]
+    },
+    {
+      "version": "1.2",
+      "title": "マルチチャネル対応",
+      "targetDate": "2026-Q3",
+      "status": "計画中",
+      "features": [
+        {
+          "title": "LINE連携",
+          "description": "LINE公式アカウント経由のチャットボット対応",
+          "priority": "high",
+          "status": "planned"
+        },
+        {
+          "title": "予約システム連携",
+          "description": "チャットボットから直接予約ができる機能",
+          "priority": "medium",
+          "status": "planned"
+        }
+      ]
+    },
+    {
+      "version": "2.0",
+      "title": "AI BPO基盤構築",
+      "targetDate": "2026-Q4",
+      "status": "構想中",
+      "features": [
+        {
+          "title": "AI電話受付システム",
+          "description": "AI音声ボットによるクリニック受電対応。必要時に有人転送",
+          "priority": "high",
+          "status": "planned"
+        },
+        {
+          "title": "AI予約管理システム",
+          "description": "予約受付・変更・キャンセル・リマインドをAIで自動処理",
+          "priority": "high",
+          "status": "planned"
+        },
+        {
+          "title": "BPOオペレーションダッシュボード",
+          "description": "BPO業務の処理状況・品質をリアルタイムで管理するダッシュボード",
+          "priority": "medium",
+          "status": "planned"
+        }
+      ]
+    },
+    {
+      "version": "2.5",
+      "title": "AI BPOサービス拡充",
+      "targetDate": "2027-Q1〜Q2",
+      "status": "構想中",
+      "features": [
+        {
+          "title": "AI事務代行",
+          "description": "書類作成、データ入力、メール対応などバックオフィス業務のAI自動化",
+          "priority": "medium",
+          "status": "planned"
+        },
+        {
+          "title": "AIマーケティング支援",
+          "description": "患者データ分析に基づく集患施策の提案・実行代行",
+          "priority": "medium",
+          "status": "planned"
+        },
+        {
+          "title": "SaaS+BPO統合プラットフォーム",
+          "description": "チャットボット分析とBPOを統合した一元管理画面",
+          "priority": "high",
+          "status": "planned"
+        }
+      ]
+    }
+  ],
+  "backlog": [
+    {
+      "title": "多言語対応（英語・中国語）",
+      "priority": "low",
+      "requestedBy": "",
+      "notes": "インバウンド患者対応のため"
+    },
+    {
+      "title": "患者満足度アンケート連携",
+      "priority": "medium",
+      "requestedBy": "",
+      "notes": ""
+    },
+    {
+      "title": "競合分析レポート",
+      "priority": "low",
+      "requestedBy": "",
+      "notes": "近隣クリニックとの比較データ"
+    }
+  ],
+  "bugs": [],
+  "lastUpdated": "2026-03-24"
+}

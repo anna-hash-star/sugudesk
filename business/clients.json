@@ -1,0 +1,77 @@
+{
+  "clients": [
+    {
+      "id": "lunaladies",
+      "name": "ルナレディースクリニック",
+      "status": "active",
+      "services": ["dashboard", "chatbot"],
+      "contractStart": null,
+      "monthlyFee": null,
+      "contactPerson": "",
+      "contactEmail": "",
+      "contactPhone": "",
+      "notes": "最初のクライアント。ダッシュボード＋チャットボット両方利用中。院別分析対応済み。"
+    },
+    {
+      "id": "adeb",
+      "name": "AdeB",
+      "status": "active",
+      "services": ["dashboard"],
+      "contractStart": null,
+      "monthlyFee": null,
+      "contactPerson": "",
+      "contactEmail": "",
+      "contactPhone": "",
+      "notes": "ダッシュボードのみ利用中"
+    },
+    {
+      "id": "izumisaki",
+      "name": "泉崎審美歯科・ファミリー歯科",
+      "status": "active",
+      "services": ["dashboard"],
+      "contractStart": null,
+      "monthlyFee": null,
+      "contactPerson": "",
+      "contactEmail": "",
+      "contactPhone": "",
+      "notes": "歯科クリニック。ダッシュボードのみ利用中"
+    },
+    {
+      "id": "hosogihospital",
+      "name": "細木病院",
+      "status": "active",
+      "services": ["dashboard"],
+      "contractStart": null,
+      "monthlyFee": null,
+      "contactPerson": "",
+      "contactEmail": "",
+      "contactPhone": "",
+      "notes": "病院。ダッシュボードのみ利用中"
+    },
+    {
+      "id": "mikasa",
+      "name": "みかさ美容クリニック",
+      "status": "active",
+      "services": ["dashboard"],
+      "contractStart": null,
+      "monthlyFee": null,
+      "contactPerson": "",
+      "contactEmail": "",
+      "contactPhone": "",
+      "notes": "美容クリニック。ダッシュボードのみ利用中"
+    }
+  ],
+  "pipeline": [
+    {
+      "name": "",
+      "stage": "リード",
+      "source": "",
+      "estimatedValue": null,
+      "nextAction": "",
+      "nextActionDate": null,
+      "notes": "営業パイプラインにリードを追加してください"
+    }
+  ],
+  "stages": ["リード", "初回接触", "デモ実施", "提案中", "交渉中", "成約", "失注"],
+  "lastUpdated": "2026-03-24"
+}

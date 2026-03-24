@@ -1,0 +1,142 @@
+{
+  "company": {
+    "name": "SuguDesk",
+    "nameJa": "スグデスク",
+    "mission": "AIの力で、医療機関の業務と患者対応を革新する",
+    "vision": "AIチャットボットとAI BPOで、すべてのクリニックが最高の業務効率と患者体験を実現できる世界を作る",
+    "founded": "2025",
+    "stage": "アーリーステージ"
+  },
+  "businessDomains": [
+    {
+      "id": "chatbot-analytics",
+      "name": "AIチャットボット分析SaaS",
+      "phase": "現在（短期）",
+      "type": "SaaS（月額サブスクリプション）",
+      "targetMarket": "医療・歯科クリニック",
+      "valueProposition": [
+        "Difyチャットボットの会話データを自動分析",
+        "患者対応の品質を可視化・改善提案",
+        "電話誘導率の削減によるスタッフ負担軽減",
+        "FAQ改善サイクルの自動化"
+      ],
+      "status": "運用中"
+    },
+    {
+      "id": "ai-bpo",
+      "name": "AI BPO事業",
+      "phase": "中期（2026後半〜2027）",
+      "type": "BPO（業務委託・成果報酬型）",
+      "targetMarket": "医療・歯科クリニック → 中小企業全般へ拡大",
+      "valueProposition": [
+        "AIを活用した電話対応・予約管理の代行",
+        "患者問い合わせのAIトリアージ＆有人エスカレーション",
+        "レセプト・事務作業のAI自動化",
+        "データ入力・帳票処理のAI代行",
+        "チャットボットSaaSで蓄積した業務知見をBPOに活用"
+      ],
+      "potentialServices": [
+        {
+          "name": "AI電話受付代行",
+          "description": "AI音声ボットによる受電対応＋必要時の有人転送",
+          "priority": "high"
+        },
+        {
+          "name": "AI予約管理BPO",
+          "description": "予約受付・変更・リマインドをAIで自動処理",
+          "priority": "high"
+        },
+        {
+          "name": "AI事務代行",
+          "description": "書類作成、データ入力、メール対応などのバックオフィス業務をAIで効率化",
+          "priority": "medium"
+        },
+        {
+          "name": "AIマーケティング支援",
+          "description": "患者データ分析に基づく集患施策の提案・実行代行",
+          "priority": "medium"
+        }
+      ],
+      "synergy": "チャットボットSaaSで得た会話データ・業務知見・クリニックとの信頼関係がAI BPO事業の強力な参入障壁になる",
+      "status": "構想中"
+    }
+  ],
+  "kpis": {
+    "currentClients": 5,
+    "targetClients": {
+      "q2_2026": 10,
+      "q3_2026": 20,
+      "q4_2026": 35,
+      "fy2026": 35
+    },
+    "mrr": {
+      "current": 0,
+      "target_q2_2026": 0,
+      "target_fy2026": 0,
+      "currency": "JPY",
+      "note": "金額は実際の数値を入力してください"
+    },
+    "churnRate": {
+      "current": null,
+      "target": "5%以下"
+    }
+  },
+  "competitiveAdvantage": [
+    "医療特化のチャットボット分析で蓄積した業務知見",
+    "クリニックとの信頼関係・顧客基盤",
+    "SaaS→BPOへの自然な拡張パス（データ×信頼×業務理解）",
+    "日本語対応のAI技術力",
+    "Google Sheets連携による導入の容易さ"
+  ],
+  "strategicPriorities": [
+    {
+      "priority": 1,
+      "title": "【短期】チャットボットSaaSの価値向上・顧客拡大",
+      "description": "ダッシュボード分析機能を強化し、クライアント数を増やす。AI BPOの基盤となる顧客基盤と業務知見を蓄積する",
+      "status": "進行中",
+      "timeline": "〜2026 Q3"
+    },
+    {
+      "priority": 2,
+      "title": "【短期】営業チャネルの確立",
+      "description": "効率的な顧客獲得チャネルを構築する",
+      "status": "計画中",
+      "timeline": "〜2026 Q3"
+    },
+    {
+      "priority": 3,
+      "title": "【中期】AI BPO事業の立ち上げ",
+      "description": "既存クライアントへのAI BPOサービス提供を開始。電話対応代行・予約管理から着手し、段階的にサービスを拡大",
+      "status": "構想中",
+      "timeline": "2026 Q4〜2027"
+    },
+    {
+      "priority": 4,
+      "title": "【中期】SaaS×BPOの統合プラットフォーム化",
+      "description": "チャットボット分析とBPOサービスを統合し、クリニックの業務を丸ごとAI化するプラットフォームを構築",
+      "status": "構想中",
+      "timeline": "2027〜"
+    }
+  ],
+  "growthStrategy": {
+    "phase1": {
+      "name": "SaaS基盤確立",
+      "period": "現在〜2026 Q3",
+      "focus": "チャットボットSaaSでクライアント数・信頼・業務知見を蓄積",
+      "keyMetrics": ["クライアント数", "MRR", "チャーンレート"]
+    },
+    "phase2": {
+      "name": "AI BPO参入",
+      "period": "2026 Q4〜2027 Q2",
+      "focus": "既存クライアントにAI BPOを提供開始。電話受付代行・予約管理から",
+      "keyMetrics": ["BPOクライアント数", "BPO売上", "自動化率"]
+    },
+    "phase3": {
+      "name": "統合プラットフォーム",
+      "period": "2027 Q3〜",
+      "focus": "SaaS+BPOを統合。医療機関以外の業種にも展開",
+      "keyMetrics": ["総売上", "業種カバレッジ", "AIタスク処理数"]
+    }
+  },
+  "lastUpdated": "2026-03-24"
+}
