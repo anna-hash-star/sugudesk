@@ -11,6 +11,8 @@
     {
       "id": "chatbot-analytics",
       "name": "AIチャットボット分析SaaS",
+      "brandName": "SuguDesk",
+      "website": "https://www.sugudesk.com/",
       "phase": "現在（短期）",
       "type": "SaaS（月額サブスクリプション）",
       "targetMarket": "医療・歯科クリニック",
@@ -25,6 +27,8 @@
     {
       "id": "ai-bpo",
       "name": "AI BPO事業",
+      "brandName": "クラウド事務長",
+      "website": "https://cloud-jimucho.studio.site/",
       "phase": "中期（2026後半〜2027）",
       "type": "BPO（業務委託・成果報酬型）",
       "targetMarket": "医療・歯科クリニック → 中小企業全般へ拡大",
