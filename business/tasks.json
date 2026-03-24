@@ -1,0 +1,108 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "AdeBの回答修正",
+      "category": "プロダクト",
+      "client": "AdeB",
+      "priority": "high",
+      "status": "todo",
+      "description": "AdeBチャットボットの回答内容を修正",
+      "dueDate": null
+    },
+    {
+      "id": 2,
+      "title": "ルナレディースの回答修正方針まとめ",
+      "category": "プロダクト",
+      "client": "ルナレディースクリニック",
+      "priority": "high",
+      "status": "todo",
+      "description": "ルナレディースクリニックのチャットボット回答修正の方針を整理・ドキュメント化",
+      "dueDate": null
+    },
+    {
+      "id": 3,
+      "title": "泉崎審美歯科のLステップ提案",
+      "category": "営業",
+      "client": "泉崎審美歯科・ファミリー歯科",
+      "priority": "medium",
+      "status": "todo",
+      "description": "泉崎審美歯科へのLステップ（LINE）導入提案を作成",
+      "dueDate": null
+    },
+    {
+      "id": 4,
+      "title": "中川さんオンボNotionづくり",
+      "category": "オペレーション",
+      "client": null,
+      "priority": "medium",
+      "status": "todo",
+      "description": "中川さんのオンボーディング用Notionページを作成",
+      "dueDate": null
+    },
+    {
+      "id": 5,
+      "title": "SuguDesk LP刷新",
+      "category": "マーケティング",
+      "client": null,
+      "priority": "high",
+      "status": "todo",
+      "description": "sugudesk.com のランディングページをリニューアル",
+      "dueDate": null
+    },
+    {
+      "id": 6,
+      "title": "木村内科のFAQ検討",
+      "category": "営業",
+      "client": "木村内科",
+      "priority": "medium",
+      "status": "todo",
+      "description": "木村内科向けのFAQコンテンツを検討・作成",
+      "dueDate": null,
+      "note": "新規クライアント候補"
+    },
+    {
+      "id": 7,
+      "title": "AdeBのチャットウィジェット変更",
+      "category": "プロダクト",
+      "client": "AdeB",
+      "priority": "medium",
+      "status": "todo",
+      "description": "AdeBサイトに設置しているチャットウィジェットのUI/設定を変更",
+      "dueDate": null
+    },
+    {
+      "id": 8,
+      "title": "SuguDeskのLP変更",
+      "category": "マーケティング",
+      "client": null,
+      "priority": "high",
+      "status": "todo",
+      "description": "sugudesk.com のLP内容を変更・改善",
+      "dueDate": null,
+      "note": "LP刷新タスクと統合可能"
+    },
+    {
+      "id": 9,
+      "title": "クラウド事務長の方向性検討",
+      "category": "経営戦略",
+      "client": null,
+      "priority": "high",
+      "status": "todo",
+      "description": "パックやセットなど頼みやすい形でのサービス設計を検討",
+      "dueDate": null
+    },
+    {
+      "id": 10,
+      "title": "経営戦略の検討",
+      "category": "経営戦略",
+      "client": null,
+      "priority": "high",
+      "status": "todo",
+      "description": "全社的な経営戦略の見直し・策定",
+      "dueDate": null
+    }
+  ],
+  "categories": ["プロダクト", "営業", "マーケティング", "オペレーション", "経営戦略"],
+  "lastUpdated": "2026-03-24"
+}
