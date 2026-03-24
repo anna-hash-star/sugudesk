@@ -15,20 +15,32 @@
     "note": "月次経費データを追加してください"
   },
   "pricing": {
-    "plans": [
-      {
-        "name": "スタンダード",
-        "monthlyPrice": null,
-        "includes": ["分析ダッシュボード", "チャットボット設置", "月次レポート"],
-        "note": "料金を設定してください"
-      },
-      {
-        "name": "プレミアム",
-        "monthlyPrice": null,
-        "includes": ["スタンダード全機能", "AI改善提案", "優先サポート", "カスタマイズ対応"],
-        "note": "料金を設定してください"
-      }
-    ]
+    "sugudesk": {
+      "brand": "SuguDesk",
+      "startingPrice": 15000,
+      "note": "15,000円〜/月。詳細はお問い合わせ"
+    },
+    "cloudJimucho": {
+      "brand": "クラウド事務長",
+      "plans": [
+        {
+          "name": "20時間プラン",
+          "monthlyPrice": 110000,
+          "hours": 20
+        },
+        {
+          "name": "30時間プラン",
+          "monthlyPrice": 150000,
+          "hours": 30,
+          "recommended": true
+        },
+        {
+          "name": "50時間プラン",
+          "monthlyPrice": 240000,
+          "hours": 50
+        }
+      ]
+    }
   },
   "lastUpdated": "2026-03-24"
 }
