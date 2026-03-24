@@ -87,6 +87,9 @@ export default function ClientPage({ clientId }) {
   });
   const maxMenu = Math.max(...menuData.map(d=>d[1]), 1);
 
+  const clinicCounts = {};
+  filteredRows.forEach(r => { const c = (r[clinicKey]||'').trim(); if(c) clinicCounts[c] = (clinicCounts[c]||0)+1; });
+
   const improvementCounts = {};
   filteredRows.forEach(r => { const v = r['improvement_action']; if(v&&v.trim()) improvementCounts[v] = (improvementCounts[v]||0)+1; });
   const improvementData = Object.entries(improvementCounts).sort((a,b)=>b[1]-a[1]);
