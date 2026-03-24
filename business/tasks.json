@@ -42,12 +42,12 @@
     },
     {
       "id": 5,
-      "title": "SuguDesk LP刷新",
+      "title": "SuguDesk LP刷新・変更",
       "category": "マーケティング",
       "client": null,
       "priority": "high",
       "status": "todo",
-      "description": "sugudesk.com のランディングページをリニューアル",
+      "description": "sugudesk.com のランディングページをリニューアル・内容改善",
       "dueDate": null
     },
     {
@@ -59,7 +59,7 @@
       "status": "todo",
       "description": "木村内科向けのFAQコンテンツを検討・作成",
       "dueDate": null,
-      "note": "新規クライアント候補"
+      "note": "ギミックさん経由のテスト導入候補"
     },
     {
       "id": 7,
@@ -73,17 +73,6 @@
     },
     {
       "id": 8,
-      "title": "SuguDeskのLP変更",
-      "category": "マーケティング",
-      "client": null,
-      "priority": "high",
-      "status": "todo",
-      "description": "sugudesk.com のLP内容を変更・改善",
-      "dueDate": null,
-      "note": "LP刷新タスクと統合可能"
-    },
-    {
-      "id": 9,
       "title": "クラウド事務長の方向性検討",
       "category": "経営戦略",
       "client": null,
@@ -93,7 +82,27 @@
       "dueDate": null
     },
     {
+      "id": 9,
+      "title": "クラウド事務長HP刷新",
+      "category": "マーケティング",
+      "client": null,
+      "priority": "high",
+      "status": "todo",
+      "description": "クラウド事務長のホームページをリニューアル",
+      "dueDate": null
+    },
+    {
       "id": 10,
+      "title": "クラウド事務長リード獲得施策",
+      "category": "マーケティング",
+      "client": null,
+      "priority": "high",
+      "status": "todo",
+      "description": "クラウド事務長の新規リード獲得の仕組みづくり",
+      "dueDate": null
+    },
+    {
+      "id": 11,
       "title": "経営戦略の検討",
       "category": "経営戦略",
       "client": null,

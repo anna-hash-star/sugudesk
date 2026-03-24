@@ -63,13 +63,13 @@
   ],
   "pipeline": [
     {
-      "name": "",
-      "stage": "リード",
-      "source": "",
-      "estimatedValue": null,
-      "nextAction": "",
+      "name": "木村内科",
+      "stage": "デモ実施",
+      "source": "ギミック経由",
+      "estimatedValue": 15000,
+      "nextAction": "FAQ検討・テスト導入準備",
       "nextActionDate": null,
-      "notes": "営業パイプラインにリードを追加してください"
+      "notes": "ギミックさんからの紹介。テスト導入で検討中"
     }
   ],
   "stages": ["リード", "初回接触", "デモ実施", "提案中", "交渉中", "成約", "失注"],
