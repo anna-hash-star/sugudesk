@@ -202,7 +202,7 @@ const selectedFirstRow = selectedPhoneRow || selectedConv?.rows?.[0];
               <BarChart data={hourData} maxVal={maxHour} defaultColor="#60a5fa" />
             </div>
           </div>
-          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:16}}>
+          <div style={{display:'grid',gridTemplateColumns:clientId==='lunaladies'?'1fr 1fr 1fr':'1fr 1fr',gap:16,marginBottom:16}}>
             <div style={{background:'white',borderRadius:12,padding:24,boxShadow:'0 1px 4px rgba(0,0,0,0.06)'}}>
               <div style={{fontSize:14,fontWeight:600,marginBottom:16,color:'#333'}}>トピック分布</div>
               <HBarChart data={topicData} maxVal={Math.max(...topicData.map(d=>d[1]),1)} colorFn={(_,i)=>topicColors[i%topicColors.length]} />
@@ -211,6 +211,12 @@ const selectedFirstRow = selectedPhoneRow || selectedConv?.rows?.[0];
               <div style={{fontSize:14,fontWeight:600,marginBottom:16,color:'#333'}}>メニューカテゴリ分布</div>
               <HBarChart data={menuData} maxVal={maxMenu} defaultColor="#10b981" />
             </div>
+            {clientId==='lunaladies'&&(
+              <div style={{background:'white',borderRadius:12,padding:24,boxShadow:'0 1px 4px rgba(0,0,0,0.06)'}}>
+                <div style={{fontSize:14,fontWeight:600,marginBottom:16,color:'#333'}}>院別会話数</div>
+                <HBarChart data={Object.entries(clinicCounts).sort((a,b)=>b[1]-a[1])} maxVal={Math.max(...Object.values(clinicCounts),1)} defaultColor="#6366f1" />
+              </div>
+            )}
           </div>
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:16}}>
             <div style={{background:'white',borderRadius:12,padding:24,boxShadow:'0 1px 4px rgba(0,0,0,0.06)'}}>
