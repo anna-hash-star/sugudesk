@@ -74,15 +74,15 @@
     width: 60px !important; height: 60px !important;
     border-radius: 50% !important; border: none !important;
     cursor: pointer !important;
-    display: none !important;
-    align-items: center !important; justify-content: center !important;
-    padding: 0 !important;
-    background: linear-gradient(180deg, #f07dbe 0%, #e46db1 40%, #d45da1 100%) !important;
-    border-top: 1px solid rgba(255,255,255,0.3) !important;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.12), 0 6px 16px rgba(228,109,177,0.35) !important;
-    transition: transform 0.15s ease !important;
-    right: 16px !important; bottom: 72px !important;
-    overflow: hidden !important;
+    display: none;
+    align-items: center; justify-content: center;
+    padding: 0;
+    background: linear-gradient(180deg, #f07dbe 0%, #e46db1 40%, #d45da1 100%);
+    border-top: 1px solid rgba(255,255,255,0.3);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.12), 0 6px 16px rgba(228,109,177,0.35);
+    transition: transform 0.15s ease;
+    right: 16px; bottom: 72px;
+    overflow: hidden;
   }
   #fab-circle:active { transform: scale(0.93) !important; }
 
@@ -108,16 +108,16 @@
     z-index: 2147483638 !important;
     border: none !important; border-radius: 24px !important;
     cursor: pointer !important;
-    display: none !important;
-    align-items: center !important; justify-content: center !important;
-    gap: 7px !important;
-    padding: 10px 18px !important;
-    background: linear-gradient(180deg, #f07dbe 0%, #e46db1 40%, #d45da1 100%) !important;
-    border-top: 1px solid rgba(255,255,255,0.35) !important;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.12), 0 6px 16px rgba(228,109,177,0.35) !important;
-    transition: transform 0.15s ease !important;
-    right: 12px !important; bottom: 68px !important;
-    overflow: hidden !important;
+    display: none;
+    align-items: center; justify-content: center;
+    gap: 7px;
+    padding: 10px 18px;
+    background: linear-gradient(180deg, #f07dbe 0%, #e46db1 40%, #d45da1 100%);
+    border-top: 1px solid rgba(255,255,255,0.35);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.12), 0 6px 16px rgba(228,109,177,0.35);
+    transition: transform 0.15s ease;
+    right: 12px; bottom: 68px;
+    overflow: hidden;
   }
   #fab-pill:active { transform: scale(0.96) !important; }
   #fab-pill .shimmer {
@@ -222,6 +222,9 @@
   <div class="shimmer"></div>
   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" style="position:relative;z-index:1">
     <path d="M21 11.5C21.0034 12.8199 20.6951 14.1219 20.1 15.3C19.3944 16.7118 18.3098 17.8992 16.9674 18.7293C15.6251 19.5594 14.0782 19.9994 12.5 20C11.1801 20.0035 9.87812 19.6951 8.7 19.1L3 21L4.9 15.3C4.30493 14.1219 3.99656 12.8199 4 11.5C4.00061 9.92179 4.44061 8.37488 5.27072 7.03258C6.10083 5.69028 7.28825 4.6056 8.7 3.90003C9.87812 3.30496 11.1801 2.99659 12.5 3.00003H13C15.0843 3.11502 17.053 3.99479 18.5291 5.47089C20.0052 6.94699 20.885 8.91568 21 11V11.5Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <circle cx="8.5" cy="11" r="1.2" fill="white"/>
+    <circle cx="12.5" cy="11" r="1.2" fill="white"/>
+    <circle cx="16.5" cy="11" r="1.2" fill="white"/>
   </svg>
 </button>
 
@@ -244,13 +247,11 @@
     btns[0].className = type === "circle" ? "active" : "";
     btns[1].className = type === "pill" ? "active" : "";
 
-    if (window.innerWidth <= 768) {
-      var win = document.querySelector("#dify-chatbot-bubble-window");
-      var isOpen = win && win.style.display !== "none";
-      if (!isOpen) {
-        document.getElementById("fab-circle").style.display = type === "circle" ? "flex" : "none";
-        document.getElementById("fab-pill").style.display = type === "pill" ? "flex" : "none";
-      }
+    var win = document.querySelector("#dify-chatbot-bubble-window");
+    var isOpen = win && win.style.display !== "none";
+    if (!isOpen) {
+      document.getElementById("fab-circle").style.display = type === "circle" ? "flex" : "none";
+      document.getElementById("fab-pill").style.display = type === "pill" ? "flex" : "none";
     }
   }
 </script>
@@ -373,8 +374,10 @@
         attributes: true, attributeFilter: ["style"],
       });
 
-      // 初期表示
-      setTimeout(function () { switchFab("circle"); }, 300);
+      // 初期表示（即時 + 遅延 + load イベントの3重保険）
+      switchFab("circle");
+      setTimeout(function () { switchFab("circle"); }, 500);
+      window.addEventListener("load", function () { switchFab("circle"); });
     });
   })();
 </script>
