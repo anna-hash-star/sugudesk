@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { clinics, candidates, operatorAlerts, agencies } from '../../../../lib/prototypeMockData';
+import { clinics, candidates, operatorAlerts, agencies, agencyMetricsByClinic } from '../../../../lib/prototypeMockData';
 
 const COLORS = {
   primary: '#2563a8',
@@ -94,35 +94,60 @@ export default function OperatorDashboard() {
           </div>
         </Section>
 
-        {/* 紹介会社サマリ */}
-        <Section title="紹介会社サマリ">
-          <div style={{ background: COLORS.white, borderRadius: 10, border: `1px solid ${COLORS.border}`, overflow: 'hidden' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        {/* 紹介会社 × 院 マトリクス（院別管理） */}
+        <Section title="紹介会社 × 院 実績マトリクス">
+          <div style={{ background: COLORS.white, borderRadius: 10, border: `1px solid ${COLORS.border}`, overflow: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 800 }}>
               <thead>
                 <tr style={{ background: '#fafafa', borderBottom: `1px solid ${COLORS.border}` }}>
                   <th style={th}>紹介会社</th>
-                  <th style={thRight}>紹介数</th>
-                  <th style={thRight}>書類通過</th>
-                  <th style={thRight}>面接</th>
-                  <th style={thRight}>採用</th>
-                  <th style={thRight}>手数料合計</th>
-                  <th style={th}>要望待ち</th>
+                  {clinics.filter((c) => Object.keys(agencyMetricsByClinic[c.id] || {}).length > 0).map((c) => (
+                    <th key={c.id} colSpan={3} style={{ ...th, textAlign: 'center', borderLeft: `1px solid ${COLORS.border}` }}>{c.name}</th>
+                  ))}
+                </tr>
+                <tr style={{ background: '#fafafa', borderBottom: `1px solid ${COLORS.border}` }}>
+                  <th style={th}></th>
+                  {clinics.filter((c) => Object.keys(agencyMetricsByClinic[c.id] || {}).length > 0).map((c) => (
+                    <>
+                      <th key={`${c.id}-i`} style={{ ...thRight, fontSize: 10, borderLeft: `1px solid ${COLORS.border}` }}>紹介</th>
+                      <th key={`${c.id}-h`} style={{ ...thRight, fontSize: 10 }}>採用</th>
+                      <th key={`${c.id}-r`} style={{ ...thRight, fontSize: 10 }}>成約率</th>
+                    </>
+                  ))}
                 </tr>
               </thead>
               <tbody>
                 {agencies.map((a) => (
                   <tr key={a.id} style={{ borderBottom: `1px solid ${COLORS.border}` }}>
-                    <td style={td}><strong>{a.name}</strong></td>
-                    <td style={tdRight}>{a.metrics.introductions}</td>
-                    <td style={tdRight}>{a.metrics.docPasses}</td>
-                    <td style={tdRight}>{a.metrics.interviews}</td>
-                    <td style={tdRight}>{a.metrics.hires}</td>
-                    <td style={tdRight}>¥{a.metrics.totalFeePaid.toLocaleString()}</td>
-                    <td style={td}>{a.requestHistory.filter((r) => r.status === '対応中').length > 0 ? `${a.requestHistory.filter((r) => r.status === '対応中').length}件` : '-'}</td>
+                    <td style={td}>
+                      <strong>{a.name}</strong>
+                      <div style={{ fontSize: 11, color: COLORS.textMuted }}>担当: {a.contactPerson} / 料率 {a.feeRate}%</div>
+                    </td>
+                    {clinics.filter((c) => Object.keys(agencyMetricsByClinic[c.id] || {}).length > 0).map((c) => {
+                      const m = agencyMetricsByClinic[c.id]?.[a.id];
+                      if (!m) return (
+                        <>
+                          <td key={`${c.id}-i`} style={{ ...tdRight, color: COLORS.textMuted, borderLeft: `1px solid ${COLORS.border}` }}>-</td>
+                          <td key={`${c.id}-h`} style={{ ...tdRight, color: COLORS.textMuted }}>-</td>
+                          <td key={`${c.id}-r`} style={{ ...tdRight, color: COLORS.textMuted }}>-</td>
+                        </>
+                      );
+                      const rate = m.introductions > 0 ? Math.round(m.hires / m.introductions * 100) : 0;
+                      return (
+                        <>
+                          <td key={`${c.id}-i`} style={{ ...tdRight, borderLeft: `1px solid ${COLORS.border}` }}>{m.introductions}</td>
+                          <td key={`${c.id}-h`} style={tdRight}>{m.hires}</td>
+                          <td key={`${c.id}-r`} style={{ ...tdRight, fontWeight: 600, color: rate >= 20 ? COLORS.warning : COLORS.text }}>{rate}%</td>
+                        </>
+                      );
+                    })}
                   </tr>
                 ))}
               </tbody>
             </table>
+          </div>
+          <div style={{ fontSize: 11, color: COLORS.textLight, marginTop: 8 }}>
+            ※ 詳細（要望履歴・手数料・平均返信日数等）は各院の「院詳細 → 紹介会社管理」タブで確認できます
           </div>
         </Section>
       </main>

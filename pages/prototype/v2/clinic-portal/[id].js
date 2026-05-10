@@ -8,6 +8,9 @@ import {
   monthlyReports,
   interviewArtifacts,
   STATUSES,
+  agencies,
+  agencyMetricsByClinic,
+  mediaMetricsByClinic,
 } from '../../../../lib/prototypeMockData';
 
 const COLORS = {
@@ -147,6 +150,11 @@ function DashboardView({ clinic, actions, cases }) {
         </div>
       </Section>
 
+      {/* 媒体・紹介会社の効果 */}
+      <Section icon="💹" title="媒体・紹介会社の効果（5月）">
+        <MediaAgencyEffectiveness clinicId={clinic.id} />
+      </Section>
+
       {/* 月次レポート */}
       <Section icon="📈" title="月次レポート">
         <MonthlyReportCard clinic={clinic} onClick={() => goAction('monthly-report')} />
@@ -257,6 +265,109 @@ function FeatureCard({ icon, title, description, buttonLabel, onClick }) {
     </div>
   );
 }
+
+function MediaAgencyEffectiveness({ clinicId }) {
+  const mediaList = mediaMetricsByClinic[clinicId]?.['2026-05'] || [];
+  const clinicAgencyMetrics = agencyMetricsByClinic[clinicId] || {};
+  const usedAgencies = agencies.filter((a) => clinicAgencyMetrics[a.id]);
+
+  if (mediaList.length === 0 && usedAgencies.length === 0) {
+    return <EmptyBox text="まだ実績データがありません" />;
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {/* 媒体別 */}
+      {mediaList.length > 0 && (
+        <div style={{ background: COLORS.white, borderRadius: 10, border: `1px solid ${COLORS.border}`, padding: 16 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>📰 求人媒体</div>
+          <div style={{ fontSize: 11, color: COLORS.textMuted, marginBottom: 12 }}>媒体別の出稿金額・応募・採用と費用対効果</div>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+            <thead>
+              <tr style={{ background: '#fafafa' }}>
+                <th style={th}>媒体</th>
+                <th style={thRight}>出稿金額</th>
+                <th style={thRight}>応募</th>
+                <th style={thRight}>面接</th>
+                <th style={thRight}>採用</th>
+                <th style={thRight}>CPA</th>
+                <th style={thRight}>CPH</th>
+              </tr>
+            </thead>
+            <tbody>
+              {mediaList.map((m, i) => (
+                <tr key={i} style={{ borderBottom: i < mediaList.length - 1 ? `1px solid ${COLORS.border}` : 'none' }}>
+                  <td style={td}>
+                    <strong>{m.media}</strong>
+                    {m.note && <div style={{ fontSize: 10, color: COLORS.textMuted, marginTop: 2 }}>{m.note}</div>}
+                  </td>
+                  <td style={tdRight}>¥{m.cost.toLocaleString()}</td>
+                  <td style={tdRight}>{m.applications}</td>
+                  <td style={tdRight}>{m.interviews}</td>
+                  <td style={tdRight}><strong>{m.hires}</strong></td>
+                  <td style={tdRight}>{m.cpa > 0 ? `¥${m.cpa.toLocaleString()}` : '-'}</td>
+                  <td style={tdRight}>{m.cph > 0 ? `¥${m.cph.toLocaleString()}` : '-'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div style={{ fontSize: 10, color: COLORS.textMuted, marginTop: 8, lineHeight: 1.6 }}>
+            CPA = 出稿金額 ÷ 応募数（応募1件あたり費用）／ CPH = 出稿金額 ÷ 採用数（採用1名あたり費用）
+          </div>
+        </div>
+      )}
+
+      {/* 紹介会社別 */}
+      {usedAgencies.length > 0 && (
+        <div style={{ background: COLORS.white, borderRadius: 10, border: `1px solid ${COLORS.border}`, padding: 16 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>🤝 紹介会社</div>
+          <div style={{ fontSize: 11, color: COLORS.textMuted, marginBottom: 12 }}>紹介会社別の実績・成約率・支払手数料</div>
+          {usedAgencies.map((a, i) => {
+            const m = clinicAgencyMetrics[a.id];
+            const successRate = m.introductions > 0 ? Math.round(m.hires / m.introductions * 100) : 0;
+            return (
+              <div key={a.id} style={{ padding: '12px 0', borderBottom: i < usedAgencies.length - 1 ? `1px solid ${COLORS.border}` : 'none' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: COLORS.text }}>{a.name}</div>
+                    <div style={{ fontSize: 11, color: COLORS.textLight, marginTop: 2 }}>
+                      担当：{a.contactPerson} ／ 料率：年収の{a.feeRate}% ／ 平均返信：{m.avgReplyDays.toFixed(1)}日
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontSize: 11, color: COLORS.textMuted }}>成約率</div>
+                    <div style={{ fontSize: 18, fontWeight: 700, color: successRate >= 20 ? COLORS.success : successRate >= 10 ? COLORS.text : COLORS.warning }}>{successRate}%</div>
+                  </div>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
+                  <MiniStat label="紹介" value={m.introductions} />
+                  <MiniStat label="書類通過" value={m.docPasses} />
+                  <MiniStat label="面接" value={m.interviews} />
+                  <MiniStat label="採用" value={m.hires} highlight />
+                  <MiniStat label="支払手数料" value={`¥${(m.totalFeePaid / 10000).toFixed(0)}万`} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MiniStat({ label, value, highlight }) {
+  return (
+    <div style={{ textAlign: 'center', padding: 8, background: highlight ? COLORS.primaryLight : COLORS.bg, borderRadius: 6 }}>
+      <div style={{ fontSize: 10, color: COLORS.textLight }}>{label}</div>
+      <div style={{ fontSize: 16, fontWeight: 700, color: highlight ? COLORS.primary : COLORS.text }}>{value}</div>
+    </div>
+  );
+}
+
+const th = { padding: '10px 12px', textAlign: 'left', fontSize: 11, fontWeight: 700, color: COLORS.textLight, textTransform: 'uppercase', letterSpacing: '0.05em' };
+const thRight = { ...th, textAlign: 'right' };
+const td = { padding: '10px 12px', fontSize: 13, color: COLORS.text };
+const tdRight = { ...td, textAlign: 'right' };
 
 function MonthlyReportCard({ clinic, onClick }) {
   const report = monthlyReports[clinic.id];

@@ -7,8 +7,11 @@ import {
   STATUSES,
   scoutTemplates as initialTemplates,
   agencies,
+  agencyMetricsByClinic,
+  agencyRequestsByClinic,
   monthlyScoutStats,
   monthlyMediaCost,
+  mediaMetricsByClinic,
   monthlyReports,
 } from '../../../../../lib/prototypeMockData';
 
@@ -239,43 +242,54 @@ function ScoutManagementTab({ clinicId, clinic }) {
   );
 }
 
-// ============== 紹介会社管理（v2 新規） ==============
+// ============== 紹介会社管理（v2 改修：院別実績） ==============
 function AgencyManagementTab({ clinicId }) {
-  const [selected, setSelected] = useState(agencies[0]?.id);
+  const clinicMetrics = agencyMetricsByClinic[clinicId] || {};
+  const clinicRequests = agencyRequestsByClinic[clinicId] || {};
+  const usedAgencies = agencies.filter((a) => clinicMetrics[a.id]);
+  const [selected, setSelected] = useState(usedAgencies[0]?.id);
   const agency = agencies.find((a) => a.id === selected);
+  const m = clinicMetrics[selected];
+  const requests = clinicRequests[selected] || [];
 
   return (
     <div>
-      <Banner text="紹介会社マスタ・実績集計・要望履歴を管理します。" />
+      <Banner text="この院での紹介会社実績・要望履歴を管理します。手数料率や担当者などのマスタ情報は紹介会社共通です。" />
 
-      {/* 一覧 */}
-      <SectionTitle>契約中の紹介会社</SectionTitle>
+      <SectionTitle>この院で利用中の紹介会社</SectionTitle>
       <div style={{ background: COLORS.white, borderRadius: 10, border: `1px solid ${COLORS.border}`, overflow: 'hidden', marginBottom: 24 }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
           <thead>
             <tr style={{ background: '#fafafa' }}>
               <th style={th}>紹介会社</th>
               <th style={th}>担当</th>
-              <th style={thRight}>手数料率</th>
+              <th style={thRight}>料率</th>
               <th style={thRight}>紹介数</th>
+              <th style={thRight}>書類通過</th>
+              <th style={thRight}>面接</th>
               <th style={thRight}>採用</th>
               <th style={thRight}>成約率</th>
-              <th style={thRight}>平均返信日数</th>
+              <th style={thRight}>手数料</th>
+              <th style={thRight}>返信日数</th>
               <th style={th}></th>
             </tr>
           </thead>
           <tbody>
-            {agencies.map((a) => {
-              const successRate = a.metrics.introductions > 0 ? Math.round(a.metrics.hires / a.metrics.introductions * 100) : 0;
+            {usedAgencies.map((a) => {
+              const cm = clinicMetrics[a.id];
+              const rate = cm.introductions > 0 ? Math.round(cm.hires / cm.introductions * 100) : 0;
               return (
                 <tr key={a.id} style={{ borderBottom: `1px solid ${COLORS.border}`, cursor: 'pointer', background: selected === a.id ? COLORS.primaryLight : 'transparent' }} onClick={() => setSelected(a.id)}>
                   <td style={td}><strong>{a.name}</strong></td>
                   <td style={td}>{a.contactPerson}</td>
                   <td style={tdRight}>{a.feeRate}%</td>
-                  <td style={tdRight}>{a.metrics.introductions}</td>
-                  <td style={tdRight}>{a.metrics.hires}</td>
-                  <td style={tdRight}><strong style={{ color: successRate >= 15 ? COLORS.success : successRate >= 10 ? COLORS.text : COLORS.warning }}>{successRate}%</strong></td>
-                  <td style={tdRight}>{a.metrics.avgReplyDays.toFixed(1)}日</td>
+                  <td style={tdRight}>{cm.introductions}</td>
+                  <td style={tdRight}>{cm.docPasses}</td>
+                  <td style={tdRight}>{cm.interviews}</td>
+                  <td style={tdRight}>{cm.hires}</td>
+                  <td style={tdRight}><strong style={{ color: rate >= 20 ? COLORS.success : rate >= 10 ? COLORS.text : COLORS.warning }}>{rate}%</strong></td>
+                  <td style={tdRight}>¥{cm.totalFeePaid.toLocaleString()}</td>
+                  <td style={tdRight}>{cm.avgReplyDays.toFixed(1)}日</td>
                   <td style={td}><span style={{ color: COLORS.primary, fontSize: 12 }}>選択 →</span></td>
                 </tr>
               );
@@ -284,22 +298,22 @@ function AgencyManagementTab({ clinicId }) {
         </table>
       </div>
 
-      {/* 詳細 */}
-      {agency && (
+      {agency && m && (
         <>
-          <SectionTitle>{agency.name}：詳細</SectionTitle>
+          <SectionTitle>{agency.name}：詳細（この院）</SectionTitle>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <CardWrap>
-              <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 12 }}>実績</div>
-              <Row label="紹介数" value={`${agency.metrics.introductions}件`} />
-              <Row label="書類通過数" value={`${agency.metrics.docPasses}件`} />
-              <Row label="面接実施数" value={`${agency.metrics.interviews}件`} />
-              <Row label="採用数" value={`${agency.metrics.hires}件`} />
-              <Row label="支払手数料合計" value={`¥${agency.metrics.totalFeePaid.toLocaleString()}`} />
-              <Row label="平均返信日数" value={`${agency.metrics.avgReplyDays.toFixed(1)}日`} />
+              <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 12 }}>この院での実績</div>
+              <Row label="紹介数" value={`${m.introductions}件`} />
+              <Row label="書類通過数" value={`${m.docPasses}件`} />
+              <Row label="面接実施数" value={`${m.interviews}件`} />
+              <Row label="採用数" value={`${m.hires}件`} />
+              <Row label="支払手数料合計" value={`¥${m.totalFeePaid.toLocaleString()}`} />
+              <Row label="平均返信日数" value={`${m.avgReplyDays.toFixed(1)}日`} />
+              <Row label="最終紹介日" value={m.lastIntroductionDate} />
             </CardWrap>
             <CardWrap>
-              <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 12 }}>連絡先・契約</div>
+              <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 12 }}>マスタ情報（共通）</div>
               <Row label="担当者" value={agency.contactPerson} />
               <Row label="メール" value={agency.contactEmail} />
               <Row label="手数料率" value={`年収の${agency.feeRate}%`} />
@@ -307,13 +321,13 @@ function AgencyManagementTab({ clinicId }) {
             </CardWrap>
           </div>
 
-          <SectionTitle>要望伝達履歴</SectionTitle>
+          <SectionTitle>この院での要望伝達履歴</SectionTitle>
           <CardWrap>
-            {agency.requestHistory.length === 0 ? (
-              <Empty text="要望履歴はまだありません" />
+            {requests.length === 0 ? (
+              <Empty text="この紹介会社への要望履歴はまだありません" />
             ) : (
-              agency.requestHistory.map((r, i) => (
-                <div key={i} style={{ padding: 12, borderBottom: i < agency.requestHistory.length - 1 ? `1px solid ${COLORS.border}` : 'none' }}>
+              requests.map((r, i) => (
+                <div key={i} style={{ padding: 12, borderBottom: i < requests.length - 1 ? `1px solid ${COLORS.border}` : 'none' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                     <span style={{ fontSize: 11, color: COLORS.textMuted }}>{r.date}</span>
                     <span style={{ fontSize: 11, fontWeight: 600, color: r.status === '対応済み' ? COLORS.success : COLORS.warning }}>{r.status}</span>
