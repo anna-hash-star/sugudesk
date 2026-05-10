@@ -11,7 +11,9 @@ import {
   agencies,
   agencyMetricsByClinic,
   mediaMetricsByClinic,
+  funnelByClinic,
 } from '../../../../lib/prototypeMockData';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell, LineChart, Line, CartesianGrid, Legend, PieChart, Pie } from 'recharts';
 
 const COLORS = {
   primary: '#2563a8',
@@ -155,6 +157,11 @@ function DashboardView({ clinic, actions, cases }) {
         <MediaAgencyEffectiveness clinicId={clinic.id} />
       </Section>
 
+      {/* 詳細分析（HERP DataHub的） */}
+      <Section icon="📊" title="詳細分析：歩留まり・リードタイム・採用構成">
+        <FunnelAnalytics clinicId={clinic.id} />
+      </Section>
+
       {/* 月次レポート */}
       <Section icon="📈" title="月次レポート">
         <MonthlyReportCard clinic={clinic} onClick={() => goAction('monthly-report')} />
@@ -265,6 +272,189 @@ function FeatureCard({ icon, title, description, buttonLabel, onClick }) {
     </div>
   );
 }
+
+function FunnelAnalytics({ clinicId }) {
+  const data = funnelByClinic[clinicId];
+  if (!data || data.sources.length === 0) {
+    return <EmptyBox text="まだ分析データがありません" />;
+  }
+
+  const totals = data.sources.reduce(
+    (acc, s) => ({
+      entry: acc.entry + s.entry,
+      docPass: acc.docPass + s.docPass,
+      interviewScheduled: acc.interviewScheduled + s.interviewScheduled,
+      interviewDone: acc.interviewDone + s.interviewDone,
+      offer: acc.offer + s.offer,
+      hire: acc.hire + s.hire,
+      active: acc.active + s.active,
+    }),
+    { entry: 0, docPass: 0, interviewScheduled: 0, interviewDone: 0, offer: 0, hire: 0, active: 0 }
+  );
+
+  const pct = (num, den) => den > 0 ? Math.round(num / den * 100) : 0;
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ fontSize: 11, color: COLORS.textMuted }}>分析期間：{data.period}</div>
+
+      {/* 応募経路別 歩留まりテーブル */}
+      <div style={{ background: COLORS.white, borderRadius: 10, border: `1px solid ${COLORS.border}`, padding: 16, overflow: 'auto' }}>
+        <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 12 }}>応募経路別 歩留まり</div>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, minWidth: 900 }}>
+          <thead>
+            <tr style={{ background: '#fafafa' }}>
+              <th style={th}>応募経路</th>
+              <th style={thRight}>応募</th>
+              <th style={{ ...thCenter, color: COLORS.textMuted, padding: '6px 4px' }}>→</th>
+              <th style={thRight}>書類通過</th>
+              <th style={{ ...thCenter, color: COLORS.textMuted, padding: '6px 4px' }}>→</th>
+              <th style={thRight}>面接実施</th>
+              <th style={{ ...thCenter, color: COLORS.textMuted, padding: '6px 4px' }}>→</th>
+              <th style={thRight}>内定</th>
+              <th style={{ ...thCenter, color: COLORS.textMuted, padding: '6px 4px' }}>→</th>
+              <th style={thRight}>採用</th>
+              <th style={thRight}>リードタイム</th>
+              <th style={thRight}>選考中</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.sources.map((s, i) => (
+              <tr key={i} style={{ borderBottom: `1px solid ${COLORS.border}` }}>
+                <td style={td}>
+                  <strong>{s.source}</strong>
+                  <div style={{ fontSize: 10, color: COLORS.textMuted, marginTop: 2 }}>{s.category}</div>
+                </td>
+                <td style={tdRight}>{s.entry}</td>
+                <PctCell value={pct(s.docPass, s.entry)} />
+                <td style={tdRight}>{s.docPass}</td>
+                <PctCell value={pct(s.interviewDone, s.docPass)} />
+                <td style={tdRight}>{s.interviewDone}</td>
+                <PctCell value={pct(s.offer, s.interviewDone)} />
+                <td style={tdRight}>{s.offer}</td>
+                <PctCell value={pct(s.hire, s.offer)} />
+                <td style={{ ...tdRight, fontWeight: 700, color: s.hire > 0 ? COLORS.success : COLORS.text }}>{s.hire}</td>
+                <td style={tdRight}>{s.leadTimeDays ? `${s.leadTimeDays}日` : '-'}</td>
+                <td style={{ ...tdRight, color: s.active > 0 ? COLORS.primary : COLORS.textMuted }}>{s.active}</td>
+              </tr>
+            ))}
+            <tr style={{ background: '#f3f4f6', fontWeight: 700 }}>
+              <td style={td}>合計</td>
+              <td style={tdRight}>{totals.entry}</td>
+              <PctCell value={pct(totals.docPass, totals.entry)} />
+              <td style={tdRight}>{totals.docPass}</td>
+              <PctCell value={pct(totals.interviewDone, totals.docPass)} />
+              <td style={tdRight}>{totals.interviewDone}</td>
+              <PctCell value={pct(totals.offer, totals.interviewDone)} />
+              <td style={tdRight}>{totals.offer}</td>
+              <PctCell value={pct(totals.hire, totals.offer)} />
+              <td style={{ ...tdRight, color: COLORS.success }}>{totals.hire}</td>
+              <td style={tdRight}>-</td>
+              <td style={tdRight}>{totals.active}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      {/* 2カラム：ステージ別遷移率 + 採用構成 */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 12 }}>
+        {/* ステージ別遷移率 */}
+        <div style={{ background: COLORS.white, borderRadius: 10, border: `1px solid ${COLORS.border}`, padding: 16 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 12 }}>応募経路別 ステージ別遷移率</div>
+          <ResponsiveContainer width="100%" height={240}>
+            <BarChart data={data.sources.map((s) => ({
+              name: s.source,
+              '応募→書類': pct(s.docPass, s.entry),
+              '書類→面接': pct(s.interviewDone, s.docPass),
+              '面接→内定': pct(s.offer, s.interviewDone),
+              '内定→採用': pct(s.hire, s.offer),
+            }))}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
+              <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-15} textAnchor="end" height={50} />
+              <YAxis tick={{ fontSize: 11 }} unit="%" />
+              <Tooltip />
+              <Legend wrapperStyle={{ fontSize: 11 }} />
+              <Bar dataKey="応募→書類" fill="#93c5fd" />
+              <Bar dataKey="書類→面接" fill="#60a5fa" />
+              <Bar dataKey="面接→内定" fill="#3b82f6" />
+              <Bar dataKey="内定→採用" fill="#2563a8" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* 採用構成 */}
+        <div style={{ background: COLORS.white, borderRadius: 10, border: `1px solid ${COLORS.border}`, padding: 16 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 12 }}>採用の経路内訳</div>
+          {totals.hire > 0 ? (
+            <ResponsiveContainer width="100%" height={240}>
+              <PieChart>
+                <Pie
+                  data={data.sources.filter((s) => s.hire > 0).map((s) => ({ name: s.source, value: s.hire }))}
+                  dataKey="value"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={70}
+                  label={(e) => `${e.name}: ${e.value}`}
+                >
+                  {data.sources.filter((s) => s.hire > 0).map((s, i) => (
+                    <Cell key={i} fill={['#2563a8', '#60a5fa', '#93c5fd', '#dbeafe', '#10b981', '#34d399'][i % 6]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <div style={{ height: 240, display: 'flex', alignItems: 'center', justifyContent: 'center', color: COLORS.textMuted, fontSize: 13 }}>
+              採用実績がまだありません
+            </div>
+          )}
+          <div style={{ marginTop: 8, padding: 10, background: COLORS.bg, borderRadius: 6, fontSize: 11, color: COLORS.textLight }}>
+            <strong>採用合計：{totals.hire}名</strong>　／　選考中：{totals.active}名
+          </div>
+        </div>
+      </div>
+
+      {/* 月次推移 */}
+      <div style={{ background: COLORS.white, borderRadius: 10, border: `1px solid ${COLORS.border}`, padding: 16 }}>
+        <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 12 }}>月次推移（応募・面接・採用）</div>
+        <ResponsiveContainer width="100%" height={220}>
+          <LineChart data={data.monthlyTrend}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
+            <XAxis dataKey="month" tick={{ fontSize: 11 }} />
+            <YAxis tick={{ fontSize: 11 }} />
+            <Tooltip />
+            <Legend wrapperStyle={{ fontSize: 11 }} />
+            <Line type="monotone" dataKey="応募" stroke="#93c5fd" strokeWidth={2} dot={{ r: 4 }} />
+            <Line type="monotone" dataKey="面接" stroke="#3b82f6" strokeWidth={2} dot={{ r: 4 }} />
+            <Line type="monotone" dataKey="採用" stroke="#2563a8" strokeWidth={2} dot={{ r: 4 }} />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* インサイト */}
+      <div style={{ background: '#fffbeb', borderRadius: 10, border: `1px solid #fcd34d`, padding: 14, fontSize: 12, color: '#78350f' }}>
+        <strong>💡 AIインサイト（参考）</strong>
+        <ul style={{ margin: '6px 0 0 0', paddingLeft: 18, lineHeight: 1.7 }}>
+          <li>マイナビ看護師の成約率（紹介→採用 20%）が最も高い。手数料負担はあるが質の高い候補者層。</li>
+          <li>スカウト返信は応募数が多い割に採用に至っていない（書類通過率40%、面接到達20%）。スカウト先のスクリーニング条件を見直し推奨。</li>
+          <li>Indeedは応募→採用転換率10%、リードタイム18日と堅実。出稿継続を推奨。</li>
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+function PctCell({ value }) {
+  const color = value >= 50 ? '#10b981' : value >= 30 ? '#3b82f6' : value >= 15 ? '#f59e0b' : '#9ca3af';
+  return (
+    <td style={{ ...tdCenter, fontSize: 10, color, fontWeight: 600, padding: '6px 4px' }}>
+      {value > 0 ? `${value}%` : '-'}
+    </td>
+  );
+}
+
+const thCenter = { padding: '10px 6px', textAlign: 'center', fontSize: 11, fontWeight: 700, color: COLORS.textLight, textTransform: 'uppercase', letterSpacing: '0.05em' };
+const tdCenter = { padding: '10px 6px', textAlign: 'center', fontSize: 12, color: COLORS.text };
 
 function MediaAgencyEffectiveness({ clinicId }) {
   const mediaList = mediaMetricsByClinic[clinicId]?.['2026-05'] || [];
