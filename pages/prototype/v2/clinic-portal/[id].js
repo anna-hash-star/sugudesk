@@ -44,7 +44,8 @@ export default function ClinicPortal() {
     <div style={{ minHeight: '100vh', background: COLORS.bg, fontFamily: '"Hiragino Sans", "Noto Sans JP", sans-serif' }}>
       <Header clinic={clinic} />
       <main style={{ maxWidth: 960, margin: '0 auto', padding: '24px 20px' }}>
-        {!action && <DashboardView clinic={clinic} actions={actions} cases={cases} />}
+        {!action && <ChatView clinic={clinic} actions={actions} />}
+        {action === 'dashboard' && <DashboardView clinic={clinic} actions={actions} cases={cases} />}
         {action === 'chat' && <ChatView clinic={clinic} actions={actions} />}
         {action === 'interview-prep' && <InterviewPrepView clinic={clinic} actions={actions} />}
         {action === 'interview-debrief' && <InterviewDebriefView clinic={clinic} cases={cases} />}
@@ -56,18 +57,32 @@ export default function ClinicPortal() {
 }
 
 function Header({ clinic }) {
+  const router = useRouter();
+  const { action } = router.query;
+  const isChat = !action || action === 'chat';
   return (
-    <header style={{ background: COLORS.white, borderBottom: `1px solid ${COLORS.border}`, padding: '16px 24px' }}>
+    <header style={{ background: COLORS.white, borderBottom: `1px solid ${COLORS.border}`, padding: '14px 24px' }}>
       <div style={{ maxWidth: 960, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <div style={{ fontSize: 11, color: COLORS.textMuted, fontWeight: 600 }}>SuguDesk 採用管理</div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: COLORS.text, marginTop: 2 }}>{clinic.name}</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: COLORS.text, marginTop: 2 }}>{clinic.name}</div>
         </div>
-        <div style={{ fontSize: 12, color: COLORS.textLight }}>事務長 ◯◯様</div>
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+          <Link href={`/prototype/v2/clinic-portal/${clinic.id}`}>
+            <button style={{ ...headerTab, background: isChat ? COLORS.primary : 'transparent', color: isChat ? 'white' : COLORS.textLight }}>💬 チャット</button>
+          </Link>
+          <Link href={`/prototype/v2/clinic-portal/${clinic.id}?action=dashboard`}>
+            <button style={{ ...headerTab, background: action === 'dashboard' ? COLORS.primary : 'transparent', color: action === 'dashboard' ? 'white' : COLORS.textLight }}>📊 ダッシュボード</button>
+          </Link>
+          <span style={{ fontSize: 12, color: COLORS.textLight, marginLeft: 12 }}>事務長 ◯◯様</span>
+        </div>
       </div>
     </header>
   );
 }
+
+const headerTab = { padding: '6px 14px', fontSize: 12, fontWeight: 600, border: `1px solid ${COLORS.border}`, borderRadius: 16, cursor: 'pointer' };
+
 
 function DashboardView({ clinic, actions, cases }) {
   const router = useRouter();
@@ -657,13 +672,24 @@ function ViewHeader({ icon, title, subtitle }) {
 
 // ============== AIアシスタント（チャット駆動UX） ==============
 function ChatView({ clinic, actions }) {
-  const [messages, setMessages] = useState([
-    {
-      role: 'assistant',
-      text: `${clinic.name} の事務長様、こんにちは。SuguDesk AIアシスタントです。\n\n今日対応が必要なのは：\n・書類確認待ち ${actions.pendingDocReview.length}名\n・面接予定 ${actions.upcomingInterviews.length}件\n・採用判断待ち ${actions.pendingHireDecision.length}名\n\n何をしましょうか？下のボタンから選ぶか、自由に話しかけてください。`,
-      suggestions: ['本日の書類選考の人は？', 'スカウトを送って', '5月の採用状況まとめて', '面接の振り返り依頼'],
-    },
-  ]);
+  // 設定状況の判定（実運用では Firestore 参照）
+  const hasJobPosting = clinic.targetRoles && clinic.targetRoles.length > 0;
+  const hasMediaConfig = clinic.mediaConfig && clinic.mediaConfig.length > 0;
+  const isInitialSetup = !hasJobPosting || !hasMediaConfig;
+
+  const initialMessage = isInitialSetup
+    ? {
+        role: 'assistant',
+        text: `${clinic.name} 様、ようこそSuguDeskへ。\n\nまず、採用業務をスタートするために、いくつか教えてください。\n\n${!hasJobPosting ? '📋 求人内容（職種・条件など）\n' : ''}${!hasMediaConfig ? '📰 ご利用中の媒体・紹介会社\n' : ''}\nどちらから入力しますか？`,
+        suggestions: !hasJobPosting && !hasMediaConfig ? ['求人内容を登録', '媒体・紹介会社を登録'] : !hasJobPosting ? ['求人内容を登録'] : ['媒体・紹介会社を登録'],
+      }
+    : {
+        role: 'assistant',
+        text: `${clinic.name} の事務長様、こんにちは。SuguDesk AIアシスタントです。\n\n今日対応が必要なのは：\n・書類確認待ち ${actions.pendingDocReview.length}名\n・面接予定 ${actions.upcomingInterviews.length}件\n・採用判断待ち ${actions.pendingHireDecision.length}名\n\n何をしましょうか？`,
+        suggestions: ['本日の書類選考の人は？', 'スカウトを送って', '5月の採用状況まとめて', '求人内容を変更', '媒体を追加', '面接の振り返り依頼'],
+      };
+
+  const [messages, setMessages] = useState([initialMessage]);
   const [input, setInput] = useState('');
   const [chatState, setChatState] = useState({ mode: 'idle', context: {} });
 
@@ -723,6 +749,58 @@ function ChatView({ clinic, actions }) {
           suggestions: ['他の依頼をする', '今日の予定は？'],
         };
       }
+    } else if (chatState.mode === 'job_posting_role') {
+      setChatState({ mode: 'job_posting_count', context: { ...chatState.context, role: userText } });
+      reply = { role: 'assistant', text: `「${userText}」ですね。何名募集されますか？`, suggestions: ['1名', '2名', '3名以上'] };
+    } else if (chatState.mode === 'job_posting_count') {
+      setChatState({ mode: 'job_posting_employment', context: { ...chatState.context, count: userText } });
+      reply = { role: 'assistant', text: '雇用形態は？', suggestions: ['常勤', 'パート', '常勤・パートどちらも'] };
+    } else if (chatState.mode === 'job_posting_employment') {
+      setChatState({ mode: 'job_posting_salary', context: { ...chatState.context, employment: userText } });
+      reply = { role: 'assistant', text: '給与レンジを教えてください（例：月給28万〜35万、時給1500〜1800円）', suggestions: [] };
+    } else if (chatState.mode === 'job_posting_salary') {
+      setChatState({ mode: 'job_posting_requirements', context: { ...chatState.context, salary: userText } });
+      reply = { role: 'assistant', text: '求める経験・スキルは？（例：経験3年以上、婦人科経験者歓迎）', suggestions: [] };
+    } else if (chatState.mode === 'job_posting_requirements') {
+      setChatState({ mode: 'job_posting_appeal', context: { ...chatState.context, requirements: userText } });
+      reply = { role: 'assistant', text: '院の魅力・推しポイントは？（例：教育充実、ワークライフバランス重視、駅近）', suggestions: [] };
+    } else if (chatState.mode === 'job_posting_appeal') {
+      const ctx = { ...chatState.context, appeal: userText };
+      setChatState({ mode: 'job_posting_confirm', context: ctx });
+      reply = {
+        role: 'assistant',
+        text: `以下の内容で求人を登録します。よろしいですか？\n\n📋 求人内容\n・職種：${ctx.role}\n・人数：${ctx.count}\n・雇用形態：${ctx.employment}\n・給与：${ctx.salary}\n・求める経験：${ctx.requirements}\n・院の魅力：${ctx.appeal}\n\nこの情報をもとに、AIで求人原稿を生成しSuguDeskオペが媒体に出稿します。`,
+        suggestions: ['OK、登録', '修正したい'],
+      };
+    } else if (chatState.mode === 'job_posting_confirm') {
+      if (text.includes('ok') || text.includes('登録') || text.includes('はい')) {
+        setChatState({ mode: 'idle', context: {} });
+        reply = { role: 'assistant', text: '求人登録を承りました。\nSuguDeskオペがAIで原稿を生成し、対象媒体に出稿します。準備が整い次第、内容確認のためご連絡します。', suggestions: ['媒体・紹介会社も登録', '他にやりたいことはない'] };
+      } else {
+        setChatState({ mode: 'idle', context: {} });
+        reply = { role: 'assistant', text: '了解しました。最初からやり直しますか？', suggestions: ['求人内容を登録'] };
+      }
+    } else if (chatState.mode === 'media_setup_select') {
+      setChatState({ mode: 'media_setup_budget', context: { ...chatState.context, media: userText } });
+      reply = { role: 'assistant', text: `「${userText}」ですね。月の出稿予算はいくらですか？（成果報酬型なら「成果報酬制」とお答えください）`, suggestions: ['¥50,000', '¥100,000', '¥150,000', '成果報酬制'] };
+    } else if (chatState.mode === 'media_setup_budget') {
+      const ctx = { ...chatState.context, budget: userText };
+      setChatState({ mode: 'media_setup_more', context: ctx });
+      reply = { role: 'assistant', text: `「${ctx.media}（${ctx.budget}）」を登録しました。\n他にも登録する媒体・紹介会社はありますか？`, suggestions: ['Indeed', 'ジョブメドレー', '看護roo!', 'マイナビ看護師', 'レバウェル看護', '紹介会社', 'もう登録不要'] };
+    } else if (chatState.mode === 'media_setup_more') {
+      if (text.includes('不要') || text.includes('終わり') || text.includes('完了')) {
+        setChatState({ mode: 'idle', context: {} });
+        reply = { role: 'assistant', text: '媒体・紹介会社の登録を完了しました。\n弊社オペが各媒体・紹介会社へのご連絡を順次進めます。', suggestions: ['求人内容も登録', '今日のアクションは？'] };
+      } else {
+        setChatState({ mode: 'media_setup_budget', context: { media: userText } });
+        reply = { role: 'assistant', text: `「${userText}」ですね。月の出稿予算はいくらですか？`, suggestions: ['¥50,000', '¥100,000', '¥150,000', '成果報酬制'] };
+      }
+    } else if (text.includes('求人内容') || text.includes('求人を登録') || text.includes('募集')) {
+      setChatState({ mode: 'job_posting_role', context: {} });
+      reply = { role: 'assistant', text: '求人内容を登録します。\nまず、募集する職種を教えてください。', suggestions: ['看護師', '助産師', '医療事務', '受付', 'ドクター', 'コメディカル'] };
+    } else if (text.includes('媒体') && (text.includes('登録') || text.includes('追加')) || text.includes('紹介会社を登録')) {
+      setChatState({ mode: 'media_setup_select', context: {} });
+      reply = { role: 'assistant', text: 'ご利用中の媒体・紹介会社を登録します。\nまず1つ目を教えてください。', suggestions: ['Indeed', 'ジョブメドレー', '看護roo!', 'マイナビ看護師', 'レバウェル看護', 'ナースではたらこ', '紹介会社（その他）'] };
     } else if (text.includes('スカウト') && (text.includes('送') || text.includes('送って'))) {
       const m = userText.match(/(\d+)\s*件/);
       const count = m ? parseInt(m[1]) : 10;
@@ -826,6 +904,10 @@ function ChatView({ clinic, actions }) {
 
       <div style={{ padding: 12, background: COLORS.bg, borderRadius: 8, fontSize: 11, color: COLORS.textLight, lineHeight: 1.6 }}>
         💡 試せる依頼の例：
+        <br />【セットアップ】
+        <br />・「求人内容を登録」 → 職種・人数・給与・要件・院の魅力を順に対話で入力
+        <br />・「媒体を追加」 → 利用中の媒体・紹介会社を順に登録
+        <br />【日次運用】
         <br />・「今日の書類選考の人は？」 → 1名ずつサマリ＋通過/不通過のみ返信
         <br />・「スカウトを10件送って」 → 職種を聞かれて、確認後オペに依頼
         <br />・「5月の採用状況まとめて」 → 月次サマリを会話で受け取る

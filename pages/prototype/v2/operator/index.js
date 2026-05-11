@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { clinics, candidates, operatorAlerts, agencies, agencyMetricsByClinic } from '../../../../lib/prototypeMockData';
+import { useState } from 'react';
+import { clinics, candidates, operatorAlerts, agencies, agencyMetricsByClinic, clinicRequests, REQUEST_TYPES } from '../../../../lib/prototypeMockData';
 
 const COLORS = {
   primary: '#2563a8',
@@ -20,6 +21,11 @@ export default function OperatorDashboard() {
       <main style={{ maxWidth: 1100, margin: '0 auto', padding: '24px 24px' }}>
         <h1 style={{ fontSize: 22, fontWeight: 700, margin: 0, marginBottom: 4 }}>オペレーションダッシュボード</h1>
         <p style={{ fontSize: 13, color: COLORS.textLight, margin: 0, marginBottom: 28 }}>2026年6月3日（火）</p>
+
+        {/* 院長依頼キュー（チャット駆動UXからの依頼） */}
+        <Section title="院長からの依頼キュー（チャット駆動）">
+          <ClinicRequestsQueue />
+        </Section>
 
         {/* タスク・アラート */}
         <Section title="今日のタスク・アラート">
@@ -154,6 +160,75 @@ export default function OperatorDashboard() {
     </div>
   );
 }
+
+function ClinicRequestsQueue() {
+  const [filter, setFilter] = useState('all');
+  const [requests, setRequests] = useState(clinicRequests);
+
+  const filtered = filter === 'all' ? requests : requests.filter((r) => r.status === filter);
+  const newCount = requests.filter((r) => r.status === '新規').length;
+  const inProgressCount = requests.filter((r) => r.status === 'AI下書き作成中' || r.status === '対応中').length;
+
+  const updateStatus = (id, newStatus) => {
+    setRequests((prev) => prev.map((r) => r.id === id ? { ...r, status: newStatus } : r));
+  };
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+        <FilterChip label={`全て（${requests.length}）`} active={filter === 'all'} onClick={() => setFilter('all')} />
+        <FilterChip label={`🆕 新規（${newCount}）`} active={filter === '新規'} onClick={() => setFilter('新規')} color={COLORS.warning} />
+        <FilterChip label={`▶ 対応中（${inProgressCount}）`} active={filter === '対応中'} onClick={() => setFilter('対応中')} color={COLORS.info} />
+        <FilterChip label="✓ 完了" active={filter === '完了'} onClick={() => setFilter('完了')} color={COLORS.success} />
+      </div>
+      <div style={{ background: COLORS.white, borderRadius: 10, border: `1px solid ${COLORS.border}`, overflow: 'hidden' }}>
+        {filtered.length === 0 ? (
+          <div style={{ padding: 24, textAlign: 'center', color: COLORS.textMuted, fontSize: 13 }}>該当する依頼はありません</div>
+        ) : (
+          filtered.map((r, i) => {
+            const typeInfo = REQUEST_TYPES[r.type] || { icon: '📌', label: 'その他' };
+            return (
+              <div key={r.id} style={{ padding: 16, borderBottom: i < filtered.length - 1 ? `1px solid ${COLORS.border}` : 'none', borderLeft: `4px solid ${r.priority === 'high' ? COLORS.danger : r.status === '新規' ? COLORS.warning : COLORS.info}` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                      <span style={{ fontSize: 14 }}>{typeInfo.icon}</span>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: COLORS.textLight }}>{typeInfo.label}</span>
+                      <strong style={{ fontSize: 13 }}>{r.clinicName}</strong>
+                      {r.priority === 'high' && <span style={{ fontSize: 10, padding: '2px 6px', background: '#fee2e2', color: COLORS.danger, borderRadius: 4, fontWeight: 700 }}>HIGH</span>}
+                    </div>
+                    <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 4 }}>{r.summary}</div>
+                    <div style={{ fontSize: 12, color: COLORS.textLight, padding: 8, background: COLORS.bg, borderRadius: 4, marginBottom: 6 }}>{r.detail}</div>
+                    <div style={{ fontSize: 11, color: COLORS.textMuted }}>依頼受信：{r.requestedAt}</div>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, minWidth: 130 }}>
+                    <span style={{ fontSize: 11, fontWeight: 600, padding: '4px 10px', borderRadius: 12, background: r.status === '新規' ? '#fef3c7' : r.status === '完了' ? '#dcfce7' : '#dbeafe', color: r.status === '新規' ? '#92400e' : r.status === '完了' ? '#166534' : '#1e40af' }}>{r.status}</span>
+                    {r.status === '新規' && (
+                      <button onClick={() => updateStatus(r.id, '対応中')} style={{ ...mini, background: COLORS.primary, color: 'white', border: 'none' }}>対応開始</button>
+                    )}
+                    {(r.status === '対応中' || r.status === 'AI下書き作成中') && (
+                      <button onClick={() => updateStatus(r.id, '完了')} style={{ ...mini, background: COLORS.success, color: 'white', border: 'none' }}>完了にする</button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+    </div>
+  );
+}
+
+function FilterChip({ label, active, onClick, color }) {
+  return (
+    <button onClick={onClick} style={{ padding: '6px 14px', fontSize: 12, fontWeight: 600, border: `1px solid ${active ? (color || COLORS.primary) : COLORS.border}`, background: active ? (color || COLORS.primary) : COLORS.white, color: active ? 'white' : COLORS.text, borderRadius: 16, cursor: 'pointer' }}>
+      {label}
+    </button>
+  );
+}
+
+const mini = { padding: '5px 12px', fontSize: 11, fontWeight: 600, borderRadius: 4, cursor: 'pointer' };
 
 function Header() {
   return (
