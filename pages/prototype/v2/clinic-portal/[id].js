@@ -14,6 +14,9 @@ import {
   funnelByClinic,
   jobPostingsByClinic,
   jobPostingDetails,
+  jobPostingExtended,
+  corporations,
+  facilities,
   scoutTemplates,
 } from '../../../../lib/prototypeMockData';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell, LineChart, Line, CartesianGrid, Legend, PieChart, Pie } from 'recharts';
@@ -788,14 +791,18 @@ function JobPostingCard({ posting, onEdit }) {
           <button onClick={() => setExpanded(!expanded)} style={{ ...secondaryButton, width: '100%', fontSize: 12, textAlign: 'center' }}>
             {expanded ? '▲ 詳細を閉じる' : '▼ 求人詳細を表示'}
           </button>
-          {expanded && <JobPostingDetailPanel details={details} />}
+          {expanded && <JobPostingDetailPanel details={details} postingId={posting.id} />}
         </>
       )}
     </div>
   );
 }
 
-function JobPostingDetailPanel({ details }) {
+function JobPostingDetailPanel({ details, postingId }) {
+  const extended = jobPostingExtended[postingId];
+  const facility = extended ? facilities[extended.facilityId] : null;
+  const corp = extended ? corporations[extended.corpId] : null;
+
   const sections = [
     { key: 'basic', title: '基本情報', fields: [
       ['募集背景', details.background],
@@ -861,6 +868,114 @@ function JobPostingDetailPanel({ details }) {
 
   return (
     <div style={{ marginTop: 16, padding: 16, background: COLORS.bg, borderRadius: 8 }}>
+      {/* プロローグ・理事長メッセージ */}
+      {extended?.introduction && (
+        <div style={{ marginBottom: 16, padding: 16, background: COLORS.white, borderRadius: 6 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 8 }}>📝 求人プロローグ</div>
+          <div style={{ fontSize: 12, color: COLORS.text, lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>{extended.introduction}</div>
+        </div>
+      )}
+      {corp && (
+        <div style={{ marginBottom: 16, padding: 16, background: COLORS.white, borderRadius: 6 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 8 }}>🏥 法人情報</div>
+          <table style={{ width: '100%', fontSize: 12, borderCollapse: 'collapse', marginBottom: 12 }}>
+            <tbody>
+              <tr><td style={{ padding: '4px 8px', color: COLORS.textLight, width: 120, fontWeight: 500 }}>法人名</td><td style={{ padding: '4px 8px' }}>{corp.name}</td></tr>
+              <tr><td style={{ padding: '4px 8px', color: COLORS.textLight, fontWeight: 500 }}>設立</td><td style={{ padding: '4px 8px' }}>{corp.establishedAt}</td></tr>
+              <tr><td style={{ padding: '4px 8px', color: COLORS.textLight, fontWeight: 500, verticalAlign: 'top' }}>理念</td><td style={{ padding: '4px 8px', lineHeight: 1.6 }}>{corp.principle}</td></tr>
+            </tbody>
+          </table>
+          {corp.directorMessage && (
+            <div style={{ padding: 12, background: COLORS.bg, borderRadius: 4 }}>
+              <div style={{ fontSize: 11, color: COLORS.textLight, fontWeight: 600, marginBottom: 6 }}>理事長メッセージ</div>
+              <div style={{ fontSize: 12, color: COLORS.text, lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>{corp.directorMessage}</div>
+            </div>
+          )}
+          {corp.perks?.length > 0 && (
+            <div style={{ marginTop: 8 }}>
+              <div style={{ fontSize: 11, color: COLORS.textLight, fontWeight: 600, marginBottom: 6 }}>法人共通の福利厚生・特典</div>
+              <ul style={{ margin: 0, paddingLeft: 20, fontSize: 12, lineHeight: 1.7 }}>
+                {corp.perks.map((p, i) => <li key={i}>{p}</li>)}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+      {facility && (
+        <div style={{ marginBottom: 16, padding: 16, background: COLORS.white, borderRadius: 6 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 8 }}>🏢 施設情報</div>
+          <table style={{ width: '100%', fontSize: 12, borderCollapse: 'collapse' }}>
+            <tbody>
+              <tr><td style={{ padding: '4px 8px', color: COLORS.textLight, width: 120, fontWeight: 500 }}>施設名</td><td style={{ padding: '4px 8px' }}>{facility.name}</td></tr>
+              <tr><td style={{ padding: '4px 8px', color: COLORS.textLight, fontWeight: 500 }}>住所</td><td style={{ padding: '4px 8px' }}>{facility.address}</td></tr>
+              <tr><td style={{ padding: '4px 8px', color: COLORS.textLight, fontWeight: 500 }}>アクセス</td><td style={{ padding: '4px 8px', whiteSpace: 'pre-wrap' }}>{facility.access}</td></tr>
+              <tr><td style={{ padding: '4px 8px', color: COLORS.textLight, fontWeight: 500 }}>開院</td><td style={{ padding: '4px 8px' }}>{facility.openedAt}</td></tr>
+              <tr><td style={{ padding: '4px 8px', color: COLORS.textLight, fontWeight: 500, verticalAlign: 'top' }}>診療科目</td><td style={{ padding: '4px 8px' }}>{facility.services}</td></tr>
+              <tr><td style={{ padding: '4px 8px', color: COLORS.textLight, fontWeight: 500, verticalAlign: 'top' }}>開院時間</td><td style={{ padding: '4px 8px', whiteSpace: 'pre-wrap' }}>{facility.businessHours}</td></tr>
+              <tr><td style={{ padding: '4px 8px', color: COLORS.textLight, fontWeight: 500 }}>休診日</td><td style={{ padding: '4px 8px' }}>{facility.closedDays}</td></tr>
+              <tr><td style={{ padding: '4px 8px', color: COLORS.textLight, fontWeight: 500 }}>平均患者数</td><td style={{ padding: '4px 8px' }}>{facility.patientCount}</td></tr>
+            </tbody>
+          </table>
+          {facility.staffComposition && (
+            <div style={{ marginTop: 8 }}>
+              <div style={{ fontSize: 11, color: COLORS.textLight, fontWeight: 600, marginBottom: 6 }}>スタッフ構成</div>
+              <div style={{ fontSize: 12, lineHeight: 1.7, paddingLeft: 16 }}>
+                ・医師：{facility.staffComposition.doctors}<br/>
+                ・看護師：{facility.staffComposition.nurses}<br/>
+                ・医療事務：{facility.staffComposition.medicalClerks}<br/>
+                {facility.staffComposition.others && <>・その他：{facility.staffComposition.others}</>}
+              </div>
+            </div>
+          )}
+          {facility.equipment && (
+            <div style={{ marginTop: 8 }}>
+              <div style={{ fontSize: 11, color: COLORS.textLight, fontWeight: 600, marginBottom: 6 }}>設備・機材</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                {facility.equipment.map((e, i) => (
+                  <span key={i} style={{ fontSize: 11, padding: '3px 8px', background: COLORS.primaryLight, color: COLORS.primary, borderRadius: 4 }}>{e}</span>
+                ))}
+              </div>
+            </div>
+          )}
+          {facility.director && (
+            <div style={{ marginTop: 12, padding: 12, background: COLORS.bg, borderRadius: 4 }}>
+              <div style={{ fontSize: 11, color: COLORS.textLight, fontWeight: 600, marginBottom: 4 }}>院長</div>
+              <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 4 }}>{facility.director}</div>
+              {facility.directorBio && <div style={{ fontSize: 11, color: COLORS.textLight, whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>{facility.directorBio}</div>}
+            </div>
+          )}
+        </div>
+      )}
+      {extended && (extended.welcomedQualifications?.length > 0 || extended.flexibility) && (
+        <div style={{ marginBottom: 16, padding: 16, background: COLORS.white, borderRadius: 6 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 8 }}>✨ 歓迎条件・働き方の柔軟性</div>
+          {extended.welcomedQualifications?.length > 0 && (
+            <div style={{ marginBottom: 8 }}>
+              <div style={{ fontSize: 11, color: COLORS.textLight, fontWeight: 600, marginBottom: 4 }}>歓迎する資格</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                {extended.welcomedQualifications.map((q, i) => <span key={i} style={{ fontSize: 11, padding: '3px 8px', background: '#fef3c7', color: '#92400e', borderRadius: 4 }}>{q}</span>)}
+              </div>
+            </div>
+          )}
+          {extended.flexibility && (
+            <div>
+              <div style={{ fontSize: 11, color: COLORS.textLight, fontWeight: 600, marginBottom: 4 }}>働き方の柔軟性</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                {extended.flexibility.webInterview && <span style={badge}>📹 WEB面接可</span>}
+                {extended.flexibility.onsiteVisit && <span style={badge}>👀 職場見学可</span>}
+                {extended.flexibility.activelyWorkingOk && <span style={badge}>📅 在職中応募可</span>}
+                {extended.flexibility.sideJobOk && <span style={badge}>💼 副業OK</span>}
+              </div>
+            </div>
+          )}
+          {(extended.workScope || extended.workplaceScope) && (
+            <div style={{ marginTop: 8, fontSize: 11, color: COLORS.textLight, lineHeight: 1.6 }}>
+              {extended.workScope && <>業務内容の変更範囲：{extended.workScope}<br/></>}
+              {extended.workplaceScope && <>就業場所の変更範囲：{extended.workplaceScope}</>}
+            </div>
+          )}
+        </div>
+      )}
       {sections.map((section) => {
         const hasContent = section.fields.some(([_, v]) => v && v !== '未設定');
         const statusKey = section.key === 'basic' ? 'basicInfo' : section.key === 'scope' ? 'duties' : section.key === 'qualifications' ? 'qualifications' : section.key === 'salary' ? 'salary' : section.key === 'workhours' ? 'workHours' : section.key === 'benefits' ? 'benefits' : section.key === 'trial' ? 'trial' : section.key === 'selection' ? 'selection' : section.key === 'appeal_full' ? 'appeal' : 'directorIntro';
@@ -891,6 +1006,8 @@ function JobPostingDetailPanel({ details }) {
     </div>
   );
 }
+
+const badge = { fontSize: 11, padding: '3px 8px', background: '#dcfce7', color: '#166534', borderRadius: 4, fontWeight: 600 };
 
 function FieldStatusBadge({ status }) {
   const map = {
