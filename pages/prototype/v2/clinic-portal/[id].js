@@ -23,35 +23,45 @@ import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell, LineCh
 
 const COLORS = {
   primary: '#2563a8',
+  primaryDark: '#1e4d80',
   primaryLight: '#eff6ff',
-  bg: '#f8f7f4',
+  accent: '#6366f1',
+  bg: '#f5f7fb',
+  bgAlt: '#fafbfd',
   white: '#ffffff',
-  text: '#1f2937',
-  textLight: '#6b7280',
-  textMuted: '#9ca3af',
-  border: '#e5e7eb',
+  text: '#0f172a',
+  textLight: '#475569',
+  textMuted: '#94a3b8',
+  border: '#e2e8f0',
+  borderLight: '#f1f5f9',
   success: '#10b981',
   warning: '#f59e0b',
   danger: '#ef4444',
   alertBg: '#fef3c7',
   alertText: '#92400e',
+  shadow: '0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04)',
+  shadowMd: '0 4px 12px rgba(15, 23, 42, 0.08), 0 2px 4px rgba(15, 23, 42, 0.04)',
+  shadowLg: '0 10px 30px rgba(15, 23, 42, 0.12), 0 4px 8px rgba(15, 23, 42, 0.04)',
 };
 
 export default function ClinicPortal() {
   const router = useRouter();
   const { id, action } = router.query;
+  const [chatOpen, setChatOpen] = useState(false);
   const clinic = clinics.find((c) => c.id === id);
   if (!clinic) return null;
 
   const actions = todayActions[id] || { pendingDocReview: [], upcomingInterviews: [], pendingHireDecision: [], pendingCommunicationRequests: [] };
   const cases = candidates[id] || [];
 
+  // チャットを別ウィンドウのフルチャットページとして開いた場合は通常のレイアウト
+  const isFullChatPage = action === 'chat';
+
   return (
-    <div style={{ minHeight: '100vh', background: COLORS.bg, fontFamily: '"Hiragino Sans", "Noto Sans JP", sans-serif' }}>
+    <div style={{ minHeight: '100vh', background: COLORS.bg, fontFamily: '"Inter", "Hiragino Sans", "Noto Sans JP", sans-serif' }}>
       <Header clinic={clinic} />
-      <main style={{ maxWidth: 960, margin: '0 auto', padding: '24px 20px' }}>
-        {!action && <ChatView clinic={clinic} actions={actions} />}
-        {action === 'dashboard' && <DashboardView clinic={clinic} actions={actions} cases={cases} />}
+      <main style={{ maxWidth: 1020, margin: '0 auto', padding: '32px 24px 80px' }}>
+        {(!action || action === 'dashboard') && <DashboardView clinic={clinic} actions={actions} cases={cases} />}
         {action === 'chat' && <ChatView clinic={clinic} actions={actions} />}
         {action === 'jobs-scouts' && <JobsAndScoutsView clinic={clinic} />}
         {action === 'interview-prep' && <InterviewPrepView clinic={clinic} actions={actions} />}
@@ -59,6 +69,8 @@ export default function ClinicPortal() {
         {action === 'communication-request' && <CommunicationRequestView clinic={clinic} cases={cases} actions={actions} />}
         {action === 'monthly-report' && <MonthlyReportView clinic={clinic} />}
       </main>
+      {/* フローティングチャット（全画面で常時アクセス可能。フルチャットページでは非表示） */}
+      {!isFullChatPage && <FloatingChat clinic={clinic} actions={actions} open={chatOpen} onToggle={() => setChatOpen(!chatOpen)} />}
     </div>
   );
 }
@@ -66,32 +78,28 @@ export default function ClinicPortal() {
 function Header({ clinic }) {
   const router = useRouter();
   const { action } = router.query;
-  const isChat = !action || action === 'chat';
+  const isHome = !action || action === 'dashboard';
   return (
-    <header style={{ background: COLORS.white, borderBottom: `1px solid ${COLORS.border}`, padding: '14px 24px' }}>
-      <div style={{ maxWidth: 960, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <div style={{ fontSize: 11, color: COLORS.textMuted, fontWeight: 600 }}>SuguDesk 採用管理</div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: COLORS.text, marginTop: 2 }}>{clinic.name}</div>
+    <header style={{ background: COLORS.white, borderBottom: `1px solid ${COLORS.border}`, padding: '14px 24px', boxShadow: COLORS.shadow, position: 'sticky', top: 0, zIndex: 20 }}>
+      <div style={{ maxWidth: 1020, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: `linear-gradient(135deg, ${COLORS.primary}, ${COLORS.accent})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 700, fontSize: 15 }}>S</div>
+          <div>
+            <div style={{ fontSize: 10, color: COLORS.textMuted, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>SuguDesk 採用管理</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: COLORS.text, marginTop: 2 }}>{clinic.name}</div>
+          </div>
         </div>
-        <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
-          <Link href={`/prototype/v2/clinic-portal/${clinic.id}`}>
-            <button style={{ ...headerTab, background: isChat ? COLORS.primary : 'transparent', color: isChat ? 'white' : COLORS.textLight }}>💬 チャット</button>
-          </Link>
-          <Link href={`/prototype/v2/clinic-portal/${clinic.id}?action=jobs-scouts`}>
-            <button style={{ ...headerTab, background: action === 'jobs-scouts' ? COLORS.primary : 'transparent', color: action === 'jobs-scouts' ? 'white' : COLORS.textLight }}>📝 求人・スカウト</button>
-          </Link>
-          <Link href={`/prototype/v2/clinic-portal/${clinic.id}?action=dashboard`}>
-            <button style={{ ...headerTab, background: action === 'dashboard' ? COLORS.primary : 'transparent', color: action === 'dashboard' ? 'white' : COLORS.textLight }}>📊 ダッシュボード</button>
-          </Link>
-          <span style={{ fontSize: 12, color: COLORS.textLight, marginLeft: 12 }}>事務長 ◯◯様</span>
-        </div>
+        <nav style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+          <Link href={`/prototype/v2/clinic-portal/${clinic.id}`}><button style={{ ...headerTab, ...(isHome ? activeTab : {}) }}>🏠 ホーム</button></Link>
+          <Link href={`/prototype/v2/clinic-portal/${clinic.id}?action=jobs-scouts`}><button style={{ ...headerTab, ...(action === 'jobs-scouts' ? activeTab : {}) }}>📝 求人・スカウト</button></Link>
+        </nav>
       </div>
     </header>
   );
 }
 
-const headerTab = { padding: '6px 14px', fontSize: 12, fontWeight: 600, border: `1px solid ${COLORS.border}`, borderRadius: 16, cursor: 'pointer' };
+const headerTab = { padding: '8px 16px', fontSize: 13, fontWeight: 600, color: COLORS.textLight, background: 'transparent', border: 'none', borderRadius: 8, cursor: 'pointer', transition: 'all 0.15s' };
+const activeTab = { background: COLORS.primaryLight, color: COLORS.primary };
 
 
 function DashboardView({ clinic, actions, cases }) {
@@ -102,30 +110,12 @@ function DashboardView({ clinic, actions, cases }) {
 
   return (
     <div>
-      {/* AIアシスタントへの誘導（最上段） */}
-      <div
-        style={{
-          background: 'linear-gradient(135deg, #2563a8 0%, #3b82f6 100%)',
-          borderRadius: 12,
-          padding: 20,
-          marginBottom: 24,
-          color: 'white',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-        onClick={() => goAction('chat')}
-      >
-        <div>
-          <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 4 }}>
-            💬 AIアシスタントと話す
-          </div>
-          <div style={{ fontSize: 12, opacity: 0.9 }}>
-            「今日の書類選考は？」「スカウト10件送って」など、話すだけで全部進みます
-          </div>
-        </div>
-        <div style={{ fontSize: 24 }}>→</div>
+      {/* ヒーロー：ホームページ風の挨拶 */}
+      <div style={{ marginBottom: 28 }}>
+        <h1 style={{ fontSize: 24, fontWeight: 700, color: COLORS.text, margin: 0, marginBottom: 4 }}>こんにちは 👋</h1>
+        <p style={{ fontSize: 14, color: COLORS.textLight, margin: 0 }}>
+          今日のアクション{totalActions > 0 ? `は ${totalActions}件` : 'はありません'}。チャットは右下からいつでも呼び出せます。
+        </p>
       </div>
       {/* 今日のアクション */}
       <Section icon="📌" title="今日のアクション">
@@ -732,9 +722,15 @@ function JobsAndScoutsView({ clinic }) {
   );
 }
 
-function JobPostingCard({ posting, onEdit }) {
+function JobPostingCard({ posting: initialPosting, onEdit }) {
+  const [posting, setPosting] = useState(initialPosting);
   const [expanded, setExpanded] = useState(false);
   const details = jobPostingDetails[posting.id];
+
+  const updateField = (key, value) => {
+    setPosting({ ...posting, [key]: value, lastUpdated: new Date().toISOString().slice(0, 10) });
+    // 実装では Firestore 更新 + オペ通知。プロトタイプではローカル state のみ
+  };
 
   // 充足率の計算
   const fieldsStatus = details?.fieldsStatus || {};
@@ -744,29 +740,33 @@ function JobPostingCard({ posting, onEdit }) {
   const completionRate = fieldsTotal > 0 ? Math.round(fieldsComplete / fieldsTotal * 100) : 100;
 
   return (
-    <div style={{ background: COLORS.white, borderRadius: 10, border: `1px solid ${COLORS.border}`, padding: 20 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+    <div style={{ background: COLORS.white, borderRadius: 14, border: `1px solid ${COLORS.border}`, padding: 22, boxShadow: COLORS.shadow, transition: 'box-shadow 0.15s' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 16, fontWeight: 700 }}>{posting.role}</span>
-            <span style={{ fontSize: 11, padding: '2px 8px', background: '#dcfce7', color: '#166534', borderRadius: 10, fontWeight: 600 }}>{posting.status}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 17, fontWeight: 700 }}>{posting.role}</span>
+            <span style={{ fontSize: 11, padding: '3px 10px', background: '#dcfce7', color: '#166534', borderRadius: 12, fontWeight: 600 }}>{posting.status}</span>
             <span style={{ fontSize: 11, color: COLORS.textMuted }}>{posting.employment} / {posting.headcount}名募集</span>
             {fieldsTotal > 0 && (
-              <span style={{ fontSize: 11, padding: '2px 8px', background: completionRate >= 80 ? '#dcfce7' : completionRate >= 50 ? '#fef3c7' : '#fee2e2', color: completionRate >= 80 ? '#166534' : completionRate >= 50 ? '#92400e' : '#991b1b', borderRadius: 10, fontWeight: 600 }}>
+              <span style={{ fontSize: 11, padding: '3px 10px', background: completionRate >= 80 ? '#dcfce7' : completionRate >= 50 ? '#fef3c7' : '#fee2e2', color: completionRate >= 80 ? '#166534' : completionRate >= 50 ? '#92400e' : '#991b1b', borderRadius: 12, fontWeight: 600 }}>
                 情報充足 {completionRate}%
               </span>
             )}
           </div>
-          <div style={{ fontSize: 10, color: COLORS.textMuted }}>最終更新：{posting.lastUpdated}</div>
+          <div style={{ fontSize: 11, color: COLORS.textMuted }}>最終更新：{posting.lastUpdated}</div>
         </div>
-        <button onClick={onEdit} style={{ ...secondaryButton, fontSize: 11, padding: '6px 12px' }}>💬 修正を依頼</button>
+        <button onClick={onEdit} style={{ ...secondaryButton, fontSize: 11, padding: '6px 12px' }}>💬 チャットで相談</button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: 8, fontSize: 13, lineHeight: 1.7, marginBottom: 12 }}>
-        <div style={{ color: COLORS.textLight, fontWeight: 600 }}>給与</div><div>{posting.salary}</div>
-        <div style={{ color: COLORS.textLight, fontWeight: 600 }}>勤務時間</div><div>{posting.workHours}</div>
-        <div style={{ color: COLORS.textLight, fontWeight: 600 }}>求める経験</div><div>{posting.requirements}</div>
-        <div style={{ color: COLORS.textLight, fontWeight: 600 }}>訴求</div><div style={{ fontSize: 12, color: COLORS.textLight }}>{posting.appeal}</div>
+      <div style={{ display: 'grid', gridTemplateColumns: '110px 1fr', gap: 8, fontSize: 13, lineHeight: 1.7, marginBottom: 14 }}>
+        <div style={{ color: COLORS.textLight, fontWeight: 600 }}>給与</div>
+        <EditableField value={posting.salary} onSave={(v) => updateField('salary', v)} />
+        <div style={{ color: COLORS.textLight, fontWeight: 600 }}>勤務時間</div>
+        <EditableField value={posting.workHours} onSave={(v) => updateField('workHours', v)} />
+        <div style={{ color: COLORS.textLight, fontWeight: 600 }}>求める経験</div>
+        <EditableField value={posting.requirements} onSave={(v) => updateField('requirements', v)} multiline />
+        <div style={{ color: COLORS.textLight, fontWeight: 600 }}>訴求</div>
+        <EditableField value={posting.appeal} onSave={(v) => updateField('appeal', v)} multiline />
       </div>
 
       {fieldsPending > 0 && (
@@ -1019,36 +1019,184 @@ function FieldStatusBadge({ status }) {
   return <span style={{ fontSize: 10, padding: '2px 8px', background: c.bg, color: c.color, borderRadius: 10, fontWeight: 600 }}>{c.label}</span>;
 }
 
-function ScoutTemplateCard({ template, onEdit }) {
+function ScoutTemplateCard({ template: initialTemplate, onEdit }) {
+  const [template, setTemplate] = useState(initialTemplate);
+  const updateField = (key, value) => setTemplate({ ...template, [key]: value });
+
   return (
-    <div style={{ background: COLORS.white, borderRadius: 10, border: `1px solid ${COLORS.border}`, padding: 20 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+    <div style={{ background: COLORS.white, borderRadius: 14, border: `1px solid ${COLORS.border}`, padding: 22, boxShadow: COLORS.shadow }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
         <div>
-          <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 4 }}>{template.name}</div>
+          <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 4 }}>{template.name}</div>
           {template.stats.reply > 0 ? (
-            <div style={{ fontSize: 11, color: COLORS.textLight }}>
+            <div style={{ fontSize: 12, color: COLORS.textLight }}>
               開封率 <strong style={{ color: COLORS.primary }}>{template.stats.open}%</strong> ／ 返信率 <strong style={{ color: COLORS.primary }}>{template.stats.reply}%</strong>
             </div>
           ) : (
             <div style={{ fontSize: 11, color: COLORS.textMuted }}>まだ送信実績なし</div>
           )}
         </div>
-        <button onClick={onEdit} style={{ ...secondaryButton, fontSize: 11, padding: '6px 12px' }}>💬 修正を依頼</button>
+        <button onClick={onEdit} style={{ ...secondaryButton, fontSize: 11, padding: '6px 12px' }}>💬 チャットで相談</button>
       </div>
-      <div style={{ marginBottom: 8 }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: COLORS.textLight, marginBottom: 4 }}>件名</div>
-        <div style={{ fontSize: 13, padding: 10, background: COLORS.bg, borderRadius: 6 }}>{template.subject}</div>
+      <div style={{ marginBottom: 12 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: COLORS.textLight, marginBottom: 6 }}>件名</div>
+        <EditableField value={template.subject} onSave={(v) => updateField('subject', v)} fieldBg={COLORS.bgAlt} />
       </div>
       <div>
-        <div style={{ fontSize: 11, fontWeight: 700, color: COLORS.textLight, marginBottom: 4 }}>本文</div>
-        <div style={{ fontSize: 13, padding: 10, background: COLORS.bg, borderRadius: 6, whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>{template.body}</div>
+        <div style={{ fontSize: 11, fontWeight: 700, color: COLORS.textLight, marginBottom: 6 }}>本文</div>
+        <EditableField value={template.body} onSave={(v) => updateField('body', v)} multiline fieldBg={COLORS.bgAlt} />
       </div>
     </div>
   );
 }
 
+// インラインで編集できるフィールド（ホバー時に編集ボタン表示、クリックで input/textarea へ切替）
+function EditableField({ value, onSave, multiline = false, fieldBg = 'transparent' }) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(value);
+  const [hover, setHover] = useState(false);
+
+  if (editing) {
+    return (
+      <div>
+        {multiline ? (
+          <textarea
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            autoFocus
+            style={{ width: '100%', minHeight: 80, padding: 10, fontSize: 13, border: `2px solid ${COLORS.primary}`, borderRadius: 8, fontFamily: 'inherit', lineHeight: 1.7, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
+          />
+        ) : (
+          <input
+            type="text"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            autoFocus
+            onKeyDown={(e) => { if (e.key === 'Enter') { onSave(draft); setEditing(false); } if (e.key === 'Escape') { setDraft(value); setEditing(false); } }}
+            style={{ width: '100%', padding: '8px 10px', fontSize: 13, border: `2px solid ${COLORS.primary}`, borderRadius: 8, outline: 'none', boxSizing: 'border-box' }}
+          />
+        )}
+        <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
+          <button onClick={() => { onSave(draft); setEditing(false); }} style={{ padding: '4px 12px', fontSize: 11, fontWeight: 600, background: COLORS.primary, color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer' }}>保存</button>
+          <button onClick={() => { setDraft(value); setEditing(false); }} style={{ padding: '4px 12px', fontSize: 11, fontWeight: 500, background: COLORS.white, color: COLORS.textLight, border: `1px solid ${COLORS.border}`, borderRadius: 6, cursor: 'pointer' }}>キャンセル</button>
+          <span style={{ fontSize: 10, color: COLORS.textMuted, alignSelf: 'center', marginLeft: 4 }}>※ 保存するとオペにも通知されます</span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      onClick={() => setEditing(true)}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        padding: multiline ? 10 : '4px 8px',
+        background: hover ? COLORS.primaryLight : fieldBg,
+        borderRadius: 6,
+        cursor: 'pointer',
+        position: 'relative',
+        whiteSpace: multiline ? 'pre-wrap' : 'normal',
+        lineHeight: multiline ? 1.7 : 1.5,
+        fontSize: multiline ? 13 : 13,
+        transition: 'background 0.15s',
+        minHeight: 24,
+      }}
+    >
+      {value || <span style={{ color: COLORS.textMuted, fontStyle: 'italic' }}>クリックして入力</span>}
+      {hover && (
+        <span style={{ position: 'absolute', right: 8, top: multiline ? 8 : 4, fontSize: 11, color: COLORS.primary, fontWeight: 600 }}>✏️ 編集</span>
+      )}
+    </div>
+  );
+}
+
+// ============== フローティングチャット（全画面で右下に常駐） ==============
+function FloatingChat({ clinic, actions, open, onToggle }) {
+  return (
+    <>
+      {/* ボタン（閉じている時） */}
+      {!open && (
+        <button
+          onClick={onToggle}
+          style={{
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+            zIndex: 50,
+            width: 64,
+            height: 64,
+            borderRadius: 32,
+            background: `linear-gradient(135deg, ${COLORS.primary}, ${COLORS.accent})`,
+            color: 'white',
+            border: 'none',
+            cursor: 'pointer',
+            boxShadow: COLORS.shadowLg,
+            fontSize: 26,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'transform 0.15s, box-shadow 0.15s',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+          aria-label="AIアシスタントを開く"
+        >
+          💬
+        </button>
+      )}
+
+      {/* パネル（開いている時） */}
+      {open && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+            zIndex: 50,
+            width: 420,
+            maxWidth: 'calc(100vw - 32px)',
+            height: 640,
+            maxHeight: 'calc(100vh - 80px)',
+            background: COLORS.white,
+            borderRadius: 18,
+            boxShadow: COLORS.shadowLg,
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+            border: `1px solid ${COLORS.border}`,
+          }}
+        >
+          {/* チャットヘッダー */}
+          <div
+            style={{
+              padding: '14px 18px',
+              background: `linear-gradient(135deg, ${COLORS.primary}, ${COLORS.accent})`,
+              color: 'white',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <div>
+              <div style={{ fontSize: 15, fontWeight: 700 }}>💬 AIアシスタント</div>
+              <div style={{ fontSize: 11, opacity: 0.85, marginTop: 2 }}>いつでも話しかけてください</div>
+            </div>
+            <button onClick={onToggle} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', width: 30, height: 30, borderRadius: 15, cursor: 'pointer', fontSize: 16 }} aria-label="閉じる">×</button>
+          </div>
+
+          {/* チャット本体 */}
+          <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <ChatView clinic={clinic} actions={actions} compact />
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 // ============== AIアシスタント（チャット駆動UX） ==============
-function ChatView({ clinic, actions }) {
+function ChatView({ clinic, actions, compact = false }) {
   // 設定状況の判定（実運用では Firestore 参照）
   const hasJobPosting = clinic.targetRoles && clinic.targetRoles.length > 0;
   const hasMediaConfig = clinic.mediaConfig && clinic.mediaConfig.length > 0;
@@ -1285,13 +1433,36 @@ function ChatView({ clinic, actions }) {
     setMessages((prev) => [...prev, reply]);
   };
 
+  if (compact) {
+    return (
+      <>
+        <div style={{ flex: 1, overflowY: 'auto', padding: '16px', background: COLORS.bgAlt }}>
+          {messages.map((m, i) => (
+            <Message key={i} message={m} onSuggestion={(s) => send(s)} />
+          ))}
+        </div>
+        <div style={{ borderTop: `1px solid ${COLORS.border}`, padding: 12, display: 'flex', gap: 8, background: COLORS.white }}>
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && send(input)}
+            placeholder="話しかけてみてください..."
+            style={{ flex: 1, padding: '10px 14px', fontSize: 13, border: `1px solid ${COLORS.border}`, borderRadius: 10, outline: 'none' }}
+          />
+          <button onClick={() => send(input)} style={{ ...primaryButton, padding: '10px 18px', borderRadius: 10 }}>送信</button>
+        </div>
+      </>
+    );
+  }
+
   return (
     <div>
       <BackLink clinicId={clinic.id} />
       <ViewHeader icon="💬" title="AIアシスタント" subtitle="話すだけでスカウト・書類選考・レポート確認・依頼が完結します" />
 
       {/* チャット履歴 */}
-      <div style={{ background: COLORS.white, borderRadius: 12, border: `1px solid ${COLORS.border}`, marginBottom: 16 }}>
+      <div style={{ background: COLORS.white, borderRadius: 12, border: `1px solid ${COLORS.border}`, marginBottom: 16, boxShadow: COLORS.shadow }}>
         <div style={{ padding: '20px', maxHeight: 600, overflowY: 'auto' }}>
           {messages.map((m, i) => (
             <Message key={i} message={m} onSuggestion={(s) => send(s)} />
@@ -1306,7 +1477,7 @@ function ChatView({ clinic, actions }) {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && send(input)}
             placeholder="話しかけてみてください..."
-            style={{ flex: 1, padding: '10px 14px', fontSize: 14, border: `1px solid ${COLORS.border}`, borderRadius: 8, outline: 'none' }}
+            style={{ flex: 1, padding: '10px 14px', fontSize: 14, border: `1px solid ${COLORS.border}`, borderRadius: 10, outline: 'none' }}
           />
           <button onClick={() => send(input)} style={{ ...primaryButton, padding: '10px 20px' }}>送信</button>
         </div>
