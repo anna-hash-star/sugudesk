@@ -18,6 +18,7 @@ import {
   corporations,
   facilities,
   scoutTemplates,
+  monthlyScoutStats,
 } from '../../../../lib/prototypeMockData';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell, LineChart, Line, CartesianGrid, Legend, PieChart, Pie } from 'recharts';
 
@@ -63,8 +64,10 @@ export default function ClinicPortal() {
       <main style={{ maxWidth: 1020, margin: '0 auto', padding: '32px 24px 80px' }}>
         {(!action || action === 'dashboard') && <DashboardView clinic={clinic} actions={actions} cases={cases} />}
         {action === 'chat' && <ChatView clinic={clinic} actions={actions} />}
-        {action === 'jobs-scouts' && <JobsAndScoutsView clinic={clinic} />}
+        {action === 'jobs' && <JobsView clinic={clinic} />}
+        {action === 'media-scouts' && <MediaScoutsView clinic={clinic} />}
         {action === 'agencies' && <AgenciesView clinic={clinic} />}
+        {action === 'jobs-scouts' && <JobsView clinic={clinic} />}
         {action === 'interview-prep' && <InterviewPrepView clinic={clinic} actions={actions} />}
         {action === 'interview-debrief' && <InterviewDebriefView clinic={clinic} cases={cases} />}
         {action === 'communication-request' && <CommunicationRequestView clinic={clinic} cases={cases} actions={actions} />}
@@ -92,7 +95,8 @@ function Header({ clinic }) {
         </div>
         <nav style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
           <Link href={`/prototype/v2/clinic-portal/${clinic.id}`}><button style={{ ...headerTab, ...(isHome ? activeTab : {}) }}>🏠 ホーム</button></Link>
-          <Link href={`/prototype/v2/clinic-portal/${clinic.id}?action=jobs-scouts`}><button style={{ ...headerTab, ...(action === 'jobs-scouts' ? activeTab : {}) }}>📝 求人・スカウト</button></Link>
+          <Link href={`/prototype/v2/clinic-portal/${clinic.id}?action=jobs`}><button style={{ ...headerTab, ...(action === 'jobs' || action === 'jobs-scouts' ? activeTab : {}) }}>📋 求人管理</button></Link>
+          <Link href={`/prototype/v2/clinic-portal/${clinic.id}?action=media-scouts`}><button style={{ ...headerTab, ...(action === 'media-scouts' ? activeTab : {}) }}>📰 媒体・スカウト</button></Link>
           <Link href={`/prototype/v2/clinic-portal/${clinic.id}?action=agencies`}><button style={{ ...headerTab, ...(action === 'agencies' ? activeTab : {}) }}>🤝 紹介会社</button></Link>
         </nav>
       </div>
@@ -851,20 +855,20 @@ function RecentRequestsList({ clinicRequests, agencyMap }) {
   );
 }
 
-// ============== 求人内容・スカウト文面ビュー ==============
-function JobsAndScoutsView({ clinic }) {
+// ============== 求人管理ビュー（求人のみ・院の魅力含む） ==============
+function JobsView({ clinic }) {
   const router = useRouter();
   const postings = jobPostingsByClinic[clinic.id] || [];
   const goChat = (msg) => router.push(`/prototype/v2/clinic-portal/${clinic.id}?action=chat&prefill=${encodeURIComponent(msg)}`);
 
   return (
     <div>
-      <ViewHeader icon="📝" title="求人内容・スカウト文面" subtitle="現在掲載中の求人と、送信しているスカウト文面を確認できます。修正したい場合はチャットで依頼してください。" />
+      <ViewHeader icon="📋" title="求人管理" subtitle="現在掲載中の求人内容を確認・編集できます。各フィールドはクリックして直接編集、もしくはチャットで相談できます。" />
 
       {/* 募集中の求人 */}
       <Section icon="🎯" title={`募集中の求人（${postings.length}件）`}>
         {postings.length === 0 ? (
-          <div style={{ background: COLORS.white, borderRadius: 10, border: `1px dashed ${COLORS.border}`, padding: 40, textAlign: 'center' }}>
+          <div style={{ background: COLORS.white, borderRadius: 12, border: `1px dashed ${COLORS.border}`, padding: 40, textAlign: 'center', boxShadow: COLORS.shadow }}>
             <div style={{ fontSize: 14, color: COLORS.textMuted, marginBottom: 12 }}>まだ求人が登録されていません</div>
             <button onClick={() => goChat('求人内容を登録')} style={primaryButton}>💬 チャットで求人を登録</button>
           </div>
@@ -878,30 +882,118 @@ function JobsAndScoutsView({ clinic }) {
         )}
       </Section>
 
-      {/* スカウト文面テンプレ */}
-      <Section icon="📤" title={`スカウト文面（${scoutTemplates.length}パターン）`}>
-        <div style={{ marginBottom: 8, padding: 10, background: COLORS.alertBg, color: COLORS.alertText, borderRadius: 6, fontSize: 11 }}>
-          💡 候補者へ送るスカウトメッセージの雛形です。送信時には候補者の経歴に合わせてAIがカスタマイズします。
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {scoutTemplates.map((t) => (
-            <ScoutTemplateCard key={t.id} template={t} onEdit={() => goChat(`${t.name}のスカウト文面を修正したい`)} />
-          ))}
-        </div>
-      </Section>
-
       {/* 院の魅力（訴求ポイント） */}
-      <Section icon="✨" title="院の魅力・訴求ポイント（求人・スカウトで共通利用）">
-        <div style={{ background: COLORS.white, borderRadius: 10, border: `1px solid ${COLORS.border}`, padding: 20 }}>
-          <div style={{ fontSize: 14, lineHeight: 1.7, color: COLORS.text, marginBottom: 16 }}>
-            {clinic.appeal || '未設定'}
-          </div>
-          <button onClick={() => goChat('院の魅力を更新したい')} style={secondaryButton}>💬 チャットで修正</button>
+      <Section icon="✨" title="院の魅力・訴求ポイント">
+        <div style={{ background: COLORS.white, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 22, boxShadow: COLORS.shadow }}>
+          <div style={{ fontSize: 11, color: COLORS.textMuted, marginBottom: 6 }}>求人原稿・スカウト文面で共通利用される基礎的な訴求</div>
+          <EditableField value={clinic.appeal || '未設定'} onSave={(v) => alert('保存しました（プロトタイプ）')} multiline fieldBg={COLORS.bgAlt} />
         </div>
       </Section>
     </div>
   );
 }
+
+// ============== 媒体・スカウト管理ビュー ==============
+function MediaScoutsView({ clinic }) {
+  const router = useRouter();
+  const goChat = (msg) => router.push(`/prototype/v2/clinic-portal/${clinic.id}?action=chat&prefill=${encodeURIComponent(msg)}`);
+  const mediaList = clinic.mediaConfig || [];
+  const scoutMonthly = monthlyScoutStats[clinic.id]?.['2026-05'] || [];
+
+  return (
+    <div>
+      <ViewHeader icon="📰" title="媒体・スカウト管理" subtitle="ご利用中の求人媒体と、スカウト送信に使う文面テンプレートを管理します。" />
+
+      {/* 利用中の媒体 */}
+      <Section icon="🌐" title={`利用中の媒体（${mediaList.length}件）`}>
+        {mediaList.length === 0 ? (
+          <div style={{ background: COLORS.white, borderRadius: 12, border: `1px dashed ${COLORS.border}`, padding: 40, textAlign: 'center', boxShadow: COLORS.shadow }}>
+            <div style={{ fontSize: 14, color: COLORS.textMuted, marginBottom: 12 }}>まだ媒体が登録されていません</div>
+            <button onClick={() => goChat('媒体を追加')} style={primaryButton}>💬 チャットで媒体を追加</button>
+          </div>
+        ) : (
+          <div style={{ background: COLORS.white, borderRadius: 12, border: `1px solid ${COLORS.border}`, overflow: 'hidden', boxShadow: COLORS.shadow }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+              <thead>
+                <tr style={{ background: COLORS.bgAlt }}>
+                  <th style={tableHead}>媒体</th>
+                  <th style={tableHead}>契約タイプ</th>
+                  <th style={{ ...tableHead, textAlign: 'right' }}>月予算</th>
+                  <th style={{ ...tableHead, textAlign: 'right' }}>月のスカウト枠</th>
+                  <th style={tableHead}></th>
+                </tr>
+              </thead>
+              <tbody>
+                {mediaList.map((m, i) => (
+                  <tr key={i} style={{ borderBottom: i < mediaList.length - 1 ? `1px solid ${COLORS.borderLight}` : 'none' }}>
+                    <td style={tableCellTd}><strong>{m.name}</strong></td>
+                    <td style={tableCellTd}>{m.type}</td>
+                    <td style={{ ...tableCellTd, textAlign: 'right' }}>{m.budget > 0 ? `¥${m.budget.toLocaleString()}` : '-'}</td>
+                    <td style={{ ...tableCellTd, textAlign: 'right' }}>{clinic.scoutQuota?.[m.name] ? `${clinic.scoutQuota[m.name]}通` : '-'}</td>
+                    <td style={tableCellTd}><button onClick={() => goChat(`${m.name}の予算/スカウト枠を変更したい`)} style={{ ...secondaryButton, fontSize: 11, padding: '5px 10px' }}>💬 変更</button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div style={{ padding: 14, borderTop: `1px solid ${COLORS.border}` }}>
+              <button onClick={() => goChat('媒体を追加')} style={{ ...secondaryButton, fontSize: 12 }}>+ 新しい媒体を追加（チャット）</button>
+            </div>
+          </div>
+        )}
+      </Section>
+
+      {/* スカウト文面テンプレ */}
+      <Section icon="📤" title={`スカウト文面テンプレ（${scoutTemplates.length}パターン）`}>
+        <div style={{ marginBottom: 12, padding: 12, background: COLORS.alertBg, color: COLORS.alertText, borderRadius: 8, fontSize: 12 }}>
+          💡 候補者へ送るスカウトメッセージの雛形。送信時には候補者の経歴に合わせてAIがカスタマイズします。各フィールドは直接編集できます。
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {scoutTemplates.map((t) => (
+            <ScoutTemplateCard key={t.id} template={t} onEdit={() => goChat(`${t.name}のスカウト文面を修正したい`)} />
+          ))}
+          <button onClick={() => goChat('新しいスカウトテンプレを作りたい')} style={{ ...secondaryButton, alignSelf: 'flex-start' }}>+ 新しいテンプレを追加（チャット）</button>
+        </div>
+      </Section>
+
+      {/* 直近のスカウト送信実績 */}
+      <Section icon="📈" title="今月のスカウト送信実績">
+        {scoutMonthly.length === 0 ? (
+          <div style={{ background: COLORS.white, borderRadius: 12, border: `1px dashed ${COLORS.border}`, padding: 24, textAlign: 'center', color: COLORS.textMuted, fontSize: 13, boxShadow: COLORS.shadow }}>
+            まだスカウト実績がありません
+          </div>
+        ) : (
+          <div style={{ background: COLORS.white, borderRadius: 12, border: `1px solid ${COLORS.border}`, overflow: 'hidden', boxShadow: COLORS.shadow }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+              <thead>
+                <tr style={{ background: COLORS.bgAlt }}>
+                  <th style={tableHead}>媒体</th>
+                  <th style={{ ...tableHead, textAlign: 'right' }}>送信</th>
+                  <th style={{ ...tableHead, textAlign: 'right' }}>開封</th>
+                  <th style={{ ...tableHead, textAlign: 'right' }}>返信</th>
+                  <th style={{ ...tableHead, textAlign: 'right' }}>返信率</th>
+                </tr>
+              </thead>
+              <tbody>
+                {scoutMonthly.map((s, i) => (
+                  <tr key={i} style={{ borderBottom: i < scoutMonthly.length - 1 ? `1px solid ${COLORS.borderLight}` : 'none' }}>
+                    <td style={tableCellTd}><strong>{s.media}</strong></td>
+                    <td style={{ ...tableCellTd, textAlign: 'right' }}>{s.sent}</td>
+                    <td style={{ ...tableCellTd, textAlign: 'right' }}>{s.opened}</td>
+                    <td style={{ ...tableCellTd, textAlign: 'right' }}>{s.replied}</td>
+                    <td style={{ ...tableCellTd, textAlign: 'right' }}><strong style={{ color: COLORS.primary }}>{s.replyRate}%</strong></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Section>
+    </div>
+  );
+}
+
+const tableHead = { padding: '12px 14px', textAlign: 'left', fontSize: 11, fontWeight: 700, color: COLORS.textLight, textTransform: 'uppercase', letterSpacing: '0.05em' };
+const tableCellTd = { padding: '12px 14px', fontSize: 13, color: COLORS.text };
 
 function JobPostingCard({ posting: initialPosting, onEdit }) {
   const [posting, setPosting] = useState(initialPosting);
