@@ -45,6 +45,7 @@ export default function ClinicPortal() {
       <Header clinic={clinic} />
       <main style={{ maxWidth: 960, margin: '0 auto', padding: '24px 20px' }}>
         {!action && <DashboardView clinic={clinic} actions={actions} cases={cases} />}
+        {action === 'chat' && <ChatView clinic={clinic} actions={actions} />}
         {action === 'interview-prep' && <InterviewPrepView clinic={clinic} actions={actions} />}
         {action === 'interview-debrief' && <InterviewDebriefView clinic={clinic} cases={cases} />}
         {action === 'communication-request' && <CommunicationRequestView clinic={clinic} cases={cases} actions={actions} />}
@@ -76,6 +77,31 @@ function DashboardView({ clinic, actions, cases }) {
 
   return (
     <div>
+      {/* AIアシスタントへの誘導（最上段） */}
+      <div
+        style={{
+          background: 'linear-gradient(135deg, #2563a8 0%, #3b82f6 100%)',
+          borderRadius: 12,
+          padding: 20,
+          marginBottom: 24,
+          color: 'white',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+        onClick={() => goAction('chat')}
+      >
+        <div>
+          <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 4 }}>
+            💬 AIアシスタントと話す
+          </div>
+          <div style={{ fontSize: 12, opacity: 0.9 }}>
+            「今日の書類選考は？」「スカウト10件送って」など、話すだけで全部進みます
+          </div>
+        </div>
+        <div style={{ fontSize: 24 }}>→</div>
+      </div>
       {/* 今日のアクション */}
       <Section icon="📌" title="今日のアクション">
         {totalActions === 0 ? (
@@ -625,6 +651,232 @@ function ViewHeader({ icon, title, subtitle }) {
         {title}
       </h1>
       <p style={{ fontSize: 13, color: COLORS.textLight, margin: 0 }}>{subtitle}</p>
+    </div>
+  );
+}
+
+// ============== AIアシスタント（チャット駆動UX） ==============
+function ChatView({ clinic, actions }) {
+  const [messages, setMessages] = useState([
+    {
+      role: 'assistant',
+      text: `${clinic.name} の事務長様、こんにちは。SuguDesk AIアシスタントです。\n\n今日対応が必要なのは：\n・書類確認待ち ${actions.pendingDocReview.length}名\n・面接予定 ${actions.upcomingInterviews.length}件\n・採用判断待ち ${actions.pendingHireDecision.length}名\n\n何をしましょうか？下のボタンから選ぶか、自由に話しかけてください。`,
+      suggestions: ['本日の書類選考の人は？', 'スカウトを送って', '5月の採用状況まとめて', '面接の振り返り依頼'],
+    },
+  ]);
+  const [input, setInput] = useState('');
+  const [chatState, setChatState] = useState({ mode: 'idle', context: {} });
+
+  const send = (text) => {
+    if (!text.trim()) return;
+    const newMessages = [...messages, { role: 'user', text }];
+    setMessages(newMessages);
+    setInput('');
+    setTimeout(() => respond(text, newMessages), 600);
+  };
+
+  const respond = (userText, history) => {
+    const text = userText.toLowerCase();
+    let reply;
+
+    // ステートマシン的な分岐
+    if (chatState.mode === 'awaiting_role_for_scout') {
+      const role = userText.includes('看護師') ? '看護師' : userText.includes('医療事務') ? '医療事務' : userText.includes('助産') ? '助産師' : userText;
+      setChatState({ mode: 'awaiting_scout_confirm', context: { ...chatState.context, role } });
+      reply = {
+        role: 'assistant',
+        text: `${role} ですね。過去で返信率が高い「パターンA：経験活用訴求」をベースに ${chatState.context.count}件 送ります。\n\nターゲット条件：経験3-10年（前回と同じ）\n媒体：ジョブメドレー / 看護roo!\n\nこの内容でよろしければ「OK」と返信してください。`,
+        suggestions: ['OK', '条件を変える', 'やめる'],
+      };
+    } else if (chatState.mode === 'awaiting_scout_confirm') {
+      if (text.includes('ok') || text.includes('お願い') || text.includes('はい')) {
+        setChatState({ mode: 'idle', context: {} });
+        reply = {
+          role: 'assistant',
+          text: `承知しました。SuguDeskオペに依頼を出しました。\n\n📋 依頼内容：\n・職種：${chatState.context.role}\n・件数：${chatState.context.count}件\n・テンプレ：パターンA\n・条件：経験3-10年\n\n本日中に送信完了の通知をLINEでお送りします。`,
+          suggestions: ['他の依頼をする', '今日の書類選考は？'],
+        };
+      } else {
+        setChatState({ mode: 'idle', context: {} });
+        reply = { role: 'assistant', text: '依頼を取り消しました。他にやりたいことはありますか？', suggestions: ['本日の書類選考の人は？', 'スカウトを送って'] };
+      }
+    } else if (chatState.mode === 'doc_review_iteration') {
+      const idx = chatState.context.index;
+      const decisions = chatState.context.decisions || [];
+      const decision = text.includes('通過') || text.includes('ok') ? '通過' : text.includes('保留') ? '保留' : '不通過';
+      const newDecisions = [...decisions, { caseId: actions.pendingDocReview[idx]?.caseId, decision }];
+      const nextIdx = idx + 1;
+      if (nextIdx < actions.pendingDocReview.length) {
+        const next = actions.pendingDocReview[nextIdx];
+        setChatState({ mode: 'doc_review_iteration', context: { index: nextIdx, decisions: newDecisions } });
+        reply = {
+          role: 'assistant',
+          text: `「${decision}」で承りました。\n\n次の候補者です。\n② ${next.caseId}（${next.role}・${next.source}・${next.daysWaiting}日待ち）\nAI事前評価：要件合致度 ${72 + nextIdx * 5}%。${nextIdx % 2 === 0 ? '経験要件・給与希望ともに範囲内。' : '一部条件で要確認事項あり、面接で深掘り推奨。'}`,
+          suggestions: ['👍 通過', '👎 不通過', '🤔 保留'],
+        };
+      } else {
+        const summary = newDecisions.map((d, i) => `${i + 1}. ${d.caseId}：${d.decision}`).join('\n');
+        setChatState({ mode: 'idle', context: {} });
+        reply = {
+          role: 'assistant',
+          text: `全${newDecisions.length}件の判断が完了しました。\n\n${summary}\n\n通過された方は弊社オペが面接日程調整に進みます。不採用の方には弊社から丁寧にご連絡します。`,
+          suggestions: ['他の依頼をする', '今日の予定は？'],
+        };
+      }
+    } else if (text.includes('スカウト') && (text.includes('送') || text.includes('送って'))) {
+      const m = userText.match(/(\d+)\s*件/);
+      const count = m ? parseInt(m[1]) : 10;
+      setChatState({ mode: 'awaiting_role_for_scout', context: { count } });
+      reply = { role: 'assistant', text: `かしこまりました。${count}件のスカウトですね。\n職種を教えてください。`, suggestions: ['看護師', '助産師', '医療事務', '受付'] };
+    } else if (text.includes('書類選考') || text.includes('書類')) {
+      if (actions.pendingDocReview.length === 0) {
+        reply = { role: 'assistant', text: '本日は書類選考の依頼はありません。', suggestions: ['今日の予定は？', '採用状況まとめて'] };
+      } else {
+        const first = actions.pendingDocReview[0];
+        setChatState({ mode: 'doc_review_iteration', context: { index: 0, decisions: [] } });
+        reply = {
+          role: 'assistant',
+          text: `本日は ${actions.pendingDocReview.length}件 の書類選考依頼があります。\n1人ずつサマリーをお送りしますので、通過 / 不通過 / 保留 でお返事ください。\n\n① ${first.caseId}（${first.role}・${first.source}・${first.daysWaiting}日待ち）\nAI事前評価：要件合致度 85%。給与希望は院の予算内、経験年数も基準内。`,
+          suggestions: ['👍 通過', '👎 不通過', '🤔 保留'],
+        };
+      }
+    } else if (text.includes('採用状況') || text.includes('5月') || text.includes('レポート') || text.includes('まとめ')) {
+      const r = monthlyReports[clinic.id];
+      if (r) {
+        reply = {
+          role: 'assistant',
+          text: `${r.month} の採用状況です。\n\n📊 サマリー\n・応募 ${r.summary.applications}名（先月比 +${r.summary.applications - r.summary.previousApplications}）\n・面接 ${r.summary.interviews}件\n・採用 ${r.summary.hires}名\n\n💰 費用合計 ¥${r.summary.totalCost.toLocaleString()}\n（媒体¥${r.summary.mediaCost.toLocaleString()} / 当社¥${r.summary.sugudeskFee.toLocaleString()}）\n\n${r.summary.hires > 0 ? `1名採用あたり ¥${r.summary.cph.toLocaleString()}` : '採用は0名でした'}\n\n詳細レポートを開きますか？`,
+          suggestions: ['📄 PDFを開く', '改善提案を教えて', '紹介会社の実績は？'],
+        };
+      } else {
+        reply = { role: 'assistant', text: 'まだレポートデータがありません。', suggestions: ['今日の予定は？'] };
+      }
+    } else if (text.includes('面接の振り返り') || text.includes('振り返り')) {
+      reply = {
+        role: 'assistant',
+        text: '面接振り返りですね。Zoomの書き出しファイルをアップロードいただければ、AIが要約・評価ドラフトを作成します。\n\nご自身でアップロードいただくか、弊社オペに依頼することもできます。',
+        suggestions: ['アップロードする', 'オペに依頼する'],
+      };
+    } else if (text.includes('面接質問') || text.includes('質問')) {
+      reply = {
+        role: 'assistant',
+        text: '面接質問の準備ですね。面接予定の候補者を選んでいただければ、業種特性に合わせたAI質問例を生成します。',
+        suggestions: ['面接質問の準備画面へ'],
+      };
+    } else if (text.includes('改善提案')) {
+      const r = monthlyReports[clinic.id];
+      if (r && r.suggestions.length > 0) {
+        const sug = r.suggestions.map((s, i) => `${i + 1}. ${s.title}\n   根拠：${s.reason}`).join('\n\n');
+        reply = { role: 'assistant', text: `5月のデータからの改善提案です。\n\n${sug}\n\nどれか採用しますか？`, suggestions: ['全て採用', '①だけ採用', '相談する'] };
+      } else {
+        reply = { role: 'assistant', text: '改善提案はまだありません。', suggestions: [] };
+      }
+    } else if (text.includes('紹介会社') || text.includes('成約')) {
+      const m = agencyMetricsByClinic[clinic.id] || {};
+      const list = Object.entries(m).map(([id, v]) => {
+        const a = agencies.find((x) => x.id === id);
+        const rate = v.introductions > 0 ? Math.round(v.hires / v.introductions * 100) : 0;
+        return `・${a?.name}：紹介${v.introductions}件 / 採用${v.hires}件 / 成約率${rate}%`;
+      }).join('\n');
+      reply = { role: 'assistant', text: `紹介会社の実績です（直近2ヶ月）。\n\n${list}\n\nマイナビ看護師の成約率が一番高い状態です。要望があればお伝えします。`, suggestions: ['マイナビに要望伝達', '他の紹介会社を増やす'] };
+    } else if (text.includes('今日の予定') || text.includes('予定') || text.includes('アクション')) {
+      reply = {
+        role: 'assistant',
+        text: `本日のアクションです。\n\n📌 書類確認待ち：${actions.pendingDocReview.length}名\n📅 面接予定：${actions.upcomingInterviews.map((i) => `${i.date} ${i.time} ${i.caseId}`).join('、') || 'なし'}\n✅ 採用判断待ち：${actions.pendingHireDecision.length}名\n\n何から進めますか？`,
+        suggestions: ['書類選考から', '面接質問の準備', 'スカウトを送る'],
+      };
+    } else if (text.includes('ok') || text.includes('はい') || text.includes('採用')) {
+      reply = { role: 'assistant', text: '承りました。SuguDeskオペが対応いたします。', suggestions: ['他の依頼をする'] };
+    } else {
+      reply = {
+        role: 'assistant',
+        text: '了解しました。具体的に教えてもらえますか？以下のような依頼ができます。',
+        suggestions: ['本日の書類選考の人は？', 'スカウトを送って', '採用状況をまとめて', '今日の予定は？'],
+      };
+    }
+    setMessages((prev) => [...prev, reply]);
+  };
+
+  return (
+    <div>
+      <BackLink clinicId={clinic.id} />
+      <ViewHeader icon="💬" title="AIアシスタント" subtitle="話すだけでスカウト・書類選考・レポート確認・依頼が完結します" />
+
+      {/* チャット履歴 */}
+      <div style={{ background: COLORS.white, borderRadius: 12, border: `1px solid ${COLORS.border}`, marginBottom: 16 }}>
+        <div style={{ padding: '20px', maxHeight: 600, overflowY: 'auto' }}>
+          {messages.map((m, i) => (
+            <Message key={i} message={m} onSuggestion={(s) => send(s)} />
+          ))}
+        </div>
+
+        {/* 入力欄 */}
+        <div style={{ borderTop: `1px solid ${COLORS.border}`, padding: 16, display: 'flex', gap: 8 }}>
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && send(input)}
+            placeholder="話しかけてみてください..."
+            style={{ flex: 1, padding: '10px 14px', fontSize: 14, border: `1px solid ${COLORS.border}`, borderRadius: 8, outline: 'none' }}
+          />
+          <button onClick={() => send(input)} style={{ ...primaryButton, padding: '10px 20px' }}>送信</button>
+        </div>
+      </div>
+
+      <div style={{ padding: 12, background: COLORS.bg, borderRadius: 8, fontSize: 11, color: COLORS.textLight, lineHeight: 1.6 }}>
+        💡 試せる依頼の例：
+        <br />・「今日の書類選考の人は？」 → 1名ずつサマリ＋通過/不通過のみ返信
+        <br />・「スカウトを10件送って」 → 職種を聞かれて、確認後オペに依頼
+        <br />・「5月の採用状況まとめて」 → 月次サマリを会話で受け取る
+        <br />・「紹介会社の成約率は？」 → 直近実績を会話で受け取る
+        <br />・「改善提案を教えて」 → AIによる次月施策を会話で受け取る
+      </div>
+    </div>
+  );
+}
+
+function Message({ message, onSuggestion }) {
+  const isUser = message.role === 'user';
+  return (
+    <div style={{ marginBottom: 14, display: 'flex', justifyContent: isUser ? 'flex-end' : 'flex-start' }}>
+      <div style={{ maxWidth: '78%' }}>
+        <div
+          style={{
+            padding: '10px 14px',
+            borderRadius: 12,
+            background: isUser ? COLORS.primary : COLORS.bg,
+            color: isUser ? 'white' : COLORS.text,
+            fontSize: 14,
+            lineHeight: 1.6,
+            whiteSpace: 'pre-wrap',
+          }}
+        >
+          {message.text}
+        </div>
+        {!isUser && message.suggestions && message.suggestions.length > 0 && (
+          <div style={{ marginTop: 8, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {message.suggestions.map((s, i) => (
+              <button
+                key={i}
+                onClick={() => onSuggestion(s)}
+                style={{
+                  padding: '6px 12px',
+                  fontSize: 12,
+                  background: COLORS.white,
+                  color: COLORS.primary,
+                  border: `1px solid ${COLORS.primary}`,
+                  borderRadius: 14,
+                  cursor: 'pointer',
+                  fontWeight: 500,
+                }}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
