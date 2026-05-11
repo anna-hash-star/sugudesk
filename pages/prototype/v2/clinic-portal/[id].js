@@ -13,6 +13,7 @@ import {
   mediaMetricsByClinic,
   funnelByClinic,
   jobPostingsByClinic,
+  jobPostingDetails,
   scoutTemplates,
 } from '../../../../lib/prototypeMockData';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell, LineChart, Line, CartesianGrid, Legend, PieChart, Pie } from 'recharts';
@@ -729,14 +730,29 @@ function JobsAndScoutsView({ clinic }) {
 }
 
 function JobPostingCard({ posting, onEdit }) {
+  const [expanded, setExpanded] = useState(false);
+  const details = jobPostingDetails[posting.id];
+
+  // 充足率の計算
+  const fieldsStatus = details?.fieldsStatus || {};
+  const fieldsTotal = Object.keys(fieldsStatus).length;
+  const fieldsComplete = Object.values(fieldsStatus).filter((s) => s === 'complete').length;
+  const fieldsPending = Object.values(fieldsStatus).filter((s) => s === 'pending').length;
+  const completionRate = fieldsTotal > 0 ? Math.round(fieldsComplete / fieldsTotal * 100) : 100;
+
   return (
     <div style={{ background: COLORS.white, borderRadius: 10, border: `1px solid ${COLORS.border}`, padding: 20 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
             <span style={{ fontSize: 16, fontWeight: 700 }}>{posting.role}</span>
             <span style={{ fontSize: 11, padding: '2px 8px', background: '#dcfce7', color: '#166534', borderRadius: 10, fontWeight: 600 }}>{posting.status}</span>
             <span style={{ fontSize: 11, color: COLORS.textMuted }}>{posting.employment} / {posting.headcount}名募集</span>
+            {fieldsTotal > 0 && (
+              <span style={{ fontSize: 11, padding: '2px 8px', background: completionRate >= 80 ? '#dcfce7' : completionRate >= 50 ? '#fef3c7' : '#fee2e2', color: completionRate >= 80 ? '#166534' : completionRate >= 50 ? '#92400e' : '#991b1b', borderRadius: 10, fontWeight: 600 }}>
+                情報充足 {completionRate}%
+              </span>
+            )}
           </div>
           <div style={{ fontSize: 10, color: COLORS.textMuted }}>最終更新：{posting.lastUpdated}</div>
         </div>
@@ -750,7 +766,13 @@ function JobPostingCard({ posting, onEdit }) {
         <div style={{ color: COLORS.textLight, fontWeight: 600 }}>訴求</div><div style={{ fontSize: 12, color: COLORS.textLight }}>{posting.appeal}</div>
       </div>
 
-      <div style={{ paddingTop: 12, borderTop: `1px solid ${COLORS.border}` }}>
+      {fieldsPending > 0 && (
+        <div style={{ marginBottom: 12, padding: 10, background: COLORS.alertBg, color: COLORS.alertText, borderRadius: 6, fontSize: 11 }}>
+          ⚠️ {fieldsPending}項目がオペヒアリング待ちです。詳細を展開して確認できます。
+        </div>
+      )}
+
+      <div style={{ paddingTop: 12, borderTop: `1px solid ${COLORS.border}`, marginBottom: details ? 12 : 0 }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: COLORS.textLight, marginBottom: 8 }}>出稿先</div>
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
           {posting.postedTo.map((p, i) => (
@@ -760,8 +782,124 @@ function JobPostingCard({ posting, onEdit }) {
           ))}
         </div>
       </div>
+
+      {details && (
+        <>
+          <button onClick={() => setExpanded(!expanded)} style={{ ...secondaryButton, width: '100%', fontSize: 12, textAlign: 'center' }}>
+            {expanded ? '▲ 詳細を閉じる' : '▼ 求人詳細を表示'}
+          </button>
+          {expanded && <JobPostingDetailPanel details={details} />}
+        </>
+      )}
     </div>
   );
+}
+
+function JobPostingDetailPanel({ details }) {
+  const sections = [
+    { key: 'basic', title: '基本情報', fields: [
+      ['募集背景', details.background],
+      ['募集拠点', details.locations?.join('、')],
+      ['雇用形態', details.employment],
+      ['募集人数', `${details.headcount}名`],
+    ]},
+    { key: 'scope', title: '診療内容・業務内容', fields: [
+      ['診療科目・範囲', details.medicalScope],
+      ['具体的業務', details.duties],
+      ['機器設備', details.equipment],
+    ]},
+    { key: 'qualifications', title: '応募条件', fields: [
+      ['必須資格', details.requiredQualifications?.join('、')],
+      ['必須経験', details.requiredExperience],
+      ['必須スキル', details.requiredSkills],
+      ['歓迎条件', details.welcomedCondition],
+      ['その他条件', details.notRequired],
+    ]},
+    { key: 'salary', title: '給与', fields: [
+      ['月給', details.salaryBase],
+      ['給与構成', details.salaryFrame],
+      ['超勤手当', details.overtime],
+      ['賞与', details.bonus],
+      ['昇給', details.raise],
+      ['想定年収', details.expectedAnnual],
+    ]},
+    { key: 'workhours', title: '勤務時間・休日', fields: [
+      ['勤務時間', details.workHours],
+      ['実働時間', details.realWorkingHours],
+      ['勤務形態', details.shiftType],
+      ['休日', details.daysOff],
+      ['年間休日', details.annualHoliday ? `${details.annualHoliday}日` : null],
+      ['有給休暇', details.paidLeave],
+      ['特別休暇', details.specialLeave],
+    ]},
+    { key: 'benefits', title: '福利厚生・待遇', fields: [
+      ['保険', details.insurance],
+      ['制服', details.uniform],
+      ['交通費', details.commute],
+      ['その他', details.others],
+    ]},
+    { key: 'trial', title: '試用期間・教育', fields: [
+      ['試用期間', details.trialPeriod],
+      ['教育・研修', details.training],
+    ]},
+    { key: 'selection', title: '選考プロセス', fields: [
+      ['選考フロー', details.selectionSteps?.join(' → ')],
+      ['平均期間', details.expectedLeadTime],
+    ]},
+    { key: 'appeal_full', title: '訴求・院文化', fields: [
+      ['訴求ポイント', details.appeal],
+      ['院の文化・人物像', details.cultureNotes],
+      ['院長プロフィール', details.directorIntro],
+    ]},
+    { key: 'access', title: '勤務地・アクセス', fields: [
+      ['住所', details.address],
+      ['アクセス', details.access],
+    ]},
+  ];
+
+  const fieldsStatus = details.fieldsStatus || {};
+
+  return (
+    <div style={{ marginTop: 16, padding: 16, background: COLORS.bg, borderRadius: 8 }}>
+      {sections.map((section) => {
+        const hasContent = section.fields.some(([_, v]) => v && v !== '未設定');
+        const statusKey = section.key === 'basic' ? 'basicInfo' : section.key === 'scope' ? 'duties' : section.key === 'qualifications' ? 'qualifications' : section.key === 'salary' ? 'salary' : section.key === 'workhours' ? 'workHours' : section.key === 'benefits' ? 'benefits' : section.key === 'trial' ? 'trial' : section.key === 'selection' ? 'selection' : section.key === 'appeal_full' ? 'appeal' : 'directorIntro';
+        const status = fieldsStatus[statusKey];
+
+        return (
+          <div key={section.key} style={{ marginBottom: 16, padding: 12, background: COLORS.white, borderRadius: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: COLORS.text }}>{section.title}</div>
+              {status && <FieldStatusBadge status={status} />}
+            </div>
+            <table style={{ width: '100%', fontSize: 12, borderCollapse: 'collapse' }}>
+              <tbody>
+                {section.fields.filter(([_, v]) => v && v !== '未設定').map(([label, value], i) => (
+                  <tr key={i}>
+                    <td style={{ padding: '4px 8px', color: COLORS.textLight, verticalAlign: 'top', width: 120, fontWeight: 500 }}>{label}</td>
+                    <td style={{ padding: '4px 8px', color: COLORS.text, lineHeight: 1.6 }}>{value}</td>
+                  </tr>
+                ))}
+                {!hasContent && (
+                  <tr><td colSpan={2} style={{ padding: '8px', color: COLORS.textMuted, fontSize: 11 }}>このセクションはオペがヒアリング予定です</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function FieldStatusBadge({ status }) {
+  const map = {
+    complete: { bg: '#dcfce7', color: '#166534', label: '✓ 確定' },
+    partial: { bg: '#fef3c7', color: '#92400e', label: '一部のみ' },
+    pending: { bg: '#fee2e2', color: '#991b1b', label: 'オペヒアリング待ち' },
+  };
+  const c = map[status] || map.pending;
+  return <span style={{ fontSize: 10, padding: '2px 8px', background: c.bg, color: c.color, borderRadius: 10, fontWeight: 600 }}>{c.label}</span>;
 }
 
 function ScoutTemplateCard({ template, onEdit }) {
@@ -907,11 +1045,34 @@ function ChatView({ clinic, actions }) {
     } else if (chatState.mode === 'job_posting_confirm') {
       if (text.includes('ok') || text.includes('登録') || text.includes('はい')) {
         setChatState({ mode: 'idle', context: {} });
-        reply = { role: 'assistant', text: '求人登録を承りました。\nSuguDeskオペがAIで原稿を生成し、対象媒体に出稿します。準備が整い次第、内容確認のためご連絡します。', suggestions: ['媒体・紹介会社も登録', '他にやりたいことはない'] };
+        reply = {
+          role: 'assistant',
+          text: '求人登録の基本情報を受け付けました。\n\n📋 次の流れ：\n1. SuguDeskオペが詳細項目（勤務時間の詳細・福利厚生・教育制度・選考フロー等）をヒアリング日程調整\n2. 全項目揃ったらAIで求人原稿を生成\n3. ご確認後、対象媒体に出稿\n\n詳細ヒアリングの日程候補は本日中にLINEでお送りします。',
+          suggestions: ['媒体・紹介会社も登録', '求人・スカウト文面を見る', '他にやりたいことはない'],
+        };
       } else {
         setChatState({ mode: 'idle', context: {} });
         reply = { role: 'assistant', text: '了解しました。最初からやり直しますか？', suggestions: ['求人内容を登録'] };
       }
+    } else if (text.includes('求人を修正') || text.includes('求人を修正したい')) {
+      const role = userText.match(/^(看護師|助産師|医療事務|受付|ドクター)/)?.[1];
+      reply = {
+        role: 'assistant',
+        text: `${role ? role + 'の' : ''}求人を修正します。どこを変えたいですか？`,
+        suggestions: ['給与レンジ', '勤務時間', '求める経験', '院の魅力', '出稿先媒体', '募集人数', 'その他（自由記述）'],
+      };
+    } else if (text.includes('スカウト文面を修正')) {
+      reply = {
+        role: 'assistant',
+        text: 'スカウト文面の修正ですね。どこを変えたいですか？',
+        suggestions: ['件名', '本文', '訴求ポイントを変える', '新しいパターンを作る'],
+      };
+    } else if (text.includes('院の魅力を更新')) {
+      reply = {
+        role: 'assistant',
+        text: '院の魅力（求人・スカウトで共通利用）を更新します。新しい訴求文面を教えてください。',
+        suggestions: [],
+      };
     } else if (chatState.mode === 'media_setup_select') {
       setChatState({ mode: 'media_setup_budget', context: { ...chatState.context, media: userText } });
       reply = { role: 'assistant', text: `「${userText}」ですね。月の出稿予算はいくらですか？（成果報酬型なら「成果報酬制」とお答えください）`, suggestions: ['¥50,000', '¥100,000', '¥150,000', '成果報酬制'] };
@@ -927,9 +1088,9 @@ function ChatView({ clinic, actions }) {
         setChatState({ mode: 'media_setup_budget', context: { media: userText } });
         reply = { role: 'assistant', text: `「${userText}」ですね。月の出稿予算はいくらですか？`, suggestions: ['¥50,000', '¥100,000', '¥150,000', '成果報酬制'] };
       }
-    } else if (text.includes('求人内容') || text.includes('求人を登録') || text.includes('募集')) {
+    } else if (text.includes('求人内容') || text.includes('求人を登録') || text.includes('募集') || text.includes('新しい求人')) {
       setChatState({ mode: 'job_posting_role', context: {} });
-      reply = { role: 'assistant', text: '求人内容を登録します。\nまず、募集する職種を教えてください。', suggestions: ['看護師', '助産師', '医療事務', '受付', 'ドクター', 'コメディカル'] };
+      reply = { role: 'assistant', text: '求人内容を登録します。まずは基本情報だけ伺います。\n（給与・休日・福利厚生など詳細項目はSuguDeskオペが後日ヒアリングで詰めますので、ご安心ください）\n\nまず、募集する職種を教えてください。', suggestions: ['看護師', '助産師', '医療事務', '受付', 'ドクター', 'コメディカル'] };
     } else if (text.includes('媒体') && (text.includes('登録') || text.includes('追加')) || text.includes('紹介会社を登録')) {
       setChatState({ mode: 'media_setup_select', context: {} });
       reply = { role: 'assistant', text: 'ご利用中の媒体・紹介会社を登録します。\nまず1つ目を教えてください。', suggestions: ['Indeed', 'ジョブメドレー', '看護roo!', 'マイナビ看護師', 'レバウェル看護', 'ナースではたらこ', '紹介会社（その他）'] };
