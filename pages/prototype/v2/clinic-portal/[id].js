@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import {
@@ -12,6 +12,8 @@ import {
   agencyMetricsByClinic,
   mediaMetricsByClinic,
   funnelByClinic,
+  jobPostingsByClinic,
+  scoutTemplates,
 } from '../../../../lib/prototypeMockData';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell, LineChart, Line, CartesianGrid, Legend, PieChart, Pie } from 'recharts';
 
@@ -47,6 +49,7 @@ export default function ClinicPortal() {
         {!action && <ChatView clinic={clinic} actions={actions} />}
         {action === 'dashboard' && <DashboardView clinic={clinic} actions={actions} cases={cases} />}
         {action === 'chat' && <ChatView clinic={clinic} actions={actions} />}
+        {action === 'jobs-scouts' && <JobsAndScoutsView clinic={clinic} />}
         {action === 'interview-prep' && <InterviewPrepView clinic={clinic} actions={actions} />}
         {action === 'interview-debrief' && <InterviewDebriefView clinic={clinic} cases={cases} />}
         {action === 'communication-request' && <CommunicationRequestView clinic={clinic} cases={cases} actions={actions} />}
@@ -67,9 +70,12 @@ function Header({ clinic }) {
           <div style={{ fontSize: 11, color: COLORS.textMuted, fontWeight: 600 }}>SuguDesk 採用管理</div>
           <div style={{ fontSize: 16, fontWeight: 700, color: COLORS.text, marginTop: 2 }}>{clinic.name}</div>
         </div>
-        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
           <Link href={`/prototype/v2/clinic-portal/${clinic.id}`}>
             <button style={{ ...headerTab, background: isChat ? COLORS.primary : 'transparent', color: isChat ? 'white' : COLORS.textLight }}>💬 チャット</button>
+          </Link>
+          <Link href={`/prototype/v2/clinic-portal/${clinic.id}?action=jobs-scouts`}>
+            <button style={{ ...headerTab, background: action === 'jobs-scouts' ? COLORS.primary : 'transparent', color: action === 'jobs-scouts' ? 'white' : COLORS.textLight }}>📝 求人・スカウト</button>
           </Link>
           <Link href={`/prototype/v2/clinic-portal/${clinic.id}?action=dashboard`}>
             <button style={{ ...headerTab, background: action === 'dashboard' ? COLORS.primary : 'transparent', color: action === 'dashboard' ? 'white' : COLORS.textLight }}>📊 ダッシュボード</button>
@@ -670,6 +676,122 @@ function ViewHeader({ icon, title, subtitle }) {
   );
 }
 
+// ============== 求人内容・スカウト文面ビュー ==============
+function JobsAndScoutsView({ clinic }) {
+  const router = useRouter();
+  const postings = jobPostingsByClinic[clinic.id] || [];
+  const goChat = (msg) => router.push(`/prototype/v2/clinic-portal/${clinic.id}?action=chat&prefill=${encodeURIComponent(msg)}`);
+
+  return (
+    <div>
+      <ViewHeader icon="📝" title="求人内容・スカウト文面" subtitle="現在掲載中の求人と、送信しているスカウト文面を確認できます。修正したい場合はチャットで依頼してください。" />
+
+      {/* 募集中の求人 */}
+      <Section icon="🎯" title={`募集中の求人（${postings.length}件）`}>
+        {postings.length === 0 ? (
+          <div style={{ background: COLORS.white, borderRadius: 10, border: `1px dashed ${COLORS.border}`, padding: 40, textAlign: 'center' }}>
+            <div style={{ fontSize: 14, color: COLORS.textMuted, marginBottom: 12 }}>まだ求人が登録されていません</div>
+            <button onClick={() => goChat('求人内容を登録')} style={primaryButton}>💬 チャットで求人を登録</button>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {postings.map((p) => (
+              <JobPostingCard key={p.id} posting={p} onEdit={() => goChat(`${p.role}の求人を修正したい`)} />
+            ))}
+            <button onClick={() => goChat('新しい求人を登録')} style={{ ...secondaryButton, alignSelf: 'flex-start' }}>+ 新しい求人を登録（チャット）</button>
+          </div>
+        )}
+      </Section>
+
+      {/* スカウト文面テンプレ */}
+      <Section icon="📤" title={`スカウト文面（${scoutTemplates.length}パターン）`}>
+        <div style={{ marginBottom: 8, padding: 10, background: COLORS.alertBg, color: COLORS.alertText, borderRadius: 6, fontSize: 11 }}>
+          💡 候補者へ送るスカウトメッセージの雛形です。送信時には候補者の経歴に合わせてAIがカスタマイズします。
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {scoutTemplates.map((t) => (
+            <ScoutTemplateCard key={t.id} template={t} onEdit={() => goChat(`${t.name}のスカウト文面を修正したい`)} />
+          ))}
+        </div>
+      </Section>
+
+      {/* 院の魅力（訴求ポイント） */}
+      <Section icon="✨" title="院の魅力・訴求ポイント（求人・スカウトで共通利用）">
+        <div style={{ background: COLORS.white, borderRadius: 10, border: `1px solid ${COLORS.border}`, padding: 20 }}>
+          <div style={{ fontSize: 14, lineHeight: 1.7, color: COLORS.text, marginBottom: 16 }}>
+            {clinic.appeal || '未設定'}
+          </div>
+          <button onClick={() => goChat('院の魅力を更新したい')} style={secondaryButton}>💬 チャットで修正</button>
+        </div>
+      </Section>
+    </div>
+  );
+}
+
+function JobPostingCard({ posting, onEdit }) {
+  return (
+    <div style={{ background: COLORS.white, borderRadius: 10, border: `1px solid ${COLORS.border}`, padding: 20 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+            <span style={{ fontSize: 16, fontWeight: 700 }}>{posting.role}</span>
+            <span style={{ fontSize: 11, padding: '2px 8px', background: '#dcfce7', color: '#166534', borderRadius: 10, fontWeight: 600 }}>{posting.status}</span>
+            <span style={{ fontSize: 11, color: COLORS.textMuted }}>{posting.employment} / {posting.headcount}名募集</span>
+          </div>
+          <div style={{ fontSize: 10, color: COLORS.textMuted }}>最終更新：{posting.lastUpdated}</div>
+        </div>
+        <button onClick={onEdit} style={{ ...secondaryButton, fontSize: 11, padding: '6px 12px' }}>💬 修正を依頼</button>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: 8, fontSize: 13, lineHeight: 1.7, marginBottom: 12 }}>
+        <div style={{ color: COLORS.textLight, fontWeight: 600 }}>給与</div><div>{posting.salary}</div>
+        <div style={{ color: COLORS.textLight, fontWeight: 600 }}>勤務時間</div><div>{posting.workHours}</div>
+        <div style={{ color: COLORS.textLight, fontWeight: 600 }}>求める経験</div><div>{posting.requirements}</div>
+        <div style={{ color: COLORS.textLight, fontWeight: 600 }}>訴求</div><div style={{ fontSize: 12, color: COLORS.textLight }}>{posting.appeal}</div>
+      </div>
+
+      <div style={{ paddingTop: 12, borderTop: `1px solid ${COLORS.border}` }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: COLORS.textLight, marginBottom: 8 }}>出稿先</div>
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          {posting.postedTo.map((p, i) => (
+            <span key={i} style={{ fontSize: 11, padding: '4px 10px', background: COLORS.primaryLight, color: COLORS.primary, borderRadius: 12, fontWeight: 500 }}>
+              {p.media}（{p.status}・{p.postedAt}〜）
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ScoutTemplateCard({ template, onEdit }) {
+  return (
+    <div style={{ background: COLORS.white, borderRadius: 10, border: `1px solid ${COLORS.border}`, padding: 20 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+        <div>
+          <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 4 }}>{template.name}</div>
+          {template.stats.reply > 0 ? (
+            <div style={{ fontSize: 11, color: COLORS.textLight }}>
+              開封率 <strong style={{ color: COLORS.primary }}>{template.stats.open}%</strong> ／ 返信率 <strong style={{ color: COLORS.primary }}>{template.stats.reply}%</strong>
+            </div>
+          ) : (
+            <div style={{ fontSize: 11, color: COLORS.textMuted }}>まだ送信実績なし</div>
+          )}
+        </div>
+        <button onClick={onEdit} style={{ ...secondaryButton, fontSize: 11, padding: '6px 12px' }}>💬 修正を依頼</button>
+      </div>
+      <div style={{ marginBottom: 8 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: COLORS.textLight, marginBottom: 4 }}>件名</div>
+        <div style={{ fontSize: 13, padding: 10, background: COLORS.bg, borderRadius: 6 }}>{template.subject}</div>
+      </div>
+      <div>
+        <div style={{ fontSize: 11, fontWeight: 700, color: COLORS.textLight, marginBottom: 4 }}>本文</div>
+        <div style={{ fontSize: 13, padding: 10, background: COLORS.bg, borderRadius: 6, whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>{template.body}</div>
+      </div>
+    </div>
+  );
+}
+
 // ============== AIアシスタント（チャット駆動UX） ==============
 function ChatView({ clinic, actions }) {
   // 設定状況の判定（実運用では Firestore 参照）
@@ -692,6 +814,16 @@ function ChatView({ clinic, actions }) {
   const [messages, setMessages] = useState([initialMessage]);
   const [input, setInput] = useState('');
   const [chatState, setChatState] = useState({ mode: 'idle', context: {} });
+
+  // 他画面から prefill で遷移してきた場合、自動送信
+  const router = useRouter();
+  useEffect(() => {
+    const prefill = router.query.prefill;
+    if (prefill && typeof prefill === 'string') {
+      setTimeout(() => send(prefill), 400);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.query.prefill]);
 
   const send = (text) => {
     if (!text.trim()) return;
