@@ -64,6 +64,7 @@ export default function ClinicPortal() {
         {(!action || action === 'dashboard') && <DashboardView clinic={clinic} actions={actions} cases={cases} />}
         {action === 'chat' && <ChatView clinic={clinic} actions={actions} />}
         {action === 'jobs-scouts' && <JobsAndScoutsView clinic={clinic} />}
+        {action === 'agencies' && <AgenciesView clinic={clinic} />}
         {action === 'interview-prep' && <InterviewPrepView clinic={clinic} actions={actions} />}
         {action === 'interview-debrief' && <InterviewDebriefView clinic={clinic} cases={cases} />}
         {action === 'communication-request' && <CommunicationRequestView clinic={clinic} cases={cases} actions={actions} />}
@@ -92,6 +93,7 @@ function Header({ clinic }) {
         <nav style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
           <Link href={`/prototype/v2/clinic-portal/${clinic.id}`}><button style={{ ...headerTab, ...(isHome ? activeTab : {}) }}>🏠 ホーム</button></Link>
           <Link href={`/prototype/v2/clinic-portal/${clinic.id}?action=jobs-scouts`}><button style={{ ...headerTab, ...(action === 'jobs-scouts' ? activeTab : {}) }}>📝 求人・スカウト</button></Link>
+          <Link href={`/prototype/v2/clinic-portal/${clinic.id}?action=agencies`}><button style={{ ...headerTab, ...(action === 'agencies' ? activeTab : {}) }}>🤝 紹介会社</button></Link>
         </nav>
       </div>
     </header>
@@ -666,6 +668,185 @@ function ViewHeader({ icon, title, subtitle }) {
         {title}
       </h1>
       <p style={{ fontSize: 13, color: COLORS.textLight, margin: 0 }}>{subtitle}</p>
+    </div>
+  );
+}
+
+// ============== 紹介会社ビュー ==============
+function AgenciesView({ clinic }) {
+  const router = useRouter();
+  const goChat = (msg) => router.push(`/prototype/v2/clinic-portal/${clinic.id}?action=chat&prefill=${encodeURIComponent(msg)}`);
+
+  const clinicMetrics = agencyMetricsByClinic[clinic.id] || {};
+  const clinicRequests = agencyRequestsByClinic[clinic.id] || {};
+  const usedAgencies = agencies.filter((a) => clinicMetrics[a.id]);
+
+  // 全件の合計
+  const totals = usedAgencies.reduce((acc, a) => {
+    const m = clinicMetrics[a.id];
+    return { intro: acc.intro + m.introductions, hires: acc.hires + m.hires, fee: acc.fee + m.totalFeePaid };
+  }, { intro: 0, hires: 0, fee: 0 });
+
+  return (
+    <div>
+      <ViewHeader icon="🤝" title="紹介会社" subtitle="契約中の人材紹介会社の実績と要望履歴を管理します。修正や追加はチャットからどうぞ。" />
+
+      {/* サマリーカード */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12, marginBottom: 24 }}>
+        <SummaryCard label="契約中" value={`${usedAgencies.length}社`} />
+        <SummaryCard label="累計紹介数" value={`${totals.intro}件`} />
+        <SummaryCard label="累計採用数" value={`${totals.hires}件`} highlight />
+        <SummaryCard label="支払手数料合計" value={`¥${(totals.fee / 10000).toFixed(0)}万`} />
+      </div>
+
+      {/* 紹介会社一覧 */}
+      <Section icon="🏢" title={`契約中の紹介会社（${usedAgencies.length}社）`}>
+        {usedAgencies.length === 0 ? (
+          <div style={{ background: COLORS.white, borderRadius: 12, border: `1px dashed ${COLORS.border}`, padding: 40, textAlign: 'center', boxShadow: COLORS.shadow }}>
+            <div style={{ fontSize: 14, color: COLORS.textMuted, marginBottom: 12 }}>まだ紹介会社が登録されていません</div>
+            <button onClick={() => goChat('紹介会社を追加したい')} style={primaryButton}>💬 チャットで紹介会社を追加</button>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {usedAgencies.map((a) => (
+              <AgencyCard key={a.id} agency={a} metrics={clinicMetrics[a.id]} requests={clinicRequests[a.id] || []} onRequestChat={() => goChat(`${a.name}に要望を伝達したい`)} onAddRequest={() => goChat(`${a.name}に新しい要望を伝達`)} />
+            ))}
+            <button onClick={() => goChat('新しい紹介会社を追加')} style={{ ...secondaryButton, alignSelf: 'flex-start' }}>+ 新しい紹介会社を追加（チャット）</button>
+          </div>
+        )}
+      </Section>
+
+      {/* 直近の要望履歴（全紹介会社まとめ） */}
+      <Section icon="📋" title="直近の要望伝達履歴（全紹介会社）">
+        <RecentRequestsList clinicRequests={clinicRequests} agencyMap={Object.fromEntries(agencies.map((a) => [a.id, a]))} />
+      </Section>
+    </div>
+  );
+}
+
+function SummaryCard({ label, value, highlight }) {
+  return (
+    <div style={{ background: highlight ? `linear-gradient(135deg, ${COLORS.primary}, ${COLORS.accent})` : COLORS.white, color: highlight ? 'white' : COLORS.text, borderRadius: 12, border: highlight ? 'none' : `1px solid ${COLORS.border}`, padding: 16, boxShadow: COLORS.shadow }}>
+      <div style={{ fontSize: 11, opacity: highlight ? 0.85 : 0.6, fontWeight: 600, marginBottom: 4 }}>{label}</div>
+      <div style={{ fontSize: 22, fontWeight: 700 }}>{value}</div>
+    </div>
+  );
+}
+
+function AgencyCard({ agency: initialAgency, metrics, requests, onRequestChat, onAddRequest }) {
+  const [agency, setAgency] = useState(initialAgency);
+  const [expanded, setExpanded] = useState(false);
+  const updateField = (key, value) => setAgency({ ...agency, [key]: value });
+
+  const successRate = metrics.introductions > 0 ? Math.round(metrics.hires / metrics.introductions * 100) : 0;
+  const activeReqs = requests.filter((r) => r.status === '対応中').length;
+
+  return (
+    <div style={{ background: COLORS.white, borderRadius: 14, border: `1px solid ${COLORS.border}`, padding: 22, boxShadow: COLORS.shadow }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 17, fontWeight: 700 }}>{agency.name}</span>
+            <span style={{ fontSize: 11, padding: '3px 10px', background: '#dcfce7', color: '#166534', borderRadius: 12, fontWeight: 600 }}>{agency.contractStatus}</span>
+            {activeReqs > 0 && <span style={{ fontSize: 11, padding: '3px 10px', background: '#fef3c7', color: '#92400e', borderRadius: 12, fontWeight: 600 }}>要望対応中 {activeReqs}件</span>}
+          </div>
+          <div style={{ fontSize: 12, color: COLORS.textMuted }}>最終紹介日：{metrics.lastIntroductionDate || '-'}</div>
+        </div>
+        <button onClick={onRequestChat} style={{ ...secondaryButton, fontSize: 11, padding: '6px 12px' }}>💬 要望を伝達</button>
+      </div>
+
+      {/* メトリクス4列 */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 14 }}>
+        <MiniMetric label="紹介" value={metrics.introductions} />
+        <MiniMetric label="書類通過" value={metrics.docPasses} />
+        <MiniMetric label="面接" value={metrics.interviews} />
+        <MiniMetric label="採用" value={metrics.hires} highlight={metrics.hires > 0} />
+      </div>
+
+      {/* 成約率・手数料・返信日数 */}
+      <div style={{ display: 'flex', gap: 16, padding: '12px 14px', background: COLORS.bgAlt, borderRadius: 8, marginBottom: 14, fontSize: 12, flexWrap: 'wrap' }}>
+        <div>成約率：<strong style={{ color: successRate >= 20 ? COLORS.success : successRate >= 10 ? COLORS.text : COLORS.warning, fontSize: 13 }}>{successRate}%</strong></div>
+        <div>支払手数料：<strong style={{ fontSize: 13 }}>¥{metrics.totalFeePaid.toLocaleString()}</strong></div>
+        <div>平均返信日数：<strong style={{ fontSize: 13 }}>{metrics.avgReplyDays.toFixed(1)}日</strong></div>
+      </div>
+
+      {/* 連絡先情報（インライン編集可） */}
+      <div style={{ display: 'grid', gridTemplateColumns: '110px 1fr', gap: 8, fontSize: 13, lineHeight: 1.7, marginBottom: 14 }}>
+        <div style={{ color: COLORS.textLight, fontWeight: 600 }}>担当者</div>
+        <EditableField value={agency.contactPerson} onSave={(v) => updateField('contactPerson', v)} />
+        <div style={{ color: COLORS.textLight, fontWeight: 600 }}>連絡先</div>
+        <EditableField value={agency.contactEmail} onSave={(v) => updateField('contactEmail', v)} />
+        <div style={{ color: COLORS.textLight, fontWeight: 600 }}>手数料率</div>
+        <EditableField value={`年収の${agency.feeRate}%`} onSave={(v) => updateField('feeRate', parseInt(v.replace(/[^0-9]/g, '')) || agency.feeRate)} />
+      </div>
+
+      {/* 要望履歴 */}
+      <div style={{ borderTop: `1px solid ${COLORS.border}`, paddingTop: 14 }}>
+        <button onClick={() => setExpanded(!expanded)} style={{ ...secondaryButton, width: '100%', fontSize: 12, textAlign: 'center', marginBottom: expanded ? 12 : 0 }}>
+          {expanded ? '▲ 要望履歴を閉じる' : `▼ 要望履歴を見る（${requests.length}件）`}
+        </button>
+        {expanded && (
+          <div style={{ background: COLORS.bgAlt, borderRadius: 8, padding: 14 }}>
+            {requests.length === 0 ? (
+              <div style={{ fontSize: 12, color: COLORS.textMuted, textAlign: 'center', padding: 12 }}>要望履歴はまだありません</div>
+            ) : (
+              <div>
+                {requests.map((r, i) => (
+                  <div key={i} style={{ padding: 12, borderBottom: i < requests.length - 1 ? `1px solid ${COLORS.border}` : 'none' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                      <span style={{ fontSize: 11, color: COLORS.textMuted }}>{r.date}</span>
+                      <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 10, background: r.status === '対応済み' ? '#dcfce7' : '#fef3c7', color: r.status === '対応済み' ? '#166534' : '#92400e' }}>{r.status}</span>
+                    </div>
+                    <div style={{ fontSize: 13, color: COLORS.text }}>{r.request}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+            <button onClick={onAddRequest} style={{ ...secondaryButton, fontSize: 11, padding: '6px 12px', marginTop: 12 }}>+ 新規要望を伝達（チャット）</button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function MiniMetric({ label, value, highlight }) {
+  return (
+    <div style={{ textAlign: 'center', padding: 10, background: highlight ? COLORS.primaryLight : COLORS.bgAlt, borderRadius: 8 }}>
+      <div style={{ fontSize: 10, color: COLORS.textLight }}>{label}</div>
+      <div style={{ fontSize: 18, fontWeight: 700, color: highlight ? COLORS.primary : COLORS.text }}>{value}</div>
+    </div>
+  );
+}
+
+function RecentRequestsList({ clinicRequests, agencyMap }) {
+  // 全紹介会社の要望をflatten
+  const allRequests = Object.entries(clinicRequests).flatMap(([agencyId, reqs]) =>
+    reqs.map((r) => ({ ...r, agencyId, agencyName: agencyMap[agencyId]?.name || agencyId }))
+  ).sort((a, b) => b.date.localeCompare(a.date));
+
+  if (allRequests.length === 0) {
+    return (
+      <div style={{ background: COLORS.white, borderRadius: 12, border: `1px dashed ${COLORS.border}`, padding: 24, textAlign: 'center', color: COLORS.textMuted, fontSize: 13, boxShadow: COLORS.shadow }}>
+        要望伝達履歴はまだありません
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ background: COLORS.white, borderRadius: 12, border: `1px solid ${COLORS.border}`, overflow: 'hidden', boxShadow: COLORS.shadow }}>
+      {allRequests.slice(0, 8).map((r, i) => (
+        <div key={i} style={{ padding: 14, borderBottom: i < Math.min(allRequests.length, 8) - 1 ? `1px solid ${COLORS.borderLight}` : 'none' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: COLORS.primary }}>{r.agencyName}</span>
+              <span style={{ fontSize: 11, color: COLORS.textMuted }}>{r.date}</span>
+            </div>
+            <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 10, background: r.status === '対応済み' ? '#dcfce7' : '#fef3c7', color: r.status === '対応済み' ? '#166534' : '#92400e' }}>{r.status}</span>
+          </div>
+          <div style={{ fontSize: 13, color: COLORS.text, lineHeight: 1.6 }}>{r.request}</div>
+        </div>
+      ))}
     </div>
   );
 }
