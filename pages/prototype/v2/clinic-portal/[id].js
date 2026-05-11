@@ -1594,23 +1594,51 @@ function ChatView({ clinic, actions, compact = false }) {
         reply = { role: 'assistant', text: '了解しました。最初からやり直しますか？', suggestions: ['求人内容を登録'] };
       }
     } else if (text.includes('求人を修正') || text.includes('求人を修正したい')) {
-      const role = userText.match(/^(看護師|助産師|医療事務|受付|ドクター)/)?.[1];
+      const role = userText.match(/^(看護師|助産師|医療事務|受付|ドクター|院長候補)/)?.[1];
       reply = {
         role: 'assistant',
         text: `${role ? role + 'の' : ''}求人を修正します。どこを変えたいですか？`,
         suggestions: ['給与レンジ', '勤務時間', '求める経験', '院の魅力', '出稿先媒体', '募集人数', 'その他（自由記述）'],
       };
     } else if (text.includes('スカウト文面を修正')) {
+      const pattern = userText.match(/パターン[ABC]：[^の]+/)?.[0];
       reply = {
         role: 'assistant',
-        text: 'スカウト文面の修正ですね。どこを変えたいですか？',
-        suggestions: ['件名', '本文', '訴求ポイントを変える', '新しいパターンを作る'],
+        text: `${pattern ? `「${pattern}」` : ''}スカウト文面の修正ですね。どこを変えたいですか？`,
+        suggestions: ['件名', '本文の冒頭', '本文の訴求ポイント', '署名', '新しいパターンを作る', 'その他（自由記述）'],
       };
     } else if (text.includes('院の魅力を更新')) {
       reply = {
         role: 'assistant',
-        text: '院の魅力（求人・スカウトで共通利用）を更新します。新しい訴求文面を教えてください。',
-        suggestions: [],
+        text: '院の魅力（求人・スカウトで共通利用）を更新します。新しい訴求文面を教えてください。\n\n例：「地域密着で女性が長く働ける環境、教育充実」など',
+        suggestions: ['現在の文面を見せて', '雛形から選びたい', 'AIで案を作って'],
+      };
+    } else if ((text.includes('要望') && (text.includes('伝達') || text.includes('伝える'))) || text.includes('新しい要望')) {
+      // 紹介会社名を抽出（マイナビ看護師、レバウェル看護、ナースではたらこ 等）
+      const agencyName = userText.match(/^([^に]+?)(に|へ)/)?.[1];
+      reply = {
+        role: 'assistant',
+        text: `${agencyName ? `${agencyName}への` : ''}要望伝達ですね。どんな内容を伝えますか？`,
+        suggestions: ['紹介人数を増やしてほしい', '経験年数の条件を変えたい', '給与レンジの上限を伝える', '勤務地・通勤時間の条件を変える', '今までの紹介傾向にフィードバック', 'その他（自由記述）'],
+      };
+    } else if (text.includes('紹介会社を追加') || text.includes('新しい紹介会社')) {
+      reply = {
+        role: 'assistant',
+        text: '新しい紹介会社を追加します。\nまず、紹介会社の名前を教えてください。',
+        suggestions: ['マイナビ看護師', 'レバウェル看護', 'ナースではたらこ', 'ジョブメドレー', '看護のお仕事', 'その他（自由記述）'],
+      };
+    } else if (text.includes('予算') && text.includes('変更') || text.includes('スカウト枠') && text.includes('変更') || (text.includes('予算/スカウト枠'))) {
+      const mediaName = userText.match(/^([^のは]+?)の/)?.[1];
+      reply = {
+        role: 'assistant',
+        text: `${mediaName ? `${mediaName}の` : ''}設定を変更します。何を変えたいですか？`,
+        suggestions: ['月予算を変更', 'スカウト送信枠を変更', '掲載を停止したい', '契約タイプを変更', 'その他（自由記述）'],
+      };
+    } else if (text.includes('新しいスカウトテンプレ') || text.includes('新しいテンプレ') || text.includes('スカウトテンプレを作')) {
+      reply = {
+        role: 'assistant',
+        text: '新しいスカウトテンプレを作成します。\nどんな訴求軸でいきますか？',
+        suggestions: ['経験活用訴求', 'ワークライフバランス訴求', '教育・スキル成長訴求', '給与・待遇訴求', '院長/院文化の訴求', 'その他（自由記述）'],
       };
     } else if (chatState.mode === 'media_setup_select') {
       setChatState({ mode: 'media_setup_budget', context: { ...chatState.context, media: userText } });
