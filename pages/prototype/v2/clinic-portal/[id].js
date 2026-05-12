@@ -20,6 +20,7 @@ import {
   facilities,
   scoutTemplates,
   monthlyScoutStats,
+  retentionKPI,
 } from '../../../../lib/prototypeMockData';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell, LineChart, Line, CartesianGrid, Legend, PieChart, Pie } from 'recharts';
 
@@ -124,6 +125,11 @@ function DashboardView({ clinic, actions, cases }) {
           今日のアクション{totalActions > 0 ? `は ${totalActions}件` : 'はありません'}。チャットは右下からいつでも呼び出せます。
         </p>
       </div>
+
+      {/* 辞めない採用 KPI（ミスマッチ防止訴求） */}
+      <Section icon="🎯" title="辞めない採用 KPI">
+        <RetentionKPISection clinicId={clinic.id} />
+      </Section>
       {/* 今日のアクション */}
       <Section icon="📌" title="今日のアクション">
         {totalActions === 0 ? (
@@ -1381,6 +1387,88 @@ function EditableField({ value, onSave, multiline = false, fieldBg = 'transparen
       {hover && (
         <span style={{ position: 'absolute', right: 8, top: multiline ? 8 : 4, fontSize: 11, color: COLORS.primary, fontWeight: 600 }}>✏️ 編集</span>
       )}
+    </div>
+  );
+}
+
+// ============== 辞めない採用 KPI セクション ==============
+function RetentionKPISection({ clinicId }) {
+  const router = useRouter();
+  const goChat = (msg) => router.push(`/prototype/v2/clinic-portal/${clinicId}?action=chat&prefill=${encodeURIComponent(msg)}`);
+  const kpi = retentionKPI[clinicId];
+
+  if (!kpi || (kpi.retention6m == null && kpi.last12mHires === 0)) {
+    return (
+      <div style={{ background: COLORS.white, borderRadius: 14, border: `1px dashed ${COLORS.border}`, padding: 24, boxShadow: COLORS.shadow }}>
+        <div style={{ fontSize: 14, color: COLORS.textMuted, textAlign: 'center', marginBottom: 12 }}>
+          採用実績がまだないので、定着率は計測できていません。<br />
+          求人を登録すると採用後の定着サポートが開始されます。
+        </div>
+      </div>
+    );
+  }
+
+  const completedSteps = kpi.mitigationSteps.filter((s) => s.done).length;
+  const totalSteps = kpi.mitigationSteps.length;
+  const diff = kpi.retention6m != null ? kpi.retention6m - kpi.industryAvg6m : 0;
+
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 16 }}>
+      {/* 左：定着率と離職コスト削減 */}
+      <div style={{ background: `linear-gradient(135deg, ${COLORS.primary}, ${COLORS.accent})`, borderRadius: 14, padding: 22, color: 'white', boxShadow: COLORS.shadowMd }}>
+        <div style={{ fontSize: 12, opacity: 0.9, fontWeight: 600, marginBottom: 6 }}>直近6ヶ月の定着率</div>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 4 }}>
+          <div style={{ fontSize: 42, fontWeight: 800, lineHeight: 1 }}>{kpi.retention6m != null ? kpi.retention6m : '-'}<span style={{ fontSize: 22 }}>%</span></div>
+          {kpi.retention6m != null && (
+            <div style={{ fontSize: 12, opacity: 0.9 }}>
+              業界平均 {kpi.industryAvg6m}%（{diff >= 0 ? `+${diff}pt` : `${diff}pt`}）
+            </div>
+          )}
+        </div>
+        <div style={{ marginTop: 16, paddingTop: 14, borderTop: '1px solid rgba(255,255,255,0.2)' }}>
+          <div style={{ fontSize: 11, opacity: 0.9, fontWeight: 600, marginBottom: 4 }}>推定 離職コスト削減（年間）</div>
+          <div style={{ fontSize: 24, fontWeight: 700 }}>¥{kpi.estimatedCostSaved.toLocaleString()}</div>
+          <div style={{ fontSize: 10, opacity: 0.8, marginTop: 4 }}>
+            紹介料1件分相当 ¥{kpi.referralFeeBenchmark.toLocaleString()} の{Math.round(kpi.estimatedCostSaved / kpi.referralFeeBenchmark * 100)}%
+          </div>
+        </div>
+      </div>
+
+      {/* 右：ミスマッチ防止策チェックリスト */}
+      <div style={{ background: COLORS.white, borderRadius: 14, border: `1px solid ${COLORS.border}`, padding: 22, boxShadow: COLORS.shadow }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: COLORS.text }}>ミスマッチ防止策の実行</div>
+          <div style={{ fontSize: 11, fontWeight: 600, color: completedSteps === totalSteps ? COLORS.success : COLORS.warning }}>
+            {completedSteps} / {totalSteps} 完了
+          </div>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          {kpi.mitigationSteps.map((s) => (
+            <div
+              key={s.id}
+              onClick={() => !s.done && goChat(`${s.label}を設定したい`)}
+              style={{
+                display: 'flex',
+                gap: 10,
+                padding: '8px 10px',
+                background: s.done ? COLORS.bgAlt : '#fffbeb',
+                borderRadius: 8,
+                cursor: s.done ? 'default' : 'pointer',
+                border: s.done ? 'none' : `1px solid #fde68a`,
+              }}
+            >
+              <div style={{ width: 18, height: 18, borderRadius: 9, background: s.done ? COLORS.success : COLORS.warning, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>
+                {s.done ? '✓' : '!'}
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: s.done ? COLORS.text : '#92400e' }}>{s.label}</div>
+                <div style={{ fontSize: 10, color: s.done ? COLORS.textMuted : '#a16207', marginTop: 2, lineHeight: 1.5 }}>{s.description}</div>
+              </div>
+              {!s.done && <div style={{ fontSize: 10, color: '#a16207', alignSelf: 'center', fontWeight: 600 }}>設定 →</div>}
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
