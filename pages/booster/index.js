@@ -2,9 +2,15 @@ import { useState } from 'react';
 import BoosterLayout from '../../components/booster/Layout';
 import { sampleJobs, sampleCandidates, sampleAgencies, candidateStatuses } from '../../lib/booster/sample-data';
 
-function SpeedKpiCard({ title, currentValue, targetValue, gap, weekChange, status, unit = '秒', maxValue = 20 }) {
+const statusColors = {
+  good: 'text-blue-600 bg-blue-50',
+  warning: 'text-red-600 bg-red-50',
+};
+
+function SpeedKpiCard({ title, currentValue, targetValue, gap, weekChange, status, statusType = 'warning', unit = '秒', maxValue = 20 }) {
   const currentPct = ((maxValue - currentValue) / maxValue) * 100;
   const targetPct = ((maxValue - targetValue) / maxValue) * 100;
+  const badgeColor = statusColors[statusType] || statusColors.warning;
 
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
@@ -15,7 +21,7 @@ function SpeedKpiCard({ title, currentValue, targetValue, gap, weekChange, statu
         <span className="text-base text-gray-400 ml-1 font-medium">{unit}</span>
       </div>
       <div className="text-center mb-6">
-        <span className="text-xs text-blue-600 bg-blue-50 px-3 py-1 rounded-full font-medium">{status}</span>
+        <span className={`text-xs px-3 py-1 rounded-full font-medium ${badgeColor}`}>{status}</span>
       </div>
 
       <div className="px-1 mb-2">
@@ -118,6 +124,7 @@ export default function BoosterDashboard() {
           gap={0.8}
           weekChange={0.3}
           status="改善余地あり"
+          statusType="warning"
           unit="日"
           maxValue={5}
         />
@@ -128,16 +135,18 @@ export default function BoosterDashboard() {
           gap={1.5}
           weekChange={0.5}
           status="改善余地あり"
+          statusType="warning"
           unit="日"
           maxValue={5}
         />
         <SpeedKpiCard
           title="面接〜内定"
-          currentValue={4}
+          currentValue={3.2}
           targetValue={3}
-          gap={1}
-          weekChange={0.5}
-          status="改善余地あり"
+          gap={0.2}
+          weekChange={0.8}
+          status="おおむね良好"
+          statusType="good"
           unit="日"
           maxValue={7}
         />
