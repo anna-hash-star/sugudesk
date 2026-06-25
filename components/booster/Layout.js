@@ -14,7 +14,7 @@ export default function BoosterLayout({ children, current }) {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen min-w-fit bg-gray-50 flex">
       <aside className="w-56 bg-white border-r border-gray-200 flex flex-col fixed h-full">
         <div className="p-5 border-b border-gray-100">
           <div className="text-lg font-bold text-blue-700">採用ブースター</div>

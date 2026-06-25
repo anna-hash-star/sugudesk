@@ -266,7 +266,7 @@ export default function CandidatesPage() {
       </div>
 
       {view === 'pipeline' && (
-        <div className="flex gap-3 overflow-x-auto pb-4">
+        <div className="flex gap-3 overflow-x-auto pb-4 min-w-0 bg-gray-50">
           {pipelineStages.map(stage => {
             const stageInfo = candidateStatuses[stage];
             const candidates = sampleCandidates.filter(c => c.status === stage);
