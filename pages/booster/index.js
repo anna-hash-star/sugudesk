@@ -110,16 +110,16 @@ export default function BoosterDashboard() {
         ))}
       </div>
 
-      <div className="grid md:grid-cols-3 gap-6 mb-8">
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
         <SpeedKpiCard
           title="書類選考の判断スピード"
-          currentValue={12}
-          targetValue={5}
-          gap={7}
-          weekChange={3}
+          currentValue={1.8}
+          targetValue={1}
+          gap={0.8}
+          weekChange={0.3}
           status="改善余地あり"
-          unit="秒"
-          maxValue={20}
+          unit="日"
+          maxValue={5}
         />
         <SpeedKpiCard
           title="推薦〜面接設定"
@@ -127,9 +127,19 @@ export default function BoosterDashboard() {
           targetValue={1}
           gap={1.5}
           weekChange={0.5}
-          status="良好"
+          status="改善余地あり"
           unit="日"
           maxValue={5}
+        />
+        <SpeedKpiCard
+          title="面接〜内定"
+          currentValue={4}
+          targetValue={3}
+          gap={1}
+          weekChange={0.5}
+          status="改善余地あり"
+          unit="日"
+          maxValue={7}
         />
 
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
