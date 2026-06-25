@@ -8,6 +8,7 @@ const navItems = [
   { key: 'ng-feedback', label: 'NG理由入力', href: '/booster/ng-feedback', icon: '✍️' },
   { key: 'agencies', label: '紹介会社', href: '/booster/agencies', icon: '🤝' },
   { key: 'media', label: '求人媒体', href: '/booster/media', icon: '📡' },
+  { key: 'retention', label: '定着フォロー', href: '/booster/retention', icon: '🌱' },
 ];
 
 export default function BoosterLayout({ children, current }) {

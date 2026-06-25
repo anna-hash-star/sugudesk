@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import BoosterLayout from '../../components/booster/Layout';
-import { sampleJobs, sampleCandidates, sampleAgencies, candidateStatuses } from '../../lib/booster/sample-data';
+import { sampleJobs, sampleCandidates, sampleAgencies, sampleRetention, agencyResponseMetrics, candidateStatuses } from '../../lib/booster/sample-data';
 
 const statusColors = {
   good: 'text-blue-600 bg-blue-50',
@@ -152,24 +152,126 @@ export default function BoosterDashboard() {
         />
 
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-          <div className="text-[13px] font-medium text-gray-500 mb-4">紹介会社別 推薦数</div>
+          <div className="text-[13px] font-medium text-gray-500 mb-4">紹介会社レスポンス</div>
           <div className="space-y-3">
-            {sampleAgencies.slice(0, 4).map(ag => {
-              const count = sampleCandidates.filter(c => c.agencyId === ag.id).length;
-              const maxCount = 3;
+            {agencyResponseMetrics.slice(0, 4).map(ag => {
+              const isfast = ag.avgResponseHours <= 12;
               return (
-                <div key={ag.id}>
+                <div key={ag.agencyId}>
                   <div className="flex justify-between text-sm mb-1">
-                    <span className="text-gray-600">{ag.name}</span>
-                    <span className="font-semibold text-gray-800">{count}名</span>
+                    <span className="text-gray-600 text-xs">{ag.name}</span>
+                    <span className={`text-xs font-semibold ${isfast ? 'text-blue-600' : 'text-red-500'}`}>
+                      {ag.avgResponseHours < 24 ? `${ag.avgResponseHours}時間` : `${(ag.avgResponseHours / 24).toFixed(1)}日`}
+                    </span>
                   </div>
-                  <div className="h-2 bg-gray-100 rounded-full">
-                    <div className="h-2 bg-blue-300 rounded-full transition-all" style={{ width: `${(count / maxCount) * 100}%` }} />
+                  <div className="h-1.5 bg-gray-100 rounded-full">
+                    <div
+                      className={`h-1.5 rounded-full transition-all ${isfast ? 'bg-blue-400' : 'bg-red-300'}`}
+                      style={{ width: `${Math.max(5, 100 - (ag.avgResponseHours / 72) * 100)}%` }}
+                    />
                   </div>
                 </div>
               );
             })}
           </div>
+          <div className="mt-3 pt-3 border-t border-gray-100">
+            <div className="flex justify-between text-xs">
+              <span className="text-gray-400">平均レス時間</span>
+              <span className="font-semibold text-gray-700">
+                {Math.round(agencyResponseMetrics.reduce((s, a) => s + a.avgResponseHours, 0) / agencyResponseMetrics.length)}時間
+              </span>
+            </div>
+            <div className="text-xs text-gray-400 mt-1">目標: 推薦受付→書類判断 12時間以内</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid lg:grid-cols-2 gap-5 mb-8">
+        <div className="bg-white rounded-xl p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold text-gray-700">定着フォロー</h2>
+            <a href="/booster/retention" className="text-xs text-blue-600 hover:text-blue-800 font-medium">詳細 →</a>
+          </div>
+          <div className="grid grid-cols-3 gap-3 mb-4">
+            <div className="bg-emerald-50 rounded-lg p-3 text-center">
+              <div className="text-xl font-bold text-emerald-700">{sampleRetention.filter(r => r.status === 'active').length}</div>
+              <div className="text-xs text-emerald-600">在籍中</div>
+            </div>
+            <div className="bg-amber-50 rounded-lg p-3 text-center">
+              <div className="text-xl font-bold text-amber-700">{sampleRetention.filter(r => r.risk === 'medium' || r.risk === 'high').length}</div>
+              <div className="text-xs text-amber-600">要注意</div>
+            </div>
+            <div className="bg-red-50 rounded-lg p-3 text-center">
+              <div className="text-xl font-bold text-red-700">{sampleRetention.filter(r => r.status === 'resigned').length}</div>
+              <div className="text-xs text-red-600">早期退職</div>
+            </div>
+          </div>
+          <div className="space-y-2">
+            {sampleRetention.filter(r => r.risk !== 'low').map(r => (
+              <div key={r.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div>
+                  <span className="text-sm font-medium text-gray-800">{r.name}</span>
+                  <span className="text-xs text-gray-500 ml-2">{r.jobTitle}</span>
+                </div>
+                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                  r.risk === 'high' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'
+                }`}>
+                  {r.risk === 'high' ? '高リスク' : '要注意'}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl p-6 shadow-sm">
+          <h2 className="text-sm font-semibold text-gray-700 mb-4">滞留アラート</h2>
+          {(() => {
+            const today = new Date('2026-06-25');
+            const stagnant = sampleCandidates
+              .filter(c => !['ng', 'withdrawn', 'joined'].includes(c.status))
+              .map(c => {
+                const lastEvent = c.statusHistory?.[c.statusHistory.length - 1];
+                const lastDate = lastEvent ? new Date(lastEvent.date) : new Date(c.appliedAt);
+                const days = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
+                return { ...c, daysSinceUpdate: days };
+              })
+              .filter(c => c.daysSinceUpdate >= 3)
+              .sort((a, b) => b.daysSinceUpdate - a.daysSinceUpdate);
+
+            if (stagnant.length === 0) {
+              return <div className="text-sm text-gray-400 text-center py-4">滞留している候補者はいません</div>;
+            }
+
+            return (
+              <div className="space-y-2">
+                {stagnant.map(c => {
+                  const job = sampleJobs.find(j => j.id === c.jobId);
+                  const statusInfo = candidateStatuses[c.status];
+                  return (
+                    <div key={c.id} className={`flex items-center justify-between p-3 rounded-lg ${
+                      c.daysSinceUpdate >= 5 ? 'bg-red-50 border border-red-200' : 'bg-amber-50 border border-amber-200'
+                    }`}>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-gray-800">{c.name}</span>
+                          <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: statusInfo?.bg, color: statusInfo?.color }}>
+                            {statusInfo?.label}
+                          </span>
+                        </div>
+                        <div className="text-xs text-gray-500 mt-0.5">{job?.title}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className={`text-sm font-bold ${c.daysSinceUpdate >= 5 ? 'text-red-600' : 'text-amber-600'}`}>
+                          {c.daysSinceUpdate}日間
+                        </div>
+                        <div className="text-xs text-gray-400">動きなし</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })()}
         </div>
       </div>
 

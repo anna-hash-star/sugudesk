@@ -229,8 +229,14 @@ export default function CandidatesPage() {
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [showUpload, setShowUpload] = useState(false);
 
+  const today = new Date('2026-06-25');
   const getJob = (jobId) => sampleJobs.find(j => j.id === jobId);
   const getAgency = (agencyId) => sampleAgencies.find(a => a.id === agencyId);
+  const getDaysStagnant = (c) => {
+    const lastEvent = c.statusHistory?.[c.statusHistory.length - 1];
+    const lastDate = lastEvent ? new Date(lastEvent.date) : new Date(c.appliedAt);
+    return Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
+  };
 
   return (
     <BoosterLayout current="candidates">
@@ -280,11 +286,18 @@ export default function CandidatesPage() {
                 <div className="space-y-2">
                   {candidates.map(c => {
                     const job = getJob(c.jobId);
+                    const days = getDaysStagnant(c);
+                    const isStagnant = days >= 3;
+                    const isCritical = days >= 5;
                     return (
                       <div
                         key={c.id}
                         onClick={() => setSelectedCandidate(c)}
-                        className="bg-white rounded-xl p-3 shadow-sm border border-gray-100 cursor-pointer hover:shadow-md transition-all"
+                        className={`rounded-xl p-3 shadow-sm cursor-pointer hover:shadow-md transition-all ${
+                          isCritical ? 'bg-red-50 border-2 border-red-300' :
+                          isStagnant ? 'bg-amber-50 border-2 border-amber-300' :
+                          'bg-white border border-gray-100'
+                        }`}
                       >
                         <div className="flex items-center justify-between mb-1">
                           <div className="font-semibold text-sm text-gray-800">{c.name}</div>
@@ -294,7 +307,16 @@ export default function CandidatesPage() {
                         <div className="flex items-center gap-1 mt-2">
                           <SourceBadge candidate={c} />
                         </div>
-                        <div className="text-xs text-gray-400 mt-1">{c.appliedAt}</div>
+                        <div className="flex items-center justify-between mt-1">
+                          <div className="text-xs text-gray-400">{c.appliedAt}</div>
+                          {isStagnant && (
+                            <span className={`text-[10px] px-1.5 py-0.5 rounded font-semibold ${
+                              isCritical ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'
+                            }`}>
+                              {days}日滞留
+                            </span>
+                          )}
+                        </div>
                       </div>
                     );
                   })}
