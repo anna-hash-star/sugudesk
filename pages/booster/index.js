@@ -2,67 +2,74 @@ import { useState } from 'react';
 import BoosterLayout from '../../components/booster/Layout';
 import { sampleJobs, sampleCandidates, sampleAgencies, candidateStatuses } from '../../lib/booster/sample-data';
 
-function SpeedGauge({ value, max, target, label, unit = '日' }) {
-  const ratio = Math.min(value / max, 1);
-  const targetRatio = target / max;
-  const r = 70;
-  const cx = 90;
-  const cy = 85;
-  const startAngle = Math.PI;
-  const endAngle = 0;
-  const arc = (angle) => ({
-    x: cx + r * Math.cos(angle),
-    y: cy - r * Math.sin(angle),
-  });
-  const needleAngle = startAngle - ratio * Math.PI;
-  const targetAngle = startAngle - targetRatio * Math.PI;
-  const needleTip = arc(needleAngle);
-  const targetPos = arc(targetAngle);
-
-  const greenEnd = startAngle - (target / max) * Math.PI;
-  const yellowEnd = startAngle - ((target + (max - target) * 0.5) / max) * Math.PI;
-
-  const arcPath = (startA, endA, radius) => {
-    const s = { x: cx + radius * Math.cos(startA), y: cy - radius * Math.sin(startA) };
-    const e = { x: cx + radius * Math.cos(endA), y: cy - radius * Math.sin(endA) };
-    const large = startA - endA > Math.PI ? 1 : 0;
-    return `M ${s.x} ${s.y} A ${radius} ${radius} 0 ${large} 1 ${e.x} ${e.y}`;
-  };
-
-  const isGood = value <= target;
-  const isOk = value > target && value <= target + (max - target) * 0.5;
+function SpeedKpiCard({ title, currentValue, targetValue, gap, weekChange, status, unit = '秒', maxValue = 20 }) {
+  const currentPct = ((maxValue - currentValue) / maxValue) * 100;
+  const targetPct = ((maxValue - targetValue) / maxValue) * 100;
 
   return (
-    <div className="flex flex-col items-center">
-      <svg width="180" height="110" viewBox="0 0 180 110">
-        <path d={arcPath(startAngle, greenEnd, r)} fill="none" stroke="#d1fae5" strokeWidth="14" strokeLinecap="round" />
-        <path d={arcPath(greenEnd, yellowEnd, r)} fill="none" stroke="#fef3c7" strokeWidth="14" />
-        <path d={arcPath(yellowEnd, endAngle, r)} fill="none" stroke="#fee2e2" strokeWidth="14" strokeLinecap="round" />
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+      <div className="text-[13px] font-medium text-gray-500 mb-5">{title}</div>
 
-        <line
-          x1={cx} y1={cy}
-          x2={targetPos.x} y2={targetPos.y}
-          stroke="#9ca3af" strokeWidth="1.5" strokeDasharray="3,2"
-        />
-        <circle cx={targetPos.x} cy={targetPos.y} r="3" fill="#9ca3af" />
+      <div className="text-center mb-1">
+        <span className="text-[40px] font-extrabold text-gray-800 tracking-tight leading-none">{currentValue}</span>
+        <span className="text-base text-gray-400 ml-1 font-medium">{unit}</span>
+      </div>
+      <div className="text-center mb-6">
+        <span className="text-xs text-blue-600 bg-blue-50 px-3 py-1 rounded-full font-medium">{status}</span>
+      </div>
 
-        <line
-          x1={cx} y1={cy}
-          x2={needleTip.x} y2={needleTip.y}
-          stroke={isGood ? '#059669' : isOk ? '#d97706' : '#dc2626'}
-          strokeWidth="3" strokeLinecap="round"
-        />
-        <circle cx={cx} cy={cy} r="5" fill={isGood ? '#059669' : isOk ? '#d97706' : '#dc2626'} />
+      <div className="px-1 mb-2">
+        <div className="flex justify-between text-[11px] text-gray-300 mb-2">
+          <span>ゆっくり</span>
+          <span>はやい</span>
+        </div>
 
-        <text x={cx} y={cy - 18} textAnchor="middle" className="text-2xl font-bold" fill={isGood ? '#059669' : isOk ? '#d97706' : '#dc2626'} fontSize="28" fontWeight="800">
-          {value}
-        </text>
-        <text x={cx} y={cy - 2} textAnchor="middle" fill="#6b7280" fontSize="11">
-          {unit}
-        </text>
-      </svg>
-      <div className="text-sm font-medium text-gray-700 -mt-2">{label}</div>
-      <div className="text-xs text-gray-400 mt-0.5">目標: {target}{unit}以内</div>
+        <div className="relative h-2.5 rounded-full bg-gradient-to-r from-slate-100 via-blue-50 to-blue-200">
+          <div
+            className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 z-10"
+            style={{ left: `${currentPct}%` }}
+          >
+            <div className="w-4 h-4 rounded-full bg-white border-[2.5px] border-blue-400 shadow-sm" />
+          </div>
+
+          <div
+            className="absolute -top-0.5 -translate-x-1/2"
+            style={{ left: `${targetPct}%` }}
+          >
+            <div className="w-[1.5px] h-3.5 bg-blue-500 rounded-full" />
+          </div>
+        </div>
+
+        <div className="relative h-5 mt-1.5">
+          <div
+            className="absolute -translate-x-1/2 text-[11px] text-gray-400 font-medium whitespace-nowrap"
+            style={{ left: `${currentPct}%` }}
+          >
+            現状
+          </div>
+          <div
+            className="absolute -translate-x-1/2 text-[11px] text-blue-500 font-medium whitespace-nowrap"
+            style={{ left: `${targetPct}%` }}
+          >
+            目標
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-2 text-[13px] pt-4 border-t border-gray-100">
+        <div className="flex justify-between items-center">
+          <span className="text-gray-400">目標</span>
+          <span className="font-semibold text-gray-700">{targetValue}{unit}以内</span>
+        </div>
+        <div className="flex justify-between items-center">
+          <span className="text-gray-400">目標まで</span>
+          <span className="font-semibold text-blue-600">あと{gap}{unit}短縮</span>
+        </div>
+        <div className="flex justify-between items-center">
+          <span className="text-gray-400">前週比</span>
+          <span className="font-semibold text-emerald-600">{weekChange}{unit}改善</span>
+        </div>
+      </div>
     </div>
   );
 }
@@ -79,9 +86,6 @@ export default function BoosterDashboard() {
   const totalCandidates = sampleCandidates.length;
   const inProgress = sampleCandidates.filter(c => !['ng', 'withdrawn', 'joined'].includes(c.status)).length;
   const offered = sampleCandidates.filter(c => ['offered', 'accepted'].includes(c.status)).length;
-
-  const avgDaysToInterview = 2.5;
-  const avgDaysToOffer = 4.0;
 
   const kpis = [
     { label: '公開求人数', value: activeJobs, color: 'border-blue-500' },
@@ -106,26 +110,32 @@ export default function BoosterDashboard() {
         ))}
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white rounded-xl p-6 shadow-sm">
-          <h2 className="text-sm font-semibold text-gray-700 mb-4">選考スピード</h2>
-          <div className="flex justify-around">
-            <SpeedGauge value={avgDaysToInterview} max={7} target={3} label="推薦 → 面接" />
-            <SpeedGauge value={avgDaysToOffer} max={7} target={3} label="面接 → 内定" />
-          </div>
-          <div className="mt-3 text-center">
-            <div className="inline-flex items-center gap-4 text-xs text-gray-400">
-              <span className="flex items-center gap-1"><span className="w-3 h-2 bg-emerald-100 rounded-sm inline-block" />良好</span>
-              <span className="flex items-center gap-1"><span className="w-3 h-2 bg-amber-100 rounded-sm inline-block" />注意</span>
-              <span className="flex items-center gap-1"><span className="w-3 h-2 bg-red-100 rounded-sm inline-block" />遅延</span>
-            </div>
-          </div>
-        </div>
+      <div className="grid md:grid-cols-3 gap-6 mb-8">
+        <SpeedKpiCard
+          title="書類選考の判断スピード"
+          currentValue={12}
+          targetValue={5}
+          gap={7}
+          weekChange={3}
+          status="改善余地あり"
+          unit="秒"
+          maxValue={20}
+        />
+        <SpeedKpiCard
+          title="推薦〜面接設定"
+          currentValue={2.5}
+          targetValue={1}
+          gap={1.5}
+          weekChange={0.5}
+          status="良好"
+          unit="日"
+          maxValue={5}
+        />
 
-        <div className="bg-white rounded-xl p-6 shadow-sm">
-          <h2 className="text-sm font-semibold text-gray-700 mb-4">紹介会社別 推薦数</h2>
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <div className="text-[13px] font-medium text-gray-500 mb-4">紹介会社別 推薦数</div>
           <div className="space-y-3">
-            {sampleAgencies.slice(0, 3).map(ag => {
+            {sampleAgencies.slice(0, 4).map(ag => {
               const count = sampleCandidates.filter(c => c.agencyId === ag.id).length;
               const maxCount = 3;
               return (
@@ -135,7 +145,7 @@ export default function BoosterDashboard() {
                     <span className="font-semibold text-gray-800">{count}名</span>
                   </div>
                   <div className="h-2 bg-gray-100 rounded-full">
-                    <div className="h-2 bg-violet-500 rounded-full" style={{ width: `${(count / maxCount) * 100}%` }} />
+                    <div className="h-2 bg-blue-300 rounded-full transition-all" style={{ width: `${(count / maxCount) * 100}%` }} />
                   </div>
                 </div>
               );
