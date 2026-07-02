@@ -1,17 +1,18 @@
 import { useState } from 'react';
 import BoosterLayout from '../../components/booster/Layout';
-import { sampleCandidates, sampleJobs, sampleAgencies, ngReasonCategories } from '../../lib/booster/sample-data';
+import { sampleJobs, sampleAgencies, ngReasonCategories } from '../../lib/booster/sample-data';
+import { useCandidates } from '../../lib/booster/useCandidates';
 
 const STEPS = ['candidate', 'category', 'detail', 'done'];
 
-function NgQuickInput() {
+function NgQuickInput({ candidates, onRecordNg }) {
   const [step, setStep] = useState(0);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedDetail, setSelectedDetail] = useState(null);
   const [freeText, setFreeText] = useState('');
 
-  const activeCandidates = sampleCandidates.filter(c =>
+  const activeCandidates = candidates.filter(c =>
     ['interview_completed', 'interview_scheduled', 'document_passed', 'applied'].includes(c.status)
   );
 
@@ -110,7 +111,11 @@ function NgQuickInput() {
             {selectedCategory?.subcategories.map(sub => (
               <button
                 key={sub}
-                onClick={() => { setSelectedDetail(sub); setStep(3); }}
+                onClick={() => {
+                  setSelectedDetail(sub);
+                  onRecordNg(selectedCandidate, selectedCategory, sub, freeText);
+                  setStep(3);
+                }}
                 className={`w-full text-left p-4 bg-white rounded-xl shadow-sm hover:shadow-md hover:bg-blue-50 transition-all border ${
                   selectedDetail === sub ? 'border-blue-500 bg-blue-50' : 'border-gray-100'
                 }`}
@@ -184,8 +189,8 @@ function NgQuickInput() {
   );
 }
 
-function NgHistory() {
-  const ngCandidates = sampleCandidates.filter(c => c.status === 'ng');
+function NgHistory({ candidates }) {
+  const ngCandidates = candidates.filter(c => c.status === 'ng');
 
   return (
     <div>
@@ -228,6 +233,13 @@ function NgHistory() {
 
 export default function NgFeedbackPage() {
   const [tab, setTab] = useState('input');
+  const { candidates, advanceStatus } = useCandidates();
+
+  const recordNg = (candidate, category, detail, memo) => {
+    advanceStatus(candidate.id, 'ng', `NG: ${category.label} - ${detail}${memo ? `（${memo}）` : ''}`, {
+      ngReason: { category: category.id, detail, feedbackSent: true },
+    });
+  };
 
   return (
     <BoosterLayout current="ng-feedback">
@@ -255,7 +267,7 @@ export default function NgFeedbackPage() {
         </button>
       </div>
 
-      {tab === 'input' ? <NgQuickInput /> : <NgHistory />}
+      {tab === 'input' ? <NgQuickInput candidates={candidates} onRecordNg={recordNg} /> : <NgHistory candidates={candidates} />}
     </BoosterLayout>
   );
 }

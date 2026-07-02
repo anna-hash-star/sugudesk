@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import BoosterLayout from '../../components/booster/Layout';
-import { sampleJobs, sampleCandidates, sampleAgencies, sampleRetention, agencyResponseMetrics, candidateStatuses } from '../../lib/booster/sample-data';
+import { sampleJobs, sampleRetention, agencyResponseMetrics, candidateStatuses } from '../../lib/booster/sample-data';
+import { useCandidates, DEMO_TODAY } from '../../lib/booster/useCandidates';
 
 const statusColors = {
   good: 'text-blue-600 bg-blue-50',
@@ -88,10 +89,11 @@ const urgencyStyle = {
 };
 
 export default function BoosterDashboard() {
+  const { candidates } = useCandidates();
   const activeJobs = sampleJobs.filter(j => j.status === 'active').length;
-  const totalCandidates = sampleCandidates.length;
-  const inProgress = sampleCandidates.filter(c => !['ng', 'withdrawn', 'joined'].includes(c.status)).length;
-  const offered = sampleCandidates.filter(c => ['offered', 'accepted'].includes(c.status)).length;
+  const totalCandidates = candidates.length;
+  const inProgress = candidates.filter(c => !['ng', 'withdrawn', 'joined'].includes(c.status)).length;
+  const offered = candidates.filter(c => ['offered', 'accepted'].includes(c.status)).length;
 
   const kpis = [
     { label: '公開求人数', value: activeJobs, color: 'border-blue-500' },
@@ -226,8 +228,8 @@ export default function BoosterDashboard() {
         <div className="bg-white rounded-xl p-6 shadow-sm">
           <h2 className="text-sm font-semibold text-gray-700 mb-4">滞留アラート</h2>
           {(() => {
-            const today = new Date('2026-06-25');
-            const stagnant = sampleCandidates
+            const today = new Date(DEMO_TODAY);
+            const stagnant = candidates
               .filter(c => !['ng', 'withdrawn', 'joined'].includes(c.status))
               .map(c => {
                 const lastEvent = c.statusHistory?.[c.statusHistory.length - 1];

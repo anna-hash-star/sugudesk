@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import BoosterLayout from '../../components/booster/Layout';
-import { sampleCandidates, sampleJobs, sampleAgencies, sampleMediaPlatforms, candidateStatuses } from '../../lib/booster/sample-data';
+import { sampleJobs, sampleAgencies, sampleMediaPlatforms, candidateStatuses, ngReasonCategories } from '../../lib/booster/sample-data';
+import { useCandidates, DEMO_TODAY } from '../../lib/booster/useCandidates';
 
 const pipelineStages = ['applied', 'document_passed', 'interview_scheduled', 'interview_completed', 'offered', 'accepted', 'joined'];
 
@@ -28,7 +29,7 @@ function SourceBadge({ candidate }) {
   return <span className="text-xs bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">{agency?.name}</span>;
 }
 
-function AiAnalysisPanel({ analysis, jobTitle }) {
+function AiAnalysisPanel({ analysis }) {
   if (!analysis) return null;
   const scoreColor = analysis.matchScore >= 80 ? 'text-emerald-600'
     : analysis.matchScore >= 60 ? 'text-blue-600' : 'text-gray-500';
@@ -104,8 +105,168 @@ function AiAnalysisPanel({ analysis, jobTitle }) {
   );
 }
 
-function UploadModal({ onClose }) {
-  const [step, setStep] = useState('upload');
+// 面接候補日の選択肢（デモ日以降の平日）
+const proposalDates = (() => {
+  const out = [];
+  const d = new Date(DEMO_TODAY);
+  while (out.length < 5) {
+    d.setDate(d.getDate() + 1);
+    const day = d.getDay();
+    if (day === 0 || day === 6) continue;
+    out.push(`${d.getMonth() + 1}/${d.getDate()}(${'日月火水木金土'[day]})`);
+  }
+  return out;
+})();
+const proposalTimes = ['10:00', '14:00', '16:00'];
+
+function SchedulingModal({ candidate, onClose, onSend }) {
+  const [selected, setSelected] = useState([]);
+
+  const toggle = (slot) => {
+    setSelected(prev =>
+      prev.includes(slot) ? prev.filter(s => s !== slot)
+        : prev.length >= 3 ? prev
+        : [...prev, slot]
+    );
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60]" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 max-h-[85vh] overflow-auto" onClick={e => e.stopPropagation()}>
+        <div className="p-6 border-b border-gray-100">
+          <h2 className="text-lg font-bold text-gray-800">面接候補日を送る</h2>
+          <p className="text-sm text-gray-500 mt-1">
+            {candidate.name}さんに提示する候補日時を最大3枠選択してください
+          </p>
+        </div>
+        <div className="p-6">
+          <div className="space-y-3 mb-5">
+            {proposalDates.map(date => (
+              <div key={date} className="flex items-center gap-3">
+                <div className="w-20 text-sm font-medium text-gray-700 shrink-0">{date}</div>
+                <div className="flex gap-2">
+                  {proposalTimes.map(time => {
+                    const slot = `${date} ${time}`;
+                    const isSelected = selected.includes(slot);
+                    return (
+                      <button
+                        key={time}
+                        type="button"
+                        onClick={() => toggle(slot)}
+                        className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
+                          isSelected
+                            ? 'bg-blue-600 text-white border-blue-600'
+                            : 'bg-white text-gray-600 border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+                        }`}
+                      >
+                        {time}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {selected.length > 0 && (
+            <div className="bg-blue-50 rounded-lg p-3 mb-4">
+              <div className="text-xs font-semibold text-blue-700 mb-1.5">選択中の候補日（{selected.length}/3）</div>
+              <div className="flex flex-wrap gap-2">
+                {selected.map(s => (
+                  <span key={s} className="text-xs bg-white text-blue-700 px-2 py-1 rounded border border-blue-200">{s}</span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="bg-gray-50 rounded-lg p-3 text-xs text-gray-500">
+            候補日はエージェント経由で候補者に打診されます。回答が届き次第、面接日が確定します。
+          </div>
+        </div>
+        <div className="p-4 border-t border-gray-100 flex justify-end gap-3">
+          <button onClick={onClose} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800">
+            キャンセル
+          </button>
+          <button
+            onClick={() => onSend(selected)}
+            disabled={selected.length === 0}
+            className="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            候補日を送信
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function NgModal({ candidate, onClose, onSubmit }) {
+  const [category, setCategory] = useState(null);
+  const agency = sampleAgencies.find(a => a.id === candidate.agencyId);
+
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60]" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 max-h-[85vh] overflow-auto" onClick={e => e.stopPropagation()}>
+        <div className="p-6 border-b border-gray-100">
+          <h2 className="text-lg font-bold text-gray-800">NG理由を記録</h2>
+          <p className="text-sm text-gray-500 mt-1">
+            {candidate.name}さんの不採用理由を選択してください
+          </p>
+        </div>
+        <div className="p-6">
+          {!category ? (
+            <div className="space-y-2">
+              {ngReasonCategories.map(cat => (
+                <button
+                  key={cat.id}
+                  onClick={() => setCategory(cat)}
+                  className="w-full text-left p-3.5 bg-gray-50 rounded-xl hover:bg-blue-50 transition-colors border border-gray-100"
+                >
+                  <div className="font-semibold text-sm text-gray-800">{cat.label}</div>
+                  <div className="text-xs text-gray-400 mt-0.5">{cat.subcategories.slice(0, 3).join(' / ')}</div>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div>
+              <button onClick={() => setCategory(null)} className="text-xs text-gray-400 hover:text-gray-600 mb-3">
+                ← {category.label}
+              </button>
+              <div className="space-y-2 mb-4">
+                {category.subcategories.map(sub => (
+                  <button
+                    key={sub}
+                    onClick={() => onSubmit(category, sub)}
+                    className="w-full text-left p-3.5 bg-gray-50 rounded-xl hover:bg-red-50 transition-colors border border-gray-100 text-sm font-medium text-gray-800"
+                  >
+                    {sub}
+                  </button>
+                ))}
+              </div>
+              {agency && (
+                <div className="bg-blue-50 rounded-lg p-3 text-xs text-blue-600">
+                  📩 記録と同時に{agency.name}へNG理由をフィードバックします。次回の推薦精度が向上します。
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+        <div className="p-4 border-t border-gray-100 flex justify-end">
+          <button onClick={onClose} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800">
+            キャンセル
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RegisterModal({ onClose, onRegister }) {
+  const [step, setStep] = useState('form');
+  const [name, setName] = useState('');
+  const [experience, setExperience] = useState('');
+  const [jobId, setJobId] = useState(sampleJobs[0]?.id || '');
+  const [agencyId, setAgencyId] = useState(sampleAgencies[0]?.id || '');
   const [dragOver, setDragOver] = useState(false);
 
   const demoAnalysis = {
@@ -116,83 +277,122 @@ function UploadModal({ onClose }) {
     interviewPoints: ['ブランク期間の活動内容', '転職理由の一貫性', '希望する夜勤頻度'],
   };
 
+  const startAnalysis = () => {
+    setStep('analyzing');
+    setTimeout(() => setStep('result'), 2200);
+  };
+
+  const handleRegister = () => {
+    const agency = sampleAgencies.find(a => a.id === agencyId);
+    onRegister({
+      id: `cand-${Date.now()}`,
+      name: name.trim() || '新規候補者',
+      jobId,
+      agencyId,
+      source: 'agency',
+      status: 'applied',
+      appliedAt: DEMO_TODAY,
+      experience: experience.trim() || '経歴確認中',
+      hasResume: true,
+      aiAnalysis: demoAnalysis,
+      statusHistory: [
+        { status: 'applied', date: DEMO_TODAY, note: `${agency?.name || 'エージェント'}からメールで推薦 → 手動登録` },
+      ],
+    });
+    onClose();
+  };
+
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={onClose}>
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-xl mx-4 max-h-[85vh] overflow-auto" onClick={e => e.stopPropagation()}>
         <div className="p-6 border-b border-gray-100">
-          <h2 className="text-lg font-bold text-gray-800">候補者を追加</h2>
-          <p className="text-sm text-gray-500 mt-1">履歴書・職務経歴書をアップロードするとAIが自動分析します</p>
+          <h2 className="text-lg font-bold text-gray-800">推薦を手動登録</h2>
+          <p className="text-sm text-gray-500 mt-1">
+            エージェントからメールで届いた推薦を登録します。書類をアップロードするとAIが自動分析します。
+          </p>
+          <div className="mt-2 text-xs text-gray-400 bg-gray-50 rounded-lg px-3 py-2">
+            📧 将来リリース: 推薦メールの自動取り込み（メール連携）に対応予定
+          </div>
         </div>
 
-        {step === 'upload' && (
-          <div className="p-6">
+        {step === 'form' && (
+          <div className="p-6 space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">候補者名</label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  placeholder="例: 鈴木 花子"
+                  className="w-full p-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">経験</label>
+                <input
+                  type="text"
+                  value={experience}
+                  onChange={e => setExperience(e.target.value)}
+                  placeholder="例: 外科病棟2年"
+                  className="w-full p-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">対象求人</label>
+                <select
+                  value={jobId}
+                  onChange={e => setJobId(e.target.value)}
+                  className="w-full p-3 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+                  {sampleJobs.map(j => <option key={j.id} value={j.id}>{j.title}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">推薦元エージェント</label>
+                <select
+                  value={agencyId}
+                  onChange={e => setAgencyId(e.target.value)}
+                  className="w-full p-3 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+                  {sampleAgencies.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
+                </select>
+              </div>
+            </div>
+
             <div
-              className={`border-2 border-dashed rounded-xl p-10 text-center transition-colors ${
-                dragOver ? 'border-blue-400 bg-blue-50' : 'border-gray-200 bg-gray-50'
-              }`}
+              onClick={startAnalysis}
               onDragOver={e => { e.preventDefault(); setDragOver(true); }}
               onDragLeave={() => setDragOver(false)}
-              onDrop={e => { e.preventDefault(); setDragOver(false); setStep('analyzing'); setTimeout(() => setStep('result'), 2000); }}
+              onDrop={e => { e.preventDefault(); setDragOver(false); startAnalysis(); }}
+              className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
+                dragOver ? 'border-blue-400 bg-blue-50' : 'border-gray-300 hover:border-blue-300 hover:bg-gray-50'
+              }`}
             >
-              <div className="text-4xl text-gray-300 mb-3">+</div>
+              <div className="text-3xl mb-2">📄</div>
               <div className="text-sm text-gray-600 font-medium mb-1">履歴書・職務経歴書をドロップ</div>
-              <div className="text-xs text-gray-400 mb-4">PDF, JPEG, PNG に対応</div>
-              <button
-                onClick={() => { setStep('analyzing'); setTimeout(() => setStep('result'), 2000); }}
-                className="bg-blue-600 text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors"
-              >
-                ファイルを選択
-              </button>
-            </div>
-
-            <div className="mt-6">
-              <div className="text-xs font-semibold text-gray-500 mb-3">対象求人</div>
-              <select className="w-full p-3 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="">選択してください</option>
-                {sampleJobs.filter(j => j.status === 'active').map(j => (
-                  <option key={j.id} value={j.id}>{j.title}（{j.department}）</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="mt-4">
-              <div className="text-xs font-semibold text-gray-500 mb-3">流入元</div>
-              <div className="flex gap-2">
-                <label className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 text-sm">
-                  <input type="radio" name="source" defaultChecked className="text-blue-600" /> 手動アップロード
-                </label>
-                <label className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 text-sm">
-                  <input type="radio" name="source" className="text-blue-600" /> 紹介会社
-                </label>
-                <label className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 text-sm">
-                  <input type="radio" name="source" className="text-blue-600" /> 媒体
-                </label>
-              </div>
+              <div className="text-xs text-gray-400">またはクリックしてファイルを選択（PDF / Word）</div>
             </div>
           </div>
         )}
 
         {step === 'analyzing' && (
-          <div className="p-12 text-center">
-            <div className="inline-block w-10 h-10 border-3 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4" />
-            <div className="text-sm font-medium text-gray-700 mb-1">AIが分析中...</div>
+          <div className="p-10 text-center">
+            <div className="w-12 h-12 border-3 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+            <div className="text-sm font-semibold text-gray-700 mb-1">AIが書類を分析しています</div>
             <div className="text-xs text-gray-400">履歴書・職務経歴書を読み取り、求人とのマッチ度を算出しています</div>
           </div>
         )}
 
         {step === 'result' && (
           <div className="p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-emerald-500 text-lg">&#10003;</span>
-              <span className="text-sm font-semibold text-gray-700">分析完了</span>
-            </div>
-
             <AiAnalysisPanel analysis={demoAnalysis} />
-
             <div className="bg-blue-50 rounded-lg p-4 mt-4">
               <div className="text-xs font-semibold text-blue-700 mb-1">次のアクション</div>
               <div className="text-xs text-blue-600">
-                マッチ度76点 — 書類通過の判断をしてください。通過の場合、面接候補日を設定できます。
+                マッチ度76点 — 推薦として登録後、パイプラインから書類通過/NGの判断ができます。
               </div>
             </div>
           </div>
@@ -200,23 +400,15 @@ function UploadModal({ onClose }) {
 
         <div className="p-4 border-t border-gray-100 flex gap-3 justify-end">
           <button onClick={onClose} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800">
-            {step === 'result' ? '閉じる' : 'キャンセル'}
+            キャンセル
           </button>
           {step === 'result' && (
-            <>
-              <button
-                onClick={onClose}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-300 transition-colors"
-              >
-                保留
-              </button>
-              <button
-                onClick={onClose}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors"
-              >
-                書類通過 → 面接設定
-              </button>
-            </>
+            <button
+              onClick={handleRegister}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors"
+            >
+              推薦として登録
+            </button>
           )}
         </div>
       </div>
@@ -225,17 +417,50 @@ function UploadModal({ onClose }) {
 }
 
 export default function CandidatesPage() {
+  const { candidates, updateCandidate, advanceStatus, addCandidate, resetDemo } = useCandidates();
   const [view, setView] = useState('pipeline');
-  const [selectedCandidate, setSelectedCandidate] = useState(null);
-  const [showUpload, setShowUpload] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+  const [showRegister, setShowRegister] = useState(false);
+  const [scheduleTargetId, setScheduleTargetId] = useState(null);
+  const [ngTargetId, setNgTargetId] = useState(null);
 
-  const today = new Date('2026-06-25');
+  const selectedCandidate = candidates.find(c => c.id === selectedId) || null;
+  const scheduleTarget = candidates.find(c => c.id === scheduleTargetId) || null;
+  const ngTarget = candidates.find(c => c.id === ngTargetId) || null;
+
+  const today = new Date(DEMO_TODAY);
   const getJob = (jobId) => sampleJobs.find(j => j.id === jobId);
-  const getAgency = (agencyId) => sampleAgencies.find(a => a.id === agencyId);
   const getDaysStagnant = (c) => {
     const lastEvent = c.statusHistory?.[c.statusHistory.length - 1];
     const lastDate = lastEvent ? new Date(lastEvent.date) : new Date(c.appliedAt);
     return Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
+  };
+
+  const sendProposal = (slots) => {
+    updateCandidate(scheduleTargetId, c => ({
+      interviewProposal: { dates: slots, status: 'pending', sentAt: DEMO_TODAY },
+      statusHistory: [
+        ...(c.statusHistory || []),
+        { status: c.status, date: DEMO_TODAY, note: `面接候補日${slots.length}件をエージェント経由で候補者に送信`, label: '日程調整' },
+      ],
+    }));
+    setScheduleTargetId(null);
+  };
+
+  const receiveProposalReply = (c) => {
+    const chosen = c.interviewProposal?.dates?.[0];
+    if (!chosen) return;
+    advanceStatus(c.id, 'interview_scheduled', `面接確定: ${chosen}`, {
+      interviewDate: chosen,
+      interviewProposal: { ...c.interviewProposal, status: 'confirmed' },
+    });
+  };
+
+  const submitNg = (category, detail) => {
+    advanceStatus(ngTargetId, 'ng', `NG: ${category.label} - ${detail}`, {
+      ngReason: { category: category.id, detail, feedbackSent: true },
+    });
+    setNgTargetId(null);
   };
 
   return (
@@ -245,12 +470,18 @@ export default function CandidatesPage() {
           <h1 className="text-xl font-bold text-gray-800">候補者管理</h1>
           <p className="text-sm text-gray-500 mt-1">選考パイプラインの管理</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           <button
-            onClick={() => setShowUpload(true)}
+            onClick={resetDemo}
+            className="text-xs text-gray-400 hover:text-gray-600 px-2 py-1.5 transition-colors"
+          >
+            デモをリセット
+          </button>
+          <button
+            onClick={() => setShowRegister(true)}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors"
           >
-            + 候補者を追加
+            + 推薦を登録
           </button>
           <button
             onClick={() => setView('pipeline')}
@@ -275,16 +506,16 @@ export default function CandidatesPage() {
         <div className="flex gap-3 overflow-x-auto pb-4 min-w-0 bg-gray-50">
           {pipelineStages.map(stage => {
             const stageInfo = candidateStatuses[stage];
-            const candidates = sampleCandidates.filter(c => c.status === stage);
+            const stageCandidates = candidates.filter(c => c.status === stage);
             return (
               <div key={stage} className="min-w-[230px] flex-shrink-0">
                 <div className="flex items-center gap-2 mb-3 px-1">
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: stageInfo.color }} />
                   <span className="text-sm font-semibold text-gray-700">{stageInfo.label}</span>
-                  <span className="text-xs bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded-full">{candidates.length}</span>
+                  <span className="text-xs bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded-full">{stageCandidates.length}</span>
                 </div>
                 <div className="space-y-2">
-                  {candidates.map(c => {
+                  {stageCandidates.map(c => {
                     const job = getJob(c.jobId);
                     const days = getDaysStagnant(c);
                     const isStagnant = days >= 3;
@@ -292,7 +523,7 @@ export default function CandidatesPage() {
                     return (
                       <div
                         key={c.id}
-                        onClick={() => setSelectedCandidate(c)}
+                        onClick={() => setSelectedId(c.id)}
                         className={`rounded-xl p-3 shadow-sm cursor-pointer hover:shadow-md transition-all ${
                           isCritical ? 'bg-red-50 border-2 border-red-300' :
                           isStagnant ? 'bg-amber-50 border-2 border-amber-300' :
@@ -306,6 +537,12 @@ export default function CandidatesPage() {
                         <div className="text-xs text-gray-500">{job?.title}</div>
                         <div className="flex items-center gap-1 mt-2">
                           <SourceBadge candidate={c} />
+                          {c.interviewProposal?.status === 'pending' && (
+                            <span className="text-[10px] bg-violet-50 text-violet-600 px-1.5 py-0.5 rounded">日程調整中</span>
+                          )}
+                          {c.interviewDate && c.status === 'interview_scheduled' && (
+                            <span className="text-[10px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">📅 {c.interviewDate}</span>
+                          )}
                         </div>
                         <div className="flex items-center justify-between mt-1">
                           <div className="text-xs text-gray-400">{c.appliedAt}</div>
@@ -320,7 +557,7 @@ export default function CandidatesPage() {
                       </div>
                     );
                   })}
-                  {candidates.length === 0 && (
+                  {stageCandidates.length === 0 && (
                     <div className="bg-gray-50 rounded-xl p-4 text-center text-xs text-gray-400 border border-dashed border-gray-200">
                       なし
                     </div>
@@ -335,16 +572,16 @@ export default function CandidatesPage() {
               <div className="w-3 h-3 rounded-full bg-red-500" />
               <span className="text-sm font-semibold text-gray-700">NG / 辞退</span>
               <span className="text-xs bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded-full">
-                {sampleCandidates.filter(c => ['ng', 'withdrawn'].includes(c.status)).length}
+                {candidates.filter(c => ['ng', 'withdrawn'].includes(c.status)).length}
               </span>
             </div>
             <div className="space-y-2">
-              {sampleCandidates.filter(c => ['ng', 'withdrawn'].includes(c.status)).map(c => {
+              {candidates.filter(c => ['ng', 'withdrawn'].includes(c.status)).map(c => {
                 const job = getJob(c.jobId);
                 return (
                   <div
                     key={c.id}
-                    onClick={() => setSelectedCandidate(c)}
+                    onClick={() => setSelectedId(c.id)}
                     className="bg-white rounded-xl p-3 shadow-sm border border-gray-100 cursor-pointer hover:shadow-md transition-all opacity-70"
                   >
                     <div className="flex items-center justify-between mb-1">
@@ -377,13 +614,13 @@ export default function CandidatesPage() {
               </tr>
             </thead>
             <tbody>
-              {sampleCandidates.map(c => {
+              {candidates.map(c => {
                 const job = getJob(c.jobId);
                 const status = candidateStatuses[c.status];
                 return (
                   <tr
                     key={c.id}
-                    onClick={() => setSelectedCandidate(c)}
+                    onClick={() => setSelectedId(c.id)}
                     className="border-t border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
                   >
                     <td className="px-4 py-3">
@@ -411,7 +648,7 @@ export default function CandidatesPage() {
       )}
 
       {selectedCandidate && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={() => setSelectedCandidate(null)}>
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={() => setSelectedId(null)}>
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl mx-4 max-h-[85vh] overflow-auto" onClick={e => e.stopPropagation()}>
             <div className="p-6 border-b border-gray-100">
               <div className="flex items-center justify-between">
@@ -449,12 +686,29 @@ export default function CandidatesPage() {
                     <span className="text-blue-600 text-xs font-medium">履歴書・職務経歴書 アップロード済</span>
                   </div>
                 )}
+                {selectedCandidate.interviewDate && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">面接日時</span>
+                    <span className="text-gray-800 font-medium">📅 {selectedCandidate.interviewDate}</span>
+                  </div>
+                )}
               </div>
 
-              <AiAnalysisPanel
-                analysis={selectedCandidate.aiAnalysis}
-                jobTitle={getJob(selectedCandidate.jobId)?.title}
-              />
+              {selectedCandidate.interviewProposal?.status === 'pending' && (
+                <div className="bg-violet-50 rounded-xl p-4 mb-4 border border-violet-100">
+                  <div className="text-xs font-semibold text-violet-700 mb-2">📅 日程調整中 — 候補者の回答待ち</div>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {selectedCandidate.interviewProposal.dates.map(d => (
+                      <span key={d} className="text-xs bg-white text-violet-700 px-2 py-1 rounded border border-violet-200">{d}</span>
+                    ))}
+                  </div>
+                  <div className="text-xs text-violet-500">
+                    エージェント経由で候補者に打診済み（{selectedCandidate.interviewProposal.sentAt}送信）
+                  </div>
+                </div>
+              )}
+
+              <AiAnalysisPanel analysis={selectedCandidate.aiAnalysis} />
 
               <h3 className="text-sm font-semibold text-gray-700 mb-3">選考履歴</h3>
               <div className="space-y-3">
@@ -463,7 +717,7 @@ export default function CandidatesPage() {
                     <div className="flex flex-col items-center">
                       <div
                         className="w-3 h-3 rounded-full mt-1"
-                        style={{ backgroundColor: candidateStatuses[h.status]?.color }}
+                        style={{ backgroundColor: h.label ? '#7c3aed' : candidateStatuses[h.status]?.color }}
                       />
                       {i < selectedCandidate.statusHistory.length - 1 && (
                         <div className="w-0.5 flex-1 bg-gray-200 my-1" />
@@ -472,7 +726,7 @@ export default function CandidatesPage() {
                     <div className="flex-1 pb-3">
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-medium text-gray-800">
-                          {candidateStatuses[h.status]?.label}
+                          {h.label || candidateStatuses[h.status]?.label}
                         </span>
                         <span className="text-xs text-gray-400">{h.date}</span>
                       </div>
@@ -482,17 +736,118 @@ export default function CandidatesPage() {
                 ))}
               </div>
             </div>
-            <div className="p-4 border-t border-gray-100 flex justify-end gap-3">
+
+            <div className="p-4 border-t border-gray-100 flex items-center gap-3">
               <button
-                onClick={() => setSelectedCandidate(null)}
+                onClick={() => setSelectedId(null)}
                 className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
               >
                 閉じる
               </button>
-              {selectedCandidate.aiAnalysis?.interviewPoints?.length > 0 &&
-                ['document_passed', 'interview_scheduled'].includes(selectedCandidate.status) && (
-                <button className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors">
-                  面接対策シートを送信
+              <div className="flex-1" />
+
+              {selectedCandidate.status === 'applied' && (
+                <>
+                  <button
+                    onClick={() => setNgTargetId(selectedCandidate.id)}
+                    className="px-4 py-2 border border-red-200 text-red-600 rounded-lg text-sm font-semibold hover:bg-red-50 transition-colors"
+                  >
+                    NG（理由を記録）
+                  </button>
+                  <button
+                    onClick={() => {
+                      advanceStatus(selectedCandidate.id, 'document_passed', `書類通過（AIマッチ度${selectedCandidate.aiAnalysis?.matchScore ?? '—'}点）`);
+                      setScheduleTargetId(selectedCandidate.id);
+                    }}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors"
+                  >
+                    書類通過 → 日程調整へ
+                  </button>
+                </>
+              )}
+
+              {selectedCandidate.status === 'document_passed' && (
+                selectedCandidate.interviewProposal?.status === 'pending' ? (
+                  <button
+                    onClick={() => receiveProposalReply(selectedCandidate)}
+                    className="px-4 py-2 bg-violet-600 text-white rounded-lg text-sm font-semibold hover:bg-violet-700 transition-colors"
+                  >
+                    候補者の回答を受信（デモ）
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => setNgTargetId(selectedCandidate.id)}
+                      className="px-4 py-2 border border-red-200 text-red-600 rounded-lg text-sm font-semibold hover:bg-red-50 transition-colors"
+                    >
+                      NG（理由を記録）
+                    </button>
+                    <button
+                      onClick={() => setScheduleTargetId(selectedCandidate.id)}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors"
+                    >
+                      面接候補日を送る
+                    </button>
+                  </>
+                )
+              )}
+
+              {selectedCandidate.status === 'interview_scheduled' && (
+                <>
+                  {selectedCandidate.aiAnalysis?.interviewPoints?.length > 0 && (
+                    <button className="px-4 py-2 border border-blue-200 text-blue-600 rounded-lg text-sm font-semibold hover:bg-blue-50 transition-colors">
+                      面接対策シートを送信
+                    </button>
+                  )}
+                  <button
+                    onClick={() => advanceStatus(selectedCandidate.id, 'interview_completed', `面接実施${selectedCandidate.interviewDate ? `（${selectedCandidate.interviewDate}）` : ''}`)}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors"
+                  >
+                    面接完了を記録
+                  </button>
+                </>
+              )}
+
+              {selectedCandidate.status === 'interview_completed' && (
+                <>
+                  <button
+                    onClick={() => setNgTargetId(selectedCandidate.id)}
+                    className="px-4 py-2 border border-red-200 text-red-600 rounded-lg text-sm font-semibold hover:bg-red-50 transition-colors"
+                  >
+                    NG（理由を記録）
+                  </button>
+                  <button
+                    onClick={() => advanceStatus(selectedCandidate.id, 'offered', '内定提示')}
+                    className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-semibold hover:bg-emerald-700 transition-colors"
+                  >
+                    内定を出す
+                  </button>
+                </>
+              )}
+
+              {selectedCandidate.status === 'offered' && (
+                <>
+                  <button
+                    onClick={() => advanceStatus(selectedCandidate.id, 'withdrawn', '候補者辞退')}
+                    className="px-4 py-2 border border-gray-200 text-gray-500 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors"
+                  >
+                    辞退
+                  </button>
+                  <button
+                    onClick={() => advanceStatus(selectedCandidate.id, 'accepted', '内定承諾')}
+                    className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-semibold hover:bg-emerald-700 transition-colors"
+                  >
+                    内定承諾を記録
+                  </button>
+                </>
+              )}
+
+              {selectedCandidate.status === 'accepted' && (
+                <button
+                  onClick={() => advanceStatus(selectedCandidate.id, 'joined', '入職（定着フォローを開始）')}
+                  className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-semibold hover:bg-emerald-700 transition-colors"
+                >
+                  入職を記録
                 </button>
               )}
             </div>
@@ -500,7 +855,23 @@ export default function CandidatesPage() {
         </div>
       )}
 
-      {showUpload && <UploadModal onClose={() => setShowUpload(false)} />}
+      {scheduleTarget && (
+        <SchedulingModal
+          candidate={scheduleTarget}
+          onClose={() => setScheduleTargetId(null)}
+          onSend={sendProposal}
+        />
+      )}
+
+      {ngTarget && (
+        <NgModal
+          candidate={ngTarget}
+          onClose={() => setNgTargetId(null)}
+          onSubmit={submitNg}
+        />
+      )}
+
+      {showRegister && <RegisterModal onClose={() => setShowRegister(false)} onRegister={addCandidate} />}
     </BoosterLayout>
   );
 }

@@ -4,12 +4,10 @@ import BoosterLayout from '../../../components/booster/Layout';
 import { sampleAgencies, sampleMediaPlatforms } from '../../../lib/booster/sample-data';
 
 const aiQuestions = [
-  { key: 'position', question: 'どの職種の求人ですか？', placeholder: '例: 看護師、理学療法士、作業療法士、医療事務' },
-  { key: 'department', question: '配属先の部署・病棟を教えてください', placeholder: '例: 外科病棟、透析センター、訪問看護ステーション' },
-  { key: 'reason', question: '募集の背景は何ですか？', placeholder: '例: 新規開設、欠員補充、増員、産休代替' },
-  { key: 'appeal', question: 'この職場の魅力・強みを教えてください（複数OK）', placeholder: '例: 年間休日123日、残業月10時間以下、寮完備、教育体制充実' },
-  { key: 'conditions', question: '勤務条件の特徴があれば教えてください', placeholder: '例: 日勤のみ、夜勤あり二交代制、オンコール月4〜5回' },
-  { key: 'salary', question: 'おおよその給与水準を教えてください', placeholder: '例: 月給28万〜35万円、年収400万円以上可' },
+  { key: 'position', question: 'どの職種・配属先の求人ですか？', placeholder: '例: 看護師 / 透析センター（新規開設）' },
+  { key: 'reason', question: '募集の背景と人数を教えてください', placeholder: '例: 2025年7月の新規開設に伴い2〜3名' },
+  { key: 'conditions', question: '勤務条件・給与の基本情報を教えてください（わかる範囲でOK）', placeholder: '例: 日勤・遅番の二交代、年収400万円以上可、年間休日123日' },
+  { key: 'notes', question: '職場について知っていることを自由に教えてください（断片的でOK）', placeholder: '例: 医師との距離が近い、看護師が検査に介入できる、育休取得者が多い ※魅力への転換はAIが行います' },
 ];
 
 const generatedDraft = {
@@ -146,7 +144,7 @@ function AiGuidedStep({ questions, answers, onAnswer, onComplete }) {
             </div>
             <div>
               <div className="text-sm font-semibold text-gray-800">求人票作成アシスタント</div>
-              <div className="text-xs text-gray-500">いくつか質問させてください。回答をもとに求人票のドラフトを作成します。</div>
+              <div className="text-xs text-gray-500">必要なのは「要件」だけ。魅力づけ・言葉選び・訴求の設計はAIが行います。</div>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -227,16 +225,18 @@ function AiGuidedStep({ questions, answers, onAnswer, onComplete }) {
 function AiGeneratingStep({ onDone }) {
   const [step, setStep] = useState(0);
   const steps = [
-    '回答を分析しています...',
-    '医療求人のベストプラクティスを適用中...',
-    '求人票ドラフトを生成しています...',
+    '要件を構造化しています...',
+    '近隣の競合求人と比較し、差別化ポイントを特定しています...',
+    '回答に埋もれた「隠れた魅力」を発掘しています...',
+    '求職者目線でキャッチコピーと訴求の順序を設計しています...',
   ];
 
   useState(() => {
     const timers = [];
-    timers.push(setTimeout(() => setStep(1), 1200));
-    timers.push(setTimeout(() => setStep(2), 2400));
-    timers.push(setTimeout(() => onDone(), 3600));
+    timers.push(setTimeout(() => setStep(1), 1100));
+    timers.push(setTimeout(() => setStep(2), 2200));
+    timers.push(setTimeout(() => setStep(3), 3300));
+    timers.push(setTimeout(() => onDone(), 4600));
     return () => timers.forEach(clearTimeout);
   });
 
@@ -246,7 +246,7 @@ function AiGeneratingStep({ onDone }) {
         <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-5">
           <div className="w-8 h-8 border-3 border-blue-500 border-t-transparent rounded-full animate-spin" />
         </div>
-        <h2 className="text-lg font-bold text-gray-800 mb-4">AIが求人票を作成中</h2>
+        <h2 className="text-lg font-bold text-gray-800 mb-4">AIが求人を魅力化しています</h2>
         <div className="space-y-3">
           {steps.map((s, i) => (
             <div key={i} className="flex items-center gap-3">
@@ -264,6 +264,104 @@ function AiGeneratingStep({ onDone }) {
               <span className={`text-sm ${i <= step ? 'text-gray-800' : 'text-gray-400'}`}>{s}</span>
             </div>
           ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// AIが「要件」から創意工夫した内容の説明（デモ用）
+const enhancementReport = [
+  {
+    tag: '魅力への転換',
+    text: '「新規開設」という事実を「立ち上げメンバーとして透析キャリアをゼロから築ける」という応募動機に転換しました。',
+  },
+  {
+    tag: '市場比較',
+    text: '年間休日123日は近隣同規模病院の平均（約115日）を上回るため、キャッチコピー直下の訴求に配置しました。',
+  },
+  {
+    tag: 'ターゲット拡張',
+    text: '透析経験者だけでなく「急性期からワークライフバランス重視で転向したい層」にも刺さる文面にしています。',
+  },
+  {
+    tag: '不安の先回り',
+    text: '未経験者の「ついていけるか」という不安に対し、教育・指導体制への言及を業務内容の直後に配置しました。',
+  },
+];
+
+const enhancementTagStyle = {
+  '魅力への転換': 'bg-blue-100 text-blue-700',
+  '市場比較': 'bg-emerald-100 text-emerald-700',
+  'ターゲット拡張': 'bg-violet-100 text-violet-700',
+  '不安の先回り': 'bg-amber-100 text-amber-700',
+};
+
+// AIからの逆提案: ワンクリックでドラフトに反映できる
+const aiSuggestions = [
+  {
+    id: 'sug-1',
+    text: '院内見学・カジュアル面談を受け入れ可能なら、選考フローに追加すると応募のハードルが下がります。',
+    field: 'selectionFlow',
+    value: '書類選考 → カジュアル面談・見学（任意） → 面接 → 内定',
+  },
+  {
+    id: 'sug-2',
+    text: '未経験者向けに独り立ちまでの目安期間を明記すると、応募をためらう層を取り込めます。',
+    field: 'preferred',
+    value: '透析経験者歓迎（未経験の方も約3ヶ月の教育プログラムで独り立ちできるよう丁寧に指導します）',
+  },
+];
+
+function AiEnhancementPanel({ onApply }) {
+  const [applied, setApplied] = useState([]);
+
+  return (
+    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100 p-6 mb-5">
+      <div className="flex items-center gap-2 mb-1">
+        <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
+          <span className="text-white text-[10px] font-bold">AI</span>
+        </div>
+        <h2 className="text-sm font-bold text-gray-800">AI魅力化レポート</h2>
+      </div>
+      <p className="text-xs text-gray-500 mb-4 ml-8">
+        いただいた要件から、AIが以下の創意工夫でこのドラフトを設計しました
+      </p>
+
+      <div className="space-y-2.5 mb-5">
+        {enhancementReport.map((item, i) => (
+          <div key={i} className="flex items-start gap-2.5 bg-white/70 rounded-lg p-3">
+            <span className={`text-[11px] px-2 py-0.5 rounded-full font-semibold shrink-0 ${enhancementTagStyle[item.tag]}`}>
+              {item.tag}
+            </span>
+            <span className="text-xs text-gray-700 leading-relaxed">{item.text}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="border-t border-blue-100 pt-4">
+        <div className="text-xs font-semibold text-blue-700 mb-2.5">💡 AIからの提案 — さらに魅力を高めるには</div>
+        <div className="space-y-2.5">
+          {aiSuggestions.map(sug => {
+            const isApplied = applied.includes(sug.id);
+            return (
+              <div key={sug.id} className="flex items-start gap-3 bg-white rounded-lg p-3 border border-blue-100">
+                <span className="text-xs text-gray-700 leading-relaxed flex-1">{sug.text}</span>
+                <button
+                  type="button"
+                  disabled={isApplied}
+                  onClick={() => { onApply(sug.field, sug.value); setApplied(prev => [...prev, sug.id]); }}
+                  className={`text-xs px-3 py-1.5 rounded-lg font-semibold shrink-0 transition-colors ${
+                    isApplied
+                      ? 'bg-emerald-50 text-emerald-600 cursor-default'
+                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                  }`}
+                >
+                  {isApplied ? '✓ 反映済み' : 'ドラフトに反映'}
+                </button>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
@@ -412,7 +510,7 @@ export default function NewJob() {
               </div>
               <h3 className="font-bold text-gray-800 mb-2">AIアシスト作成</h3>
               <p className="text-sm text-gray-500 leading-relaxed">
-                いくつかの質問に答えるだけで、AIが医療求人のベストプラクティスに基づいた求人票ドラフトを自動生成します。
+                要件を4問答えるだけ。AIが市場比較と創意工夫で「選ばれる求人票」に魅力化して仕上げます。
               </p>
               <div className="mt-4 text-xs text-blue-600 font-medium">おすすめ</div>
             </button>
@@ -468,6 +566,10 @@ export default function NewJob() {
               </div>
             )}
           </div>
+
+          {Object.keys(aiAnswers).length > 0 && (
+            <AiEnhancementPanel onApply={(field, value) => updateField(field, value)} />
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {formLayout.map(section => (
