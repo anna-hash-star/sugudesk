@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import BoosterLayout from '../../components/booster/Layout';
 import { sampleJobs, sampleAgencies, sampleMediaPlatforms, candidateStatuses, ngReasonCategories } from '../../lib/booster/sample-data';
 import { useCandidates, DEMO_TODAY } from '../../lib/booster/useCandidates';
@@ -261,6 +262,54 @@ function NgModal({ candidate, onClose, onSubmit }) {
   );
 }
 
+function AnalyzingSteps({ onDone }) {
+  const [step, setStep] = useState(0);
+  const steps = [
+    '履歴書・職務経歴書を読み取っています...',
+    '経歴を構造化しています...',
+    '求人要件と照合し、マッチ度を算出しています...',
+    '強み・確認事項・面接ポイントを抽出しています...',
+  ];
+
+  useEffect(() => {
+    const timers = [
+      setTimeout(() => setStep(1), 1000),
+      setTimeout(() => setStep(2), 2000),
+      setTimeout(() => setStep(3), 3000),
+      setTimeout(() => onDone(), 4200),
+    ];
+    return () => timers.forEach(clearTimeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <div className="p-8">
+      <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-5">
+        <div className="w-8 h-8 border-3 border-blue-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+      <h2 className="text-lg font-bold text-gray-800 mb-5 text-center">AIが候補者を分析しています</h2>
+      <div className="space-y-3 max-w-sm mx-auto">
+        {steps.map((s, i) => (
+          <div key={i} className="flex items-center gap-3">
+            {i < step ? (
+              <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center shrink-0">
+                <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            ) : i === step ? (
+              <div className="w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin shrink-0" />
+            ) : (
+              <div className="w-5 h-5 bg-gray-200 rounded-full shrink-0" />
+            )}
+            <span className={`text-sm ${i <= step ? 'text-gray-800' : 'text-gray-400'}`}>{s}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function RegisterModal({ onClose, onRegister }) {
   const [step, setStep] = useState('form');
   const [name, setName] = useState('');
@@ -277,10 +326,7 @@ function RegisterModal({ onClose, onRegister }) {
     interviewPoints: ['ブランク期間の活動内容', '転職理由の一貫性', '希望する夜勤頻度'],
   };
 
-  const startAnalysis = () => {
-    setStep('analyzing');
-    setTimeout(() => setStep('result'), 2200);
-  };
+  const startAnalysis = () => setStep('analyzing');
 
   const handleRegister = () => {
     const agency = sampleAgencies.find(a => a.id === agencyId);
@@ -378,13 +424,7 @@ function RegisterModal({ onClose, onRegister }) {
           </div>
         )}
 
-        {step === 'analyzing' && (
-          <div className="p-10 text-center">
-            <div className="w-12 h-12 border-3 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-            <div className="text-sm font-semibold text-gray-700 mb-1">AIが書類を分析しています</div>
-            <div className="text-xs text-gray-400">履歴書・職務経歴書を読み取り、求人とのマッチ度を算出しています</div>
-          </div>
-        )}
+        {step === 'analyzing' && <AnalyzingSteps onDone={() => setStep('result')} />}
 
         {step === 'result' && (
           <div className="p-6">
@@ -417,9 +457,17 @@ function RegisterModal({ onClose, onRegister }) {
 }
 
 export default function CandidatesPage() {
+  const router = useRouter();
   const { candidates, updateCandidate, advanceStatus, addCandidate, resetDemo } = useCandidates();
   const [view, setView] = useState('pipeline');
   const [selectedId, setSelectedId] = useState(null);
+
+  // ダッシュボードの滞留アラート等からのディープリンクで候補者詳細を開く
+  useEffect(() => {
+    if (router.isReady && router.query.focus) {
+      setSelectedId(router.query.focus);
+    }
+  }, [router.isReady, router.query.focus]);
   const [showRegister, setShowRegister] = useState(false);
   const [scheduleTargetId, setScheduleTargetId] = useState(null);
   const [ngTargetId, setNgTargetId] = useState(null);
