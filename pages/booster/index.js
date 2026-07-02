@@ -128,12 +128,14 @@ export default function BoosterDashboard() {
     .sort((a, b) => b.daysSinceUpdate - a.daysSinceUpdate);
 
   const awaitingJudgment = candidates.filter(c => c.status === 'applied').length;
-  const schedulingCount = candidates.filter(c => c.status === 'document_passed' && c.interviewProposal?.status === 'pending').length;
+  // 書類通過後、候補日送信 or 候補者の回答待ちの状態はすべて日程調整のアクション対象
+  const schedulingCount = candidates.filter(c => c.status === 'document_passed').length;
+  const awaitingProposal = candidates.filter(c => c.status === 'document_passed' && c.interviewProposal?.status !== 'pending').length;
   const interviewCount = candidates.filter(c => c.status === 'interview_scheduled').length;
 
   const actions = [
     { label: '書類判断待ち', value: awaitingJudgment, sub: '目標: 12時間以内に判断', alert: awaitingJudgment > 0 },
-    { label: '日程調整中', value: schedulingCount, sub: '候補者の回答待ち', alert: false },
+    { label: '日程調整', value: schedulingCount, sub: awaitingProposal > 0 ? '候補日の送信が必要' : '候補者の回答待ち', alert: awaitingProposal > 0 },
     { label: '滞留アラート', value: stagnant.length, sub: '3日以上動きなし', alert: stagnant.length > 0 },
     { label: '面接予定', value: interviewCount, sub: '対策シートを事前送付', alert: false },
   ];
@@ -271,24 +273,24 @@ export default function BoosterDashboard() {
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-5 mb-8">
-        <div className="bg-white rounded-xl p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-gray-700">定着フォロー</h2>
-            <Link href="/booster/retention" className="text-xs text-blue-600 hover:text-blue-800 font-medium">詳細 →</Link>
-          </div>
-          <div className="grid grid-cols-3 gap-3 mb-4">
-            <div className="bg-emerald-50 rounded-lg p-3 text-center">
-              <div className="text-xl font-bold text-emerald-700">{sampleRetention.filter(r => r.status === 'active').length}</div>
-              <div className="text-xs text-emerald-600">在籍中</div>
+      <div className="bg-white rounded-xl p-6 shadow-sm mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-sm font-semibold text-gray-700">定着フォロー</h2>
+          <Link href="/booster/retention" className="text-xs text-blue-600 hover:text-blue-800 font-medium">詳細 →</Link>
+        </div>
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-3 gap-3">
+            <div className="bg-emerald-50 rounded-lg p-4 text-center">
+              <div className="text-2xl font-bold text-emerald-700">{sampleRetention.filter(r => r.status === 'active').length}</div>
+              <div className="text-xs text-emerald-600 mt-1">在籍中</div>
             </div>
-            <div className="bg-amber-50 rounded-lg p-3 text-center">
-              <div className="text-xl font-bold text-amber-700">{sampleRetention.filter(r => r.risk === 'medium' || r.risk === 'high').length}</div>
-              <div className="text-xs text-amber-600">要注意</div>
+            <div className="bg-amber-50 rounded-lg p-4 text-center">
+              <div className="text-2xl font-bold text-amber-700">{sampleRetention.filter(r => r.risk === 'medium' || r.risk === 'high').length}</div>
+              <div className="text-xs text-amber-600 mt-1">要注意</div>
             </div>
-            <div className="bg-red-50 rounded-lg p-3 text-center">
-              <div className="text-xl font-bold text-red-700">{sampleRetention.filter(r => r.status === 'resigned').length}</div>
-              <div className="text-xs text-red-600">早期退職</div>
+            <div className="bg-red-50 rounded-lg p-4 text-center">
+              <div className="text-2xl font-bold text-red-700">{sampleRetention.filter(r => r.status === 'resigned').length}</div>
+              <div className="text-xs text-red-600 mt-1">早期退職</div>
             </div>
           </div>
           <div className="space-y-2">
@@ -306,48 +308,6 @@ export default function BoosterDashboard() {
               </Link>
             ))}
           </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-6 shadow-sm">
-          <h2 className="text-sm font-semibold text-gray-700 mb-4">滞留アラート</h2>
-          {stagnant.length === 0 ? (
-            <div className="text-sm text-gray-400 text-center py-4">滞留している候補者はいません</div>
-          ) : (
-            <div className="space-y-2">
-              {stagnant.map(c => {
-                const job = sampleJobs.find(j => j.id === c.jobId);
-                const statusInfo = candidateStatuses[c.status];
-                return (
-                  <Link
-                    key={c.id}
-                    href={`/booster/candidates?focus=${c.id}`}
-                    className={`flex items-center justify-between p-3 rounded-lg transition-all hover:shadow-sm ${
-                      c.daysSinceUpdate >= 5 ? 'bg-red-50 border border-red-200 hover:bg-red-100/60' : 'bg-amber-50 border border-amber-200 hover:bg-amber-100/60'
-                    }`}
-                  >
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-gray-800">{c.name}</span>
-                        <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: statusInfo?.bg, color: statusInfo?.color }}>
-                          {statusInfo?.label}
-                        </span>
-                      </div>
-                      <div className="text-xs text-gray-500 mt-0.5">{job?.title}</div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="text-right">
-                        <div className={`text-sm font-bold ${c.daysSinceUpdate >= 5 ? 'text-red-600' : 'text-amber-600'}`}>
-                          {c.daysSinceUpdate}日間
-                        </div>
-                        <div className="text-xs text-gray-400">動きなし</div>
-                      </div>
-                      <span className="text-gray-300">→</span>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          )}
         </div>
       </div>
 
