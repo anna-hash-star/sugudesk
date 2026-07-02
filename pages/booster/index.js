@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import BoosterLayout from '../../components/booster/Layout';
-import { sampleJobs, sampleRetention, agencyResponseMetrics, candidateStatuses } from '../../lib/booster/sample-data';
+import { sampleJobs, sampleRetention, agencyResponseMetrics, candidateStatuses, sampleAgencies, sampleMediaPlatforms } from '../../lib/booster/sample-data';
 import { useCandidates, DEMO_TODAY } from '../../lib/booster/useCandidates';
 
 const statusColors = {
@@ -149,6 +149,49 @@ export default function BoosterDashboard() {
 
   const avgResponse = Math.round(agencyResponseMetrics.reduce((s, a) => s + a.avgResponseHours, 0) / agencyResponseMetrics.length);
 
+  // チャネル別（人材紹介 / 求人媒体）の状況
+  const bySource = (src) => candidates.filter(c => c.source === src);
+  const countInProgress = (list) => list.filter(c => !['ng', 'withdrawn', 'joined'].includes(c.status)).length;
+  const countOffered = (list) => list.filter(c => ['offered', 'accepted', 'joined'].includes(c.status)).length;
+
+  const agencyCands = bySource('agency');
+  const mediaCands = bySource('media');
+  const activeMedia = sampleMediaPlatforms.filter(m => m.status === 'active');
+
+  const channels = [
+    {
+      key: 'agency',
+      label: '人材紹介',
+      accent: 'blue',
+      connections: `${sampleAgencies.length}社連携`,
+      inflow: agencyResponseMetrics.reduce((s, a) => s + a.recommendations, 0),
+      inflowLabel: '今月の推薦',
+      inProgress: countInProgress(agencyCands),
+      offered: countOffered(agencyCands),
+      note: '成功報酬（年収の20〜35%）',
+    },
+    {
+      key: 'media',
+      label: '求人媒体',
+      accent: 'violet',
+      connections: `${activeMedia.length}媒体掲載`,
+      inflow: activeMedia.reduce((s, m) => s + m.applicants, 0),
+      inflowLabel: '今月の応募',
+      inProgress: countInProgress(mediaCands),
+      offered: countOffered(mediaCands),
+      note: '掲載費＋成功報酬（媒体により異なる）',
+    },
+  ];
+  const totalInflow = channels.reduce((s, c) => s + c.inflow, 0);
+  const totalChannelInProgress = channels.reduce((s, c) => s + c.inProgress, 0);
+  const totalChannelOffered = channels.reduce((s, c) => s + c.offered, 0);
+
+  const accentStyles = {
+    blue: { dot: 'bg-blue-500', num: 'text-blue-600', chip: 'bg-blue-50 text-blue-600' },
+    violet: { dot: 'bg-violet-500', num: 'text-violet-600', chip: 'bg-violet-50 text-violet-600' },
+    slate: { dot: 'bg-slate-400', num: 'text-slate-700', chip: 'bg-slate-100 text-slate-600' },
+  };
+
   return (
     <BoosterLayout current="dashboard">
       <div className="mb-6">
@@ -196,6 +239,70 @@ export default function BoosterDashboard() {
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-sm font-semibold text-gray-700">チャネル別状況</h2>
+          <div className="flex items-center gap-4 text-xs text-gray-500">
+            <Link href="/booster/agencies" className="hover:text-blue-600">紹介会社 →</Link>
+            <Link href="/booster/media" className="hover:text-violet-600">求人媒体 →</Link>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {channels.map(ch => {
+            const s = accentStyles[ch.accent];
+            return (
+              <div key={ch.key} className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+                <div className="flex items-center gap-2 mb-4">
+                  <span className={`w-2.5 h-2.5 rounded-full ${s.dot}`} />
+                  <span className="text-sm font-semibold text-gray-800">{ch.label}</span>
+                  <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${s.chip}`}>{ch.connections}</span>
+                </div>
+                <div className="flex items-baseline gap-1 mb-4">
+                  <span className={`text-3xl font-bold ${s.num}`}>{ch.inflow}</span>
+                  <span className="text-xs text-gray-400 ml-1">{ch.inflowLabel}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-3 pt-3 border-t border-gray-100">
+                  <div>
+                    <div className="text-lg font-bold text-gray-800">{ch.inProgress}</div>
+                    <div className="text-xs text-gray-400">選考中</div>
+                  </div>
+                  <div>
+                    <div className="text-lg font-bold text-gray-800">{ch.offered}</div>
+                    <div className="text-xs text-gray-400">内定・入職</div>
+                  </div>
+                </div>
+                <div className="text-[11px] text-gray-400 mt-3 pt-3 border-t border-gray-100">{ch.note}</div>
+              </div>
+            );
+          })}
+
+          <div className="bg-slate-50 rounded-xl p-5 border border-slate-200">
+            <div className="flex items-center gap-2 mb-4">
+              <span className={`w-2.5 h-2.5 rounded-full ${accentStyles.slate.dot}`} />
+              <span className="text-sm font-semibold text-gray-800">合算</span>
+              <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${accentStyles.slate.chip}`}>全チャネル</span>
+            </div>
+            <div className="flex items-baseline gap-1 mb-4">
+              <span className={`text-3xl font-bold ${accentStyles.slate.num}`}>{totalInflow}</span>
+              <span className="text-xs text-gray-400 ml-1">今月の流入合計</span>
+            </div>
+            <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-200">
+              <div>
+                <div className="text-lg font-bold text-gray-800">{totalChannelInProgress}</div>
+                <div className="text-xs text-gray-400">選考中</div>
+              </div>
+              <div>
+                <div className="text-lg font-bold text-gray-800">{totalChannelOffered}</div>
+                <div className="text-xs text-gray-400">内定・入職</div>
+              </div>
+            </div>
+            <div className="text-[11px] text-gray-400 mt-3 pt-3 border-t border-slate-200">
+              紹介{channels[0].inflow}件 / 媒体{channels[1].inflow}件
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
