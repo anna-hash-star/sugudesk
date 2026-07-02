@@ -6,15 +6,48 @@ import { useCandidates, DEMO_TODAY } from '../../lib/booster/useCandidates';
 
 const pipelineStages = ['applied', 'document_passed', 'interview_scheduled', 'interview_completed', 'offered', 'accepted', 'joined'];
 
-function MatchScoreBadge({ score }) {
+// マッチ度は点数ではなく3段階の適合ラベルで表現する
+// （「書類で振り落とさず、面接で見極める」思想に沿い、数字での輪切りを避ける）
+function fitTier(score) {
   if (score == null) return null;
-  const color = score >= 80 ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-    : score >= 60 ? 'bg-blue-50 text-blue-700 border-blue-200'
-    : 'bg-gray-50 text-gray-500 border-gray-200';
+  if (score >= 80) return { key: 'high', label: '要件マッチ', badge: 'bg-emerald-50 text-emerald-700 border-emerald-200', dot: 'bg-emerald-500', desc: '主要な要件を満たしています' };
+  if (score >= 60) return { key: 'mid', label: '概ねマッチ', badge: 'bg-blue-50 text-blue-700 border-blue-200', dot: 'bg-blue-500', desc: '概ね合致、面接で確認したい点があります' };
+  return { key: 'low', label: '要確認', badge: 'bg-amber-50 text-amber-700 border-amber-200', dot: 'bg-amber-500', desc: '要件との差分があり、面接での見極めが必要です' };
+}
+
+function FitBadge({ analysis }) {
+  const tier = fitTier(analysis?.matchScore);
+  if (!tier) return null;
   return (
-    <span className={`text-[11px] px-1.5 py-0.5 rounded border font-semibold ${color}`}>
-      {score}点
+    <span className={`text-[11px] px-2 py-0.5 rounded-full border font-semibold whitespace-nowrap ${tier.badge}`}>
+      {tier.label}
     </span>
+  );
+}
+
+// 項目別フィット（◎ 合致 / ○ 概ね / △ 要確認）
+const fitLevelMark = {
+  high: { mark: '◎', text: '合致', color: 'text-emerald-600' },
+  mid: { mark: '○', text: '概ね', color: 'text-blue-600' },
+  low: { mark: '△', text: '要確認', color: 'text-amber-600' },
+};
+
+function FitDimensions({ fit }) {
+  if (!fit || fit.length === 0) return null;
+  return (
+    <div className="space-y-1.5">
+      {fit.map((f, i) => {
+        const lv = fitLevelMark[f.level] || fitLevelMark.mid;
+        return (
+          <div key={i} className="flex items-center gap-3 text-sm">
+            <span className="text-gray-600 w-24 shrink-0">{f.label}</span>
+            <span className={`font-bold ${lv.color} w-4 text-center`}>{lv.mark}</span>
+            <span className={`text-xs font-medium ${lv.color} w-10 shrink-0`}>{lv.text}</span>
+            <span className="text-xs text-gray-500 flex-1">{f.note}</span>
+          </div>
+        );
+      })}
+    </div>
   );
 }
 
@@ -32,8 +65,7 @@ function SourceBadge({ candidate }) {
 
 function AiAnalysisPanel({ analysis }) {
   if (!analysis) return null;
-  const scoreColor = analysis.matchScore >= 80 ? 'text-emerald-600'
-    : analysis.matchScore >= 60 ? 'text-blue-600' : 'text-gray-500';
+  const tier = fitTier(analysis.matchScore);
 
   return (
     <div className="bg-slate-50 rounded-xl p-5 mb-4 border border-slate-100">
@@ -42,25 +74,22 @@ function AiAnalysisPanel({ analysis }) {
         <span className="text-xs text-slate-400">by 採用ブースターAI</span>
       </div>
 
-      <div className="flex items-center gap-4 mb-4">
-        <div className="text-center">
-          <div className={`text-3xl font-extrabold ${scoreColor}`}>{analysis.matchScore}</div>
-          <div className="text-[11px] text-gray-400 mt-0.5">マッチ度</div>
+      {tier && (
+        <div className="flex items-center gap-3 mb-4 bg-white rounded-lg p-3 border border-slate-200">
+          <span className={`w-2.5 h-2.5 rounded-full ${tier.dot}`} />
+          <span className={`text-sm px-2.5 py-1 rounded-full border font-semibold ${tier.badge}`}>{tier.label}</span>
+          <span className="text-xs text-gray-500">{tier.desc}</span>
         </div>
-        <div className="flex-1">
-          <div className="h-2 bg-gray-200 rounded-full">
-            <div
-              className={`h-2 rounded-full transition-all ${
-                analysis.matchScore >= 80 ? 'bg-emerald-400' : analysis.matchScore >= 60 ? 'bg-blue-400' : 'bg-gray-400'
-              }`}
-              style={{ width: `${analysis.matchScore}%` }}
-            />
-          </div>
-          <div className="text-xs text-gray-400 mt-1">
-            {analysis.matchScore >= 80 ? '求人要件と高くマッチ' : analysis.matchScore >= 60 ? '概ねマッチ、確認事項あり' : 'マッチ度が低い'}
+      )}
+
+      {analysis.fit && analysis.fit.length > 0 && (
+        <div className="mb-4">
+          <div className="text-xs font-semibold text-gray-600 mb-2">要件との適合状況</div>
+          <div className="bg-white rounded-lg p-3 border border-slate-200">
+            <FitDimensions fit={analysis.fit} />
           </div>
         </div>
-      </div>
+      )}
 
       <div className="mb-4">
         <div className="text-xs font-semibold text-gray-600 mb-1.5">経歴サマリ</div>
@@ -267,7 +296,7 @@ function AnalyzingSteps({ onDone }) {
   const steps = [
     '履歴書・職務経歴書を読み取っています...',
     '経歴を構造化しています...',
-    '求人要件と照合し、マッチ度を算出しています...',
+    '求人要件と照合し、適合状況を判定しています...',
     '強み・確認事項・面接ポイントを抽出しています...',
   ];
 
@@ -324,6 +353,12 @@ function RegisterModal({ onClose, onRegister }) {
     strengths: ['外科病棟2年の実務経験あり', '回復期からの異動でリハビリ連携に強い', '夜勤・日勤の二交代経験'],
     concerns: ['直近の外科経験からブランクが1年', '転職回数が3回とやや多い'],
     interviewPoints: ['ブランク期間の活動内容', '転職理由の一貫性', '希望する夜勤頻度'],
+    fit: [
+      { label: '経験・スキル', level: 'mid', note: '外科2年+回復期3年' },
+      { label: '資格・免許', level: 'high', note: '正看護師' },
+      { label: '勤務条件', level: 'mid', note: '夜勤頻度の希望を確認' },
+      { label: '就業ブランク', level: 'low', note: '直近の外科からブランク1年' },
+    ],
   };
 
   const startAnalysis = () => setStep('analyzing');
@@ -432,7 +467,7 @@ function RegisterModal({ onClose, onRegister }) {
             <div className="bg-blue-50 rounded-lg p-4 mt-4">
               <div className="text-xs font-semibold text-blue-700 mb-1">次のアクション</div>
               <div className="text-xs text-blue-600">
-                マッチ度76点 — 推薦として登録後、パイプラインから書類通過/NGの判断ができます。
+                「概ねマッチ」— 推薦として登録後、パイプラインから書類通過/NGの判断ができます。
               </div>
             </div>
           </div>
@@ -580,7 +615,7 @@ export default function CandidatesPage() {
                       >
                         <div className="flex items-center justify-between mb-1">
                           <div className="font-semibold text-sm text-gray-800">{c.name}</div>
-                          <MatchScoreBadge score={c.aiAnalysis?.matchScore} />
+                          <FitBadge analysis={c.aiAnalysis} />
                         </div>
                         <div className="text-xs text-gray-500">{job?.title}</div>
                         <div className="flex items-center gap-1 mt-2">
@@ -634,7 +669,7 @@ export default function CandidatesPage() {
                   >
                     <div className="flex items-center justify-between mb-1">
                       <div className="font-semibold text-sm text-gray-600">{c.name}</div>
-                      <MatchScoreBadge score={c.aiAnalysis?.matchScore} />
+                      <FitBadge analysis={c.aiAnalysis} />
                     </div>
                     <div className="text-xs text-gray-400">{job?.title}</div>
                     {c.ngReason && (
@@ -656,7 +691,7 @@ export default function CandidatesPage() {
                 <th className="px-4 py-3 text-xs font-semibold text-gray-500">候補者</th>
                 <th className="px-4 py-3 text-xs font-semibold text-gray-500">求人</th>
                 <th className="px-4 py-3 text-xs font-semibold text-gray-500">流入元</th>
-                <th className="px-4 py-3 text-xs font-semibold text-gray-500">マッチ度</th>
+                <th className="px-4 py-3 text-xs font-semibold text-gray-500">適合</th>
                 <th className="px-4 py-3 text-xs font-semibold text-gray-500">ステータス</th>
                 <th className="px-4 py-3 text-xs font-semibold text-gray-500">応募日</th>
               </tr>
@@ -677,7 +712,7 @@ export default function CandidatesPage() {
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-600">{job?.title}</td>
                     <td className="px-4 py-3"><SourceBadge candidate={c} /></td>
-                    <td className="px-4 py-3"><MatchScoreBadge score={c.aiAnalysis?.matchScore} /></td>
+                    <td className="px-4 py-3"><FitBadge analysis={c.aiAnalysis} /></td>
                     <td className="px-4 py-3">
                       <span
                         className="text-xs px-2 py-1 rounded-full font-medium"
@@ -703,7 +738,7 @@ export default function CandidatesPage() {
                 <div>
                   <div className="flex items-center gap-3">
                     <h2 className="text-lg font-bold text-gray-800">{selectedCandidate.name}</h2>
-                    <MatchScoreBadge score={selectedCandidate.aiAnalysis?.matchScore} />
+                    <FitBadge analysis={selectedCandidate.aiAnalysis} />
                   </div>
                   <p className="text-sm text-gray-500 mt-0.5">{getJob(selectedCandidate.jobId)?.title}</p>
                 </div>
@@ -804,7 +839,7 @@ export default function CandidatesPage() {
                   </button>
                   <button
                     onClick={() => {
-                      advanceStatus(selectedCandidate.id, 'document_passed', `書類通過（AIマッチ度${selectedCandidate.aiAnalysis?.matchScore ?? '—'}点）`);
+                      advanceStatus(selectedCandidate.id, 'document_passed', `書類通過（AI適合: ${fitTier(selectedCandidate.aiAnalysis?.matchScore)?.label ?? '—'}）`);
                       setScheduleTargetId(selectedCandidate.id);
                     }}
                     className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors"
