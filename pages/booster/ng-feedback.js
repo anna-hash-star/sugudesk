@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import BoosterLayout from '../../components/booster/Layout';
-import { sampleJobs, sampleAgencies, ngReasonCategories } from '../../lib/booster/sample-data';
+import { sampleJobs, sampleAgencies, ngReasonCategories, sampleNgRecords, ngCategoryColors, ngCategoryActions } from '../../lib/booster/sample-data';
 import { useCandidates } from '../../lib/booster/useCandidates';
+
+const categoryLabel = (id) => ngReasonCategories.find(c => c.id === id)?.label || id;
 
 const STEPS = ['candidate', 'category', 'detail', 'done'];
 
@@ -189,6 +191,113 @@ function NgQuickInput({ candidates, onRecordNg }) {
   );
 }
 
+function NgTrends({ candidates }) {
+  // 履歴データ + ライブのNG候補者を統合して傾向を集計
+  const liveNg = candidates
+    .filter(c => c.status === 'ng' && c.ngReason)
+    .map(c => {
+      const job = sampleJobs.find(j => j.id === c.jobId);
+      const reachedInterview = c.statusHistory?.some(h => ['interview_scheduled', 'interview_completed'].includes(h.status));
+      return {
+        id: c.id,
+        jobType: job?.jobType || 'その他',
+        jobTitle: job?.title || '—',
+        category: c.ngReason.category,
+        detail: c.ngReason.detail,
+        stage: reachedInterview ? 'interview' : 'document',
+        date: c.statusHistory?.[c.statusHistory.length - 1]?.date || c.appliedAt,
+      };
+    });
+  const records = [...sampleNgRecords, ...liveNg];
+
+  const total = records.length;
+  const docCount = records.filter(r => r.stage === 'document').length;
+  const intCount = records.filter(r => r.stage === 'interview').length;
+
+  // 職種別に集計
+  const jobTypes = [...new Set(records.map(r => r.jobType))];
+  const byJobType = jobTypes.map(jt => {
+    const list = records.filter(r => r.jobType === jt);
+    const catCounts = {};
+    list.forEach(r => { catCounts[r.category] = (catCounts[r.category] || 0) + 1; });
+    const cats = Object.entries(catCounts)
+      .map(([cat, count]) => ({ cat, count }))
+      .sort((a, b) => b.count - a.count);
+    return { jobType: jt, total: list.length, cats, topCat: cats[0]?.cat };
+  }).sort((a, b) => b.total - a.total);
+
+  const pct = (n) => Math.round((n / total) * 100);
+
+  return (
+    <div>
+      <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+          <div className="text-xs text-gray-500 mb-1">総NG件数</div>
+          <div className="text-2xl font-bold text-gray-800">{total}<span className="text-sm font-medium text-gray-400 ml-1">件</span></div>
+          <div className="text-xs text-gray-400 mt-1">直近2ヶ月の蓄積</div>
+        </div>
+        <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+          <div className="text-xs text-gray-500 mb-1">書類段階でのNG</div>
+          <div className="text-2xl font-bold text-gray-800">{docCount}<span className="text-sm font-medium text-gray-400 ml-1">件</span></div>
+          <div className="text-xs text-gray-400 mt-1">全体の{pct(docCount)}% — 要件・推薦精度</div>
+        </div>
+        <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+          <div className="text-xs text-gray-500 mb-1">面接段階でのNG</div>
+          <div className="text-2xl font-bold text-gray-800">{intCount}<span className="text-sm font-medium text-gray-400 ml-1">件</span></div>
+          <div className="text-xs text-gray-400 mt-1">全体の{pct(intCount)}% — 見極め・条件</div>
+        </div>
+      </div>
+
+      <h2 className="text-sm font-semibold text-gray-700 mb-3">職種別のNG理由 傾向</h2>
+      <div className="space-y-4">
+        {byJobType.map(({ jobType, total: jtTotal, cats, topCat }) => (
+          <div key={jobType} className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-gray-800">{jobType}</span>
+                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{jtTotal}件</span>
+              </div>
+              <span className="text-xs text-gray-400">最多: {categoryLabel(topCat)}</span>
+            </div>
+
+            {/* 100%積み上げバー */}
+            <div className="flex h-3 rounded-full overflow-hidden mb-3 bg-gray-100">
+              {cats.map(({ cat, count }) => (
+                <div
+                  key={cat}
+                  style={{ width: `${(count / jtTotal) * 100}%`, backgroundColor: ngCategoryColors[cat] }}
+                  className="h-full"
+                  title={`${categoryLabel(cat)}: ${count}件`}
+                />
+              ))}
+            </div>
+
+            {/* カテゴリ内訳 */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1.5 mb-4">
+              {cats.map(({ cat, count }) => (
+                <div key={cat} className="flex items-center gap-2 text-xs">
+                  <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: ngCategoryColors[cat] }} />
+                  <span className="text-gray-600 flex-1">{categoryLabel(cat)}</span>
+                  <span className="font-semibold text-gray-700">{count}件</span>
+                  <span className="text-gray-400 w-9 text-right">{Math.round((count / jtTotal) * 100)}%</span>
+                </div>
+              ))}
+            </div>
+
+            {/* 示唆 */}
+            <div className="bg-blue-50 rounded-lg p-3 flex items-start gap-2">
+              <span className="text-[11px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-semibold shrink-0 mt-0.5">示唆</span>
+              <span className="text-xs text-blue-700 leading-relaxed">
+                最多の「{categoryLabel(topCat)}」への対策 — {ngCategoryActions[topCat]}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function NgHistory({ candidates }) {
   const ngCandidates = candidates.filter(c => c.status === 'ng');
 
@@ -232,7 +341,7 @@ function NgHistory({ candidates }) {
 }
 
 export default function NgFeedbackPage() {
-  const [tab, setTab] = useState('input');
+  const [tab, setTab] = useState('trends');
   const { candidates, advanceStatus } = useCandidates();
 
   const recordNg = (candidate, category, detail, memo) => {
@@ -244,11 +353,19 @@ export default function NgFeedbackPage() {
   return (
     <BoosterLayout current="ng-feedback">
       <div className="mb-6">
-        <h1 className="text-xl font-bold text-gray-800">NG理由取得アシスタント</h1>
-        <p className="text-sm text-gray-500 mt-1">選考結果を記録し、紹介会社へのフィードバック精度を向上</p>
+        <h1 className="text-xl font-bold text-gray-800">NG理由 分析</h1>
+        <p className="text-sm text-gray-500 mt-1">選考結果を記録し、職種別の傾向から求人・推薦の改善につなげる</p>
       </div>
 
       <div className="flex gap-2 mb-6">
+        <button
+          onClick={() => setTab('trends')}
+          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+            tab === 'trends' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-100'
+          }`}
+        >
+          📊 傾向分析
+        </button>
         <button
           onClick={() => setTab('input')}
           className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
@@ -267,7 +384,9 @@ export default function NgFeedbackPage() {
         </button>
       </div>
 
-      {tab === 'input' ? <NgQuickInput candidates={candidates} onRecordNg={recordNg} /> : <NgHistory candidates={candidates} />}
+      {tab === 'trends' && <NgTrends candidates={candidates} />}
+      {tab === 'input' && <NgQuickInput candidates={candidates} onRecordNg={recordNg} />}
+      {tab === 'history' && <NgHistory candidates={candidates} />}
     </BoosterLayout>
   );
 }
