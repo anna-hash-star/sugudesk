@@ -19,14 +19,14 @@ function Hero() {
     <section className="relative overflow-hidden">
       <div className="max-w-6xl mx-auto px-4 md:px-6 pt-12 md:pt-20 pb-14 md:pb-24 grid md:grid-cols-[1.1fr_1fr] gap-10 items-center">
         <div>
-          <p className="text-[12px] tracking-[0.3em] text-rc-teal font-bold">KOMOREBI CLINIC RECRUIT</p>
+          <p className="text-[12px] tracking-[0.3em] text-rc-teal font-bold">{clinic.enName}</p>
           <h1 className="rc-mincho text-[34px] md:text-5xl font-semibold leading-[1.35] mt-4 text-rc-ink" style={{ textWrap: 'balance' }}>
             {clinic.tagline}
           </h1>
           <p className="mt-5 text-[15px] leading-8 text-rc-ink-soft max-w-lg">{clinic.lead}</p>
 
           <div className="flex flex-wrap gap-2 mt-6" aria-label="働きやすさの要点">
-            {[clinic.station, clinic.holiday, '残業 月平均4.2h', '夜勤なし'].map(b => (
+            {clinic.badges.map(b => (
               <span key={b} className="text-[12px] font-medium bg-white border border-rc-sand rounded-full px-3.5 py-1.5 text-rc-ink">
                 {b}
               </span>
@@ -68,7 +68,7 @@ function Stats() {
   return (
     <section id="stats" className="bg-white border-y border-rc-sand scroll-mt-20">
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20">
-        <Eyebrow en="BY THE NUMBERS" ja="数字で見る、こもれびクリニック" />
+        <Eyebrow en="BY THE NUMBERS" ja={`数字で見る、${clinic.shortName}`} />
         <p className="text-sm text-rc-ink-soft mb-8 max-w-xl">言葉より、実績で。働きやすさに関わる数字をそのまま公開しています。</p>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
           {stats.map(s => (
@@ -99,7 +99,7 @@ function Director() {
         </div>
       </div>
       <div>
-        <Eyebrow en="MESSAGE" ja="スタッフが幸せでないと、いい医療はできない。" />
+        <Eyebrow en="MESSAGE" ja={director.headline} />
         <div className="space-y-5 text-[15px] leading-8 text-rc-ink max-w-xl">
           {director.message.map((p, i) => <p key={i}>{p}</p>)}
         </div>
@@ -237,7 +237,7 @@ function ChatSection() {
             {chatScript.greeting}
           </div>
           <div className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-sm bg-rc-teal text-white px-4 py-2.5 text-[13px]">
-            ブランク5年ですが応募できますか？
+            {chatScript.sampleQuestion}
           </div>
           <div className="max-w-[85%] rounded-2xl rounded-bl-sm bg-rc-ivory border border-rc-sand px-4 py-2.5 text-[13px] leading-relaxed">
             {faqs[0].a}

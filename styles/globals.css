@@ -16,6 +16,17 @@
   font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
 }
 
+/* クリニック別テーマ：clinic.themeClass でルートに付与すると rc-* トークンが差し替わる */
+.theme-adeb {
+  --color-rc-teal: #9C4F63;      /* ローズ（美容皮膚科向け） */
+  --color-rc-teal-dark: #713A4A;
+  --color-rc-teal-soft: #F6E7EB;
+  --color-rc-ivory: #FBF8F7;
+  --color-rc-sand: #EFE4E3;
+  --color-rc-ink: #33282C;
+  --color-rc-ink-soft: #7A6169;
+}
+
 html {
   scroll-behavior: smooth;
 }

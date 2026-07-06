@@ -1,15 +1,7 @@
 import Link from 'next/link';
 import RecruitLayout, { Photo } from '../../components/recruit/RecruitLayout';
 import { useRecruitChat } from '../../components/recruit/ChatWidget';
-import { flowSteps } from '../../lib/recruit/site-data';
-
-// 見学当日の流れ（プロセスの可視化＝不安の除去）
-const tourDetail = [
-  { time: '00:00', title: '受付にお声がけください', text: '「見学の◯◯です」だけで通じます。スタッフ用出入口ではなく正面玄関からどうぞ。' },
-  { time: '00:05', title: '院内をご案内（15分）', text: '診察室・内視鏡室・スタッフルームまで全部お見せします。動きやすい服装がおすすめです。' },
-  { time: '00:20', title: 'スタッフと立ち話', text: '同じ職種のスタッフに直接質問できます。院長・事務長は同席しません（本音を聞いてください）。' },
-  { time: '00:30', title: '終了', text: 'その場で応募を促すことはしません。持ち帰ってゆっくり考えてください。' },
-];
+import { flowSteps, tourDetail } from '../../lib/recruit/site-data';
 
 export default function FlowPage() {
   const { openChat } = useRecruitChat();
