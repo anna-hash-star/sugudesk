@@ -5,12 +5,26 @@
 # （ビルド済みSSG HTMLを1ファイルに束ね、ページ遷移とチャットをバニラJSで再現。
 #   Vercel等が使えない相手にもブラウザだけで見せられる。）
 
+import base64
 import glob
 import json
 import os
 import re
 
 css = open(glob.glob(".next/static/chunks/*.css")[0]).read()
+
+MIME = {".webp": "image/webp", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png"}
+
+
+def inline_photo(match):
+    # public/ 配下に実ファイルがあれば data URI で埋め込み、無ければタグごと除去してイラストを見せる
+    src = match.group(1)
+    local = "public" + src
+    if os.path.exists(local):
+        mime = MIME.get(os.path.splitext(local)[1].lower(), "application/octet-stream")
+        b64 = base64.b64encode(open(local, "rb").read()).decode()
+        return match.group(0).replace(f'src="{src}"', f'src="data:{mime};base64,{b64}"')
+    return ""
 
 
 def extract(path):
@@ -20,8 +34,7 @@ def extract(path):
     content = html[start:end].rstrip()
     assert content.endswith("</div>")
     content = content[: -len("</div>")]
-    # 未配置の実写<img>を除去（プレビューでは下層のイラストを見せる）
-    content = re.sub(r'<img[^>]*recruit-photos[^>]*/?>', "", content)
+    content = re.sub(r'<img[^>]*src="(/recruit-photos/[^"]+)"[^>]*/?>', inline_photo, content)
     return content
 
 
@@ -79,7 +92,7 @@ body.chat-open button[aria-label="採用相談チャットを開く"] {{ display
 #pv-chat {{ display:none; }}
 #pv-chat.open {{ display:flex; }}
 </style>
-<div class="pv-note"><b>プレビュー版</b>（実装コードの静的書き出し）— ページ遷移・チャット・FAQは動作します。実写写真は public/recruit-photos/ に配置後に反映（現在はイラスト表示）。</div>
+<div class="pv-note"><b>プレビュー版</b>（実装コードの静的書き出し・実写写真反映済み）— ページ遷移・チャット・FAQは動作します。雇用形態タブ・フォーム送信・スクロール演出は実装版のみ。</div>
 {sections}
 
 <div id="pv-chat" class="theme-adeb fixed z-50 inset-x-0 bottom-0 md:inset-auto md:bottom-6 md:right-6 md:w-[380px] flex-col bg-white md:rounded-2xl shadow-2xl border border-rc-sand max-h-[85dvh] md:max-h-[600px]" style="flex-direction:column" role="dialog" aria-label="採用相談チャット">
