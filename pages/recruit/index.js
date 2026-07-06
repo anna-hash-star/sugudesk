@@ -25,9 +25,19 @@ function Hero() {
       <div className="relative max-w-6xl mx-auto px-4 md:px-6 pt-12 md:pt-20 pb-14 md:pb-24 grid md:grid-cols-[1.1fr_1fr] gap-10 items-center">
         <div>
           <p className="rc-hero-in text-[12px] tracking-[0.3em] text-rc-teal font-bold">{clinic.enName}</p>
-          <h1 className="rc-hero-in rc-mincho text-[34px] md:text-5xl font-semibold leading-[1.35] mt-4 text-rc-ink" style={{ textWrap: 'balance', '--rc-delay': '120ms' }}>
-            {clinic.tagline}
-          </h1>
+          {(() => {
+            const lines = clinic.tagline.split('\n');
+            return (
+              <h1
+                className={`rc-hero-in rc-mincho font-semibold leading-[1.4] mt-4 text-rc-ink ${
+                  lines.length > 1 ? 'text-[24px] md:text-[38px]' : 'text-[34px] md:text-5xl'
+                }`}
+                style={{ textWrap: lines.length > 1 ? undefined : 'balance', '--rc-delay': '120ms' }}
+              >
+                {lines.map(l => <span key={l} className="block">{l}</span>)}
+              </h1>
+            );
+          })()}
           <p className="rc-hero-in mt-5 text-[15px] leading-8 text-rc-ink-soft max-w-lg" style={{ '--rc-delay': '240ms' }}>{clinic.lead}</p>
 
           <div className="rc-hero-in flex flex-wrap gap-2 mt-6" style={{ '--rc-delay': '340ms' }} aria-label="働きやすさの要点">
