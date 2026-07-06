@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import RecruitLayout, { hasTour } from '../../components/recruit/RecruitLayout';
 import { useRecruitChat } from '../../components/recruit/ChatWidget';
-import { jobs } from '../../lib/recruit/site-data';
+import { clinic, jobs } from '../../lib/recruit/site-data';
 
 // エントリーフォーム：必須4項目のみ・履歴書添付なし（スマホでの離脱防止）。
 // 送信はデモ実装。実運用では /api/recruit-entry を作り、SuguDesk管理画面 or メール通知に接続する。
@@ -85,6 +85,13 @@ export default function EntryPage() {
         </nav>
         <h1 className="rc-mincho text-3xl font-semibold">{pageTitle}</h1>
         <p className="text-[14px] text-rc-ink-soft mt-3">入力は4項目・1分で完了します。履歴書はまだ不要です。</p>
+        {clinic.phone && (
+          <p className="mt-4 rounded-xl bg-white border border-rc-sand px-4 py-3 text-[13px]">
+            お電話でも応募できます：
+            <a href={`tel:${clinic.phone}`} className="font-bold text-rc-teal mx-1" style={{ fontVariantNumeric: 'tabular-nums' }}>{clinic.phone}</a>
+            （{clinic.recruitContact}）
+          </p>
+        )}
 
         {/* 応募 or 見学（見学を実施するクリニックのみ） */}
         {hasTour && (

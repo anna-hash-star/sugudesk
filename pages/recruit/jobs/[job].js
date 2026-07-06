@@ -9,7 +9,7 @@ import { clinic, jobs, voices } from '../../../lib/recruit/site-data';
 // Google しごと検索（Google for Jobs）向けの JobPosting 構造化データ。
 // 採用サイト単体でも「職種名＋地域」の検索結果に求人枠で露出できる集客施策。
 function buildJobPostingJsonLd(job) {
-  const typeMap = { '常勤': 'FULL_TIME', 'パート': 'PART_TIME' };
+  const typeMap = { '常勤': 'FULL_TIME', '正社員': 'FULL_TIME', 'パート': 'PART_TIME' };
   return {
     '@context': 'https://schema.org',
     '@type': 'JobPosting',

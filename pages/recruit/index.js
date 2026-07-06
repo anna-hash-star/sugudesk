@@ -193,10 +193,14 @@ function JobsIndex() {
         <div className="mb-8">
           <div className="text-[11px] tracking-[0.25em] text-rc-teal-soft font-bold">OPEN POSITIONS</div>
           <h2 className="rc-mincho text-2xl md:text-[32px] font-semibold text-white mt-1.5">
-            {jobs.length === 1 ? `募集職種：${jobs[0].title}` : '職種から探す'}
+            {jobs.length === 1 ? `募集職種：${jobs[0].title}` : '募集職種'}
           </h2>
         </div>
-        <div className={jobs.length === 1 ? 'grid max-w-xl' : 'grid md:grid-cols-3 gap-4'}>
+        <div className={
+          jobs.length === 1 ? 'grid max-w-xl'
+            : jobs.length === 2 ? 'grid md:grid-cols-2 gap-4 max-w-4xl'
+            : 'grid md:grid-cols-3 gap-4'
+        }>
           {jobs.map((j, i) => (
             <Reveal key={j.slug} delay={i * 110}>
             <Link href={`/recruit/jobs/${j.slug}`}
@@ -401,7 +405,7 @@ function Closing() {
         <p className="text-white/80 text-[14px] mt-3">
           {hasTour
             ? '私服OK・履歴書不要。職場の空気を見てから決めてください。'
-            : '匿名チャットOK・応募は1分・面接は1回だけ。履歴書はまだ不要です。'}
+            : '匿名チャットOK・フォームは1分・お電話でもOK。履歴書はまだ不要です。'}
         </p>
         <div className="flex flex-wrap justify-center items-center gap-3 mt-8">
           <Link href="/recruit/entry"
