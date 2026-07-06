@@ -1,4 +1,4 @@
-<title>医療系採用サイト｜型・構成・ワイヤーフレーム</title>
+<title>医療系採用サイト｜型・構成・ワイヤーフレーム v2</title>
 <style>
   :root {
     --paper: #F7F9F8;
@@ -16,18 +16,10 @@
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --paper: #101815;
-      --panel: #17211E;
-      --ink: #E3EAE7;
-      --ink-soft: #93A39D;
-      --line: #2C3833;
-      --wire-fill: #1E2A26;
-      --wire-edge: #4A5A54;
-      --accent: #3FAE9C;
-      --accent-ink: #0C1512;
-      --accent-soft: #1C332E;
-      --note: #D2A24C;
-      --note-soft: #2E2617;
+      --paper: #101815; --panel: #17211E; --ink: #E3EAE7; --ink-soft: #93A39D;
+      --line: #2C3833; --wire-fill: #1E2A26; --wire-edge: #4A5A54;
+      --accent: #3FAE9C; --accent-ink: #0C1512; --accent-soft: #1C332E;
+      --note: #D2A24C; --note-soft: #2E2617;
     }
   }
   :root[data-theme="dark"] {
@@ -45,12 +37,9 @@
 
   * { box-sizing: border-box; }
   body {
-    margin: 0;
-    background: var(--paper);
-    color: var(--ink);
+    margin: 0; background: var(--paper); color: var(--ink);
     font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
-    font-size: 15px;
-    line-height: 1.85;
+    font-size: 15px; line-height: 1.85;
   }
   .wrap { max-width: 1060px; margin: 0 auto; padding: 56px 24px 96px; }
 
@@ -64,51 +53,64 @@
     font-size: clamp(26px, 4vw, 38px); font-weight: 600; line-height: 1.4;
     margin: 0 0 10px; text-wrap: balance;
   }
-  .doc-head p { margin: 0; color: var(--ink-soft); max-width: 44em; }
+  .doc-head p { margin: 0; color: var(--ink-soft); max-width: 46em; }
+  .doc-head .rev { font-size: 12.5px; margin-top: 10px; }
+  .doc-head .rev b { color: var(--note); }
 
   h2 {
     font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
     font-size: 22px; font-weight: 600; margin: 72px 0 8px;
     display: flex; align-items: baseline; gap: 12px;
   }
-  h2 .no {
-    font-family: ui-monospace, "SF Mono", Menlo, monospace;
-    font-size: 13px; color: var(--accent); letter-spacing: .08em;
-  }
-  .lede { color: var(--ink-soft); margin: 0 0 28px; max-width: 46em; }
+  h2 .no { font-family: ui-monospace, Menlo, monospace; font-size: 13px; color: var(--accent); letter-spacing: .08em; }
+  h3.sub { margin: 40px 0 12px; font-size: 16px; }
+  .lede { color: var(--ink-soft); margin: 0 0 28px; max-width: 48em; }
+  .lede em { font-style: normal; color: var(--accent); font-weight: 700; }
 
-  /* ---- 類型カード ---- */
-  .types { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
-  .type-card { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 22px 20px; }
-  .type-card .tag {
+  /* ---- 参考サイトカード ---- */
+  .refs { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .ref-card { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 22px 20px; }
+  .ref-card .tag {
     display: inline-block; font-family: ui-monospace, Menlo, monospace; font-size: 11px;
-    letter-spacing: .1em; padding: 3px 9px; border: 1px solid var(--wire-edge);
-    border-radius: 3px; color: var(--ink-soft); margin-bottom: 12px;
+    letter-spacing: .1em; padding: 3px 9px; border-radius: 3px; margin-bottom: 12px;
+    background: var(--wire-fill); border: 1px solid var(--wire-edge); color: var(--ink-soft);
   }
-  .type-card h3 { margin: 0 0 8px; font-size: 16px; }
-  .type-card p { margin: 0; font-size: 13.5px; color: var(--ink-soft); }
-  .type-card dl { margin: 12px 0 0; font-size: 13px; }
-  .type-card dt { color: var(--ink-soft); font-weight: 600; margin-top: 8px; }
-  .type-card dd { margin: 0; }
-  .reco {
-    margin-top: 16px; background: var(--accent-soft); border-left: 4px solid var(--accent);
-    border-radius: 0 6px 6px 0; padding: 18px 22px;
+  .ref-card h3 { margin: 0 0 4px; font-size: 16px; }
+  .ref-card .url { font-family: ui-monospace, Menlo, monospace; font-size: 11px; color: var(--accent); word-break: break-all; }
+  .ref-card p { margin: 10px 0 0; font-size: 13px; color: var(--ink-soft); }
+  .ref-card .take { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 13px; }
+  .ref-card .take b { color: var(--accent); font-size: 12px; letter-spacing: .04em; display: block; }
+  .common {
+    margin-top: 16px; background: var(--panel); border: 1px solid var(--line);
+    border-left: 4px solid var(--note); border-radius: 0 6px 6px 0; padding: 18px 22px; font-size: 14px;
   }
-  .reco strong { color: var(--accent); }
-  .reco p { margin: 4px 0 0; }
+  .common b { color: var(--note); }
+  .common ul { margin: 8px 0 0; padding-left: 20px; }
+  .common li { margin: 3px 0; }
+  .common li em { font-style: normal; color: var(--accent); font-weight: 700; }
+
+  /* ---- CV3段 ---- */
+  .funnel { display: flex; gap: 0; align-items: stretch; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 26px 22px; overflow-x: auto; }
+  .fstep { flex: 1; min-width: 150px; text-align: center; position: relative; padding: 0 18px; }
+  .fstep + .fstep::before { content: "→"; position: absolute; left: -9px; top: 34px; color: var(--wire-edge); font-size: 20px; }
+  .fstep .bubble {
+    border: 2px solid var(--accent); border-radius: 8px; padding: 12px 8px; font-weight: 700; font-size: 14px;
+    background: var(--accent-soft); color: var(--ink);
+  }
+  .fstep:nth-child(2) .bubble { background: color-mix(in srgb, var(--accent) 45%, var(--panel)); }
+  .fstep:nth-child(3) .bubble { background: var(--accent); color: var(--accent-ink); }
+  .fstep p { font-size: 12.5px; color: var(--ink-soft); margin: 10px 0 0; line-height: 1.7; }
+  .funnel-note { font-size: 13px; color: var(--ink-soft); margin: 12px 4px 0; max-width: 48em; }
+  .funnel-note em { font-style: normal; color: var(--accent); font-weight: 700; }
 
   /* ---- サイトマップ ---- */
   .sitemap { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 28px; overflow-x: auto; }
-  .sm-root {
-    display: inline-block; background: var(--ink); color: var(--paper);
-    padding: 8px 20px; border-radius: 4px; font-weight: 700; font-size: 14px;
-  }
+  .sm-root { display: inline-block; background: var(--ink); color: var(--paper); padding: 8px 20px; border-radius: 4px; font-weight: 700; font-size: 14px; }
   .sm-children { display: flex; gap: 14px; margin: 0; padding: 18px 0 0 26px; border-left: 2px solid var(--wire-edge); list-style: none; flex-wrap: wrap; }
-  .sm-children li {
-    background: var(--wire-fill); border: 1px solid var(--wire-edge); border-radius: 4px;
-    padding: 8px 16px; font-size: 13.5px;
-  }
-  .sm-children li code { font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: var(--accent); display: block; }
+  .sm-children li { background: var(--wire-fill); border: 1px solid var(--wire-edge); border-radius: 4px; padding: 8px 16px; font-size: 13.5px; }
+  .sm-children li.hub { border-width: 2px; border-color: var(--ink); font-weight: 700; }
+  .sm-children li.chat { background: var(--accent-soft); border-color: var(--accent); }
+  .sm-children li code { font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: var(--accent); display: block; font-weight: 400; }
   .sm-note { font-size: 13px; color: var(--ink-soft); margin: 14px 0 0; }
 
   /* ---- ワイヤー共通 ---- */
@@ -118,9 +120,10 @@
   .sw.box { background: var(--wire-fill); }
   .sw.img { background: repeating-linear-gradient(45deg, var(--wire-fill), var(--wire-fill) 4px, var(--wire-edge) 4px, var(--wire-edge) 5px); }
   .sw.cta { background: var(--accent); border-color: var(--accent); }
+  .sw.chat { background: var(--accent-soft); border: 2px solid var(--accent); }
 
   .wf-row { display: flex; gap: 28px; align-items: flex-start; flex-wrap: wrap; }
-  .frame { background: var(--panel); border: 2px solid var(--ink); border-radius: 10px; padding: 10px; flex: none; }
+  .frame { background: var(--panel); border: 2px solid var(--ink); border-radius: 10px; padding: 10px; flex: none; position: relative; }
   .frame .bar { font-family: ui-monospace, Menlo, monospace; font-size: 10px; color: var(--ink-soft); text-align: center; padding: 2px 0 8px; letter-spacing: .1em; }
   .frame-sp { width: 320px; }
   .frame-pc { width: 620px; max-width: 100%; }
@@ -131,17 +134,30 @@
   .wf-img { background: repeating-linear-gradient(45deg, var(--wire-fill), var(--wire-fill) 5px, color-mix(in srgb, var(--wire-edge) 55%, var(--wire-fill)) 5px, color-mix(in srgb, var(--wire-edge) 55%, var(--wire-fill)) 6px); }
   .wf-cta { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
   .wf-cta .t { color: var(--accent-ink); }
+  .wf-chat { background: var(--accent-soft); border: 2px solid var(--accent); }
+  .wf-chat .t { color: var(--accent); }
   .wf-ghost { background: var(--panel); border-style: dashed; }
   .lines i { display: block; height: 5px; background: var(--wire-edge); opacity: .55; border-radius: 2px; margin-top: 5px; }
   .lines i.w60 { width: 60%; } .lines i.w80 { width: 80%; } .lines i.w40 { width: 40%; }
   .cols { display: flex; gap: 6px; } .cols > * { flex: 1; }
   .chip-row { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
   .chip { border: 1px solid var(--wire-edge); background: var(--panel); border-radius: 99px; font-size: 10px; padding: 1px 9px; color: var(--ink-soft); }
+  .chip.on { border-color: var(--accent); color: var(--accent); }
 
   .pin {
     position: absolute; top: -8px; right: -8px; width: 20px; height: 20px; border-radius: 50%;
     background: var(--note); color: var(--paper); font-family: ui-monospace, Menlo, monospace;
-    font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; z-index: 1;
+  }
+  .float-chat {
+    position: absolute; right: 16px; bottom: 52px; width: 44px; height: 44px; border-radius: 50%;
+    background: var(--accent); color: var(--accent-ink); display: flex; align-items: center; justify-content: center;
+    font-size: 17px; box-shadow: 0 3px 10px rgba(0,0,0,.25); z-index: 2;
+  }
+  .float-chat::after {
+    content: "常駐チャット"; position: absolute; right: 0; top: -22px; white-space: nowrap;
+    font-size: 9px; font-family: ui-monospace, Menlo, monospace; color: var(--accent);
+    background: var(--panel); border: 1px solid var(--accent); border-radius: 3px; padding: 1px 6px;
   }
 
   .notes { flex: 1 1 300px; min-width: 280px; }
@@ -153,225 +169,293 @@
     font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 3px;
   }
   .notes li strong { display: block; font-size: 14px; }
-  .notes li span { color: var(--ink-soft); font-size: 12.5px; line-height: 1.7; }
+  .notes li strong .new { font-family: ui-monospace, Menlo, monospace; font-size: 10px; color: var(--accent); border: 1px solid var(--accent); border-radius: 3px; padding: 0 5px; margin-left: 6px; vertical-align: 1px; }
+  .notes li span.d { color: var(--ink-soft); font-size: 12.5px; line-height: 1.7; display: block; }
 
-  .sticky-bar { position: relative; margin-top: 2px; }
+  /* ---- チャット会話モック ---- */
+  .chat-mock { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 22px; max-width: 420px; }
+  .chat-mock .head { font-size: 12px; font-weight: 700; color: var(--accent); padding-bottom: 10px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+  .msg { max-width: 85%; border-radius: 10px; padding: 8px 12px; font-size: 12.5px; margin-bottom: 8px; line-height: 1.7; }
+  .msg.bot { background: var(--wire-fill); border: 1px solid var(--line); }
+  .msg.user { background: var(--accent); color: var(--accent-ink); margin-left: auto; }
+  .msg .chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+  .msg .chips b { font-weight: 400; border: 1px solid var(--accent); color: var(--accent); border-radius: 99px; font-size: 11px; padding: 2px 10px; background: var(--panel); }
 
-  /* ---- 下層3画面 ---- */
+  .req-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-top: 20px; }
+  .req { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 16px 18px; font-size: 13px; }
+  .req b { display: block; font-size: 13.5px; margin-bottom: 4px; }
+  .req span { color: var(--ink-soft); }
+
+  /* ---- 下層 ---- */
   .sub-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
   .sub-row .frame { width: auto; }
   .sub-cap { font-size: 13px; margin: 10px 4px 0; }
   .sub-cap b { display: block; }
   .sub-cap span { color: var(--ink-soft); font-size: 12.5px; }
 
-  /* ---- 表 ---- */
-  .tbl-wrap { overflow-x: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; }
-  table { border-collapse: collapse; width: 100%; font-size: 13.5px; min-width: 640px; }
-  th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
-  th { font-size: 12px; letter-spacing: .06em; color: var(--ink-soft); background: color-mix(in srgb, var(--wire-fill) 50%, var(--panel)); }
-  tr:last-child td { border-bottom: none; }
-  td.new { color: var(--accent); font-weight: 700; white-space: nowrap; }
-
   .check { list-style: none; margin: 0; padding: 0; }
   .check li { padding: 8px 0 8px 30px; position: relative; border-bottom: 1px solid var(--line); font-size: 14px; }
-  .check li::before {
-    content: ""; position: absolute; left: 2px; top: 15px; width: 14px; height: 14px;
-    border: 2px solid var(--accent); border-radius: 3px;
-  }
+  .check li::before { content: ""; position: absolute; left: 2px; top: 15px; width: 14px; height: 14px; border: 2px solid var(--accent); border-radius: 3px; }
   .check li em { font-style: normal; color: var(--accent); font-weight: 700; }
 
   .src { margin-top: 72px; border-top: 2px solid var(--ink); padding-top: 20px; }
   .src h2 { margin-top: 0; }
   .src ul { margin: 0; padding-left: 20px; font-size: 13px; color: var(--ink-soft); }
   .src a { color: var(--accent); }
+  .src .caveat { font-size: 12.5px; color: var(--ink-soft); background: var(--note-soft); border-radius: 4px; padding: 10px 14px; margin: 14px 0 0; }
   @media (max-width: 720px) { .frame-pc { width: 100%; } }
 </style>
 
 <div class="wrap">
   <header class="doc-head">
-    <p class="kicker">RECRUIT SITE TEMPLATE / MEDICAL — 2026.07</p>
-    <h1>医療系採用サイトの型<br>構成・ワイヤーフレーム設計書</h1>
-    <p>クリニック〜中小医療法人向け。参考3類型の分析から「1ページ集約＋下層3枚」の型を定義する。緑色の要素はすべて応募導線（CTA）。</p>
+    <p class="kicker">RECRUIT SITE TEMPLATE / MEDICAL — v2 · 2026.07</p>
+    <h1>医療系採用サイトの型 v2<br>参考4サイト分析＋チャット採用相談</h1>
+    <p>クライアント指定の実在4サイト（クリニック2・グループ1・病院1）の構造分析をベースに再構成。自社の強みであるチャットを「採用相談」導線として型に標準装備する。緑＝応募導線、緑枠淡色＝チャット導線。</p>
+    <p class="rev"><b>v2の変更点:</b> TOP1枚LP型 → TOP＋職種別ページのハブ型へ／CVを「チャット相談→見学→応募」の3段に再設計</p>
   </header>
 
-  <h2><span class="no">01</span>参考にする型 — 3類型</h2>
-  <p class="lede">病院・クリニック採用サイトの事例集を横断すると、成功パターンは3類型に整理できる。</p>
-  <div class="types">
-    <div class="type-card">
-      <span class="tag">TYPE A</span>
-      <h3>看護部特設型</h3>
-      <p>大病院の看護部採用サイトに多い。コンセプトコピー先行のブランディング型で、教育制度・クリニカルラダーのコンテンツが厚い。</p>
-      <dl><dt>向く相手</dt><dd>新卒を毎年まとめて採る病院</dd><dt>難点</dt><dd>制作量・更新頻度がクリニックには過大</dd></dl>
+  <h2><span class="no">01</span>参考4サイトの構造分析</h2>
+  <p class="lede">検索エンジンにインデックスされた下層URL群から各サイトの情報設計を再構成した（ページ内のセクション順は推定を含む）。</p>
+  <div class="refs">
+    <div class="ref-card">
+      <span class="tag">REF 1 — グループ採用ポータル型</span>
+      <h3>自由が丘クリニックグループ</h3>
+      <span class="url">jc-recruit.jp</span>
+      <p>美容医療・化粧品グループ。<b>知る(about) → 仕事(work/welfare) → 人(interview) → 条件(recruitment)</b> の4層ファネル。要項は職種×拠点でURL分割（nurse_meguro 等）。</p>
+      <div class="take"><b>取り入れる点</b>福利厚生の独立コンテンツ化／職種別インタビュー／職種単位URL（媒体・検索からの直接着地に強い）</div>
     </div>
-    <div class="type-card">
-      <span class="tag">TYPE B</span>
-      <h3>クリニック親しみ型</h3>
-      <p>スタッフ実写＋院長メッセージ＋「1日の流れ」が中心。白基調に暖色 or 医療系グリーン。1カラム縦長で完結。</p>
-      <dl><dt>向く相手</dt><dd>中途・パート採用中心の診療所</dd><dt>強み</dt><dd>最大の転職不安「人間関係」に直接答える</dd></dl>
+    <div class="ref-card">
+      <span class="tag">REF 2 — 単院・職種ハブ型</span>
+      <h3>りつの内視鏡クリニック</h3>
+      <span class="url">ritsuno-recruit.com</span>
+      <p>「スタッフ自身が幸せになる」を掲げる内視鏡専門クリニック。<b>/data/（数字でわかる）</b>、職種ごとの紹介ページ（/nurse/ /doctor/…）＋要項ページ、<b>/tour/（施設見学の流れ）</b>。</p>
+      <div class="take"><b>取り入れる点</b>数字でわかる／見学を「流れ」として見せる／理念を働く人に向ける</div>
     </div>
-    <div class="type-card">
-      <span class="tag">TYPE C</span>
-      <h3>データ・コンテンツリッチ型</h3>
-      <p>「数字で見る」（平均年齢・有休消化率・残業）、座談会、FAQが充実。比較検討中の中途求職者に強い。</p>
-      <dl><dt>向く相手</dt><dd>競合の多い都市部の医療機関</dd><dt>強み</dt><dd>離職理由（残業・休暇）を定量で払拭</dd></dl>
+    <div class="ref-card">
+      <span class="tag">REF 3 — 採用専用ミニマル型</span>
+      <h3>梶ヶ谷クリニック</h3>
+      <span class="url">kajigaya-clinic.com/recruit/</span>
+      <p>患者向けサイトから<b>採用専用サイトを分離</b>。/clinic/（医院紹介）/voice/（スタッフの声）＋職種×雇用形態別の要項。有休消化100%目標・<b>トレーナー制＋チェックリスト3ヶ月</b>を明文化。</p>
+      <div class="take"><b>取り入れる点</b>採用サイト分離／要項を常勤・パートで分割／教育を「制度名＋期間」で具体に</div>
+    </div>
+    <div class="ref-card">
+      <span class="tag">REF 4 — 病院・多職種ポータル型</span>
+      <h3>けいゆう病院</h3>
+      <span class="url">keiyu-hospital.com/recruit/</span>
+      <p>職種大分類（/nurses/）の中に<b>教育体制・病院説明会・募集要項を入れ子</b>で持つ2階層構造。要項は部署・雇用区分別（ward / ope / nurse-new…）。/entry/ で問合せとエントリーを統合。</p>
+      <div class="take"><b>取り入れる点</b>病院規模は大分類→詳細の2階層／説明会・見学会の常設イベント化</div>
     </div>
   </div>
-  <div class="reco">
-    <strong>推奨：B をベースに C の「数字で見る」「FAQ」を移植したハイブリッド</strong>
-    <p>クリニックの応募者は中途中心で、意思決定要因は「人間関係・休日・実際の働き方」。ブランディングより不安解消が効き、1ページ完結なら運用コストも現実的。</p>
-  </div>
-
-  <h2><span class="no">02</span>サイト構成</h2>
-  <p class="lede">更新担当がいない前提で下層は3枚に絞る。採用ブログ等の更新前提コンテンツは、止まった瞬間に「活気がない」印象になるため型に含めない。</p>
-  <div class="sitemap">
-    <span class="sm-root">TOP（縦長LP型・情報集約）</span>
-    <ul class="sm-children">
-      <li>募集要項（職種別）<code>/recruit/{job}</code></li>
-      <li>スタッフインタビュー<code>/voice</code></li>
-      <li>応募・見学フォーム<code>/entry</code></li>
+  <div class="common">
+    <b>4サイトの共通項（型に昇格させる要素）</b>
+    <ul>
+      <li><em>職種別ページが構造の中心</em> — 4サイト全てが職種（×拠点 or ×雇用形態）単位でURLを分割。求職者は自分の職種しか読まない</li>
+      <li>見学・説明会が独立した中間CV（REF 2・3・4）</li>
+      <li>スタッフの声／インタビューは全サイト標準装備</li>
+      <li>数字・具体の訴求（/data/、有休100%、トレーナー制3ヶ月）</li>
+      <li>問合せ手段は電話・メール・フォームのみ — <em>チャット相談はどのサイトにも無い ＝ SuguDeskの差別化ポイント</em></li>
     </ul>
-    <p class="sm-note">募集要項ページが職業安定法の労働条件明示（§05）を担保する。</p>
   </div>
 
-  <h2><span class="no">03</span>TOPページ ワイヤーフレーム（SP優先）</h2>
+  <h2><span class="no">02</span>コンバージョン3段設計（本型の核）</h2>
+  <p class="lede">参考サイトは「見学 → 応募」の2段。本型はその手前に<em>チャット相談</em>を置き、電話しづらい・メールは重いと感じる求職者のゼロクリック接点を作る。</p>
+  <div class="funnel">
+    <div class="fstep">
+      <div class="bubble">チャットで採用相談</div>
+      <p>匿名OK・24時間・即レス<br>「ブランク5年でも大丈夫？」</p>
+    </div>
+    <div class="fstep">
+      <div class="bubble">見学に行く</div>
+      <p>30分・私服OK<br>REF 2/4の見学・説明会に相当</p>
+    </div>
+    <div class="fstep">
+      <div class="bubble">応募する</div>
+      <p>フォーム4項目 / LINE<br>本命CV</p>
+    </div>
+  </div>
+  <p class="funnel-note">チャットの終端で「見学を予約しますか？」と橋渡しし、段を上らせる。連絡先の取得は見学予約まで求めない — <em>匿名性がこの導線の価値</em>。</p>
+
+  <h2><span class="no">03</span>サイト構成 v2</h2>
+  <p class="lede">TOP1枚集約（v1）から<em>「TOP＋職種別ページ」のハブ構造</em>へ。REF 2式の「職種紹介と要項の分離」は運用リソースを考え統合し、職種ページ1枚に働き方＋要項をまとめる。</p>
+  <div class="sitemap">
+    <span class="sm-root">TOP（ハブ）</span>
+    <ul class="sm-children">
+      <li class="hub">職種別ページ<code>/jobs/{nurse|clerk|…}</code>仕事内容＋1日の流れ＋先輩の声＋要項</li>
+      <li>スタッフの声<code>/voice</code></li>
+      <li>見学・応募の流れ<code>/flow</code></li>
+      <li>エントリー<code>/entry</code></li>
+      <li class="chat">◎ チャットで採用相談<code>全ページ常駐ウィジェット</code></li>
+    </ul>
+    <p class="sm-note">医院紹介・数字で見る・教育はTOPに集約（下層化は更新が回る場合のみ）。病院規模は /jobs/ を「看護部門・医療技術部門・事務部門」の大分類2階層に拡張（REF 4式）。</p>
+  </div>
+
+  <h2><span class="no">04</span>TOPページ ワイヤーフレーム v2（SP優先）</h2>
   <div class="legend">
     <span><i class="sw box"></i>コンテンツ</span>
-    <span><i class="sw img"></i>実写写真（素材集は不可）</span>
+    <span><i class="sw img"></i>実写写真</span>
     <span><i class="sw cta"></i>応募導線（CTA）</span>
+    <span><i class="sw chat"></i>チャット導線</span>
   </div>
 
   <div class="wf-row">
     <div class="frame frame-sp">
-      <div class="bar">SP 375px</div>
+      <div class="bar">SP 375px — TOP</div>
+      <div class="float-chat">💬</div>
       <div class="screen">
         <div class="cols">
           <div class="wf" style="flex:2"><span class="t">ロゴ</span></div>
           <div class="wf wf-cta" style="flex:1"><span class="t">応募する</span></div>
         </div>
-        <div class="wf wf-img" style="min-height:150px"><span class="pin">1</span><span class="t">実写：スタッフの働く姿</span>コンセプトコピー<br>「◯◯駅3分・日曜休み」
+        <div class="wf wf-img" style="min-height:140px"><span class="pin">1</span><span class="t">実写：スタッフの働く姿</span>コンセプトコピー<br>「◯◯駅3分・日曜休み」
           <div class="chip-row"><span class="chip">看護師</span><span class="chip">医療事務</span></div>
         </div>
         <div class="cols">
-          <div class="wf wf-cta"><span class="t">応募する</span></div>
-          <div class="wf wf-ghost"><span class="t">まず見学</span></div>
+          <div class="wf wf-cta"><span class="t">応募</span></div>
+          <div class="wf wf-ghost"><span class="t">見学</span></div>
+          <div class="wf wf-chat"><span class="t">相談</span></div>
         </div>
         <div class="wf"><span class="pin">2</span><span class="t">数字で見る</span>
           <div class="cols" style="margin-top:6px">
             <div class="wf wf-ghost">平均年齢</div><div class="wf wf-ghost">有休消化</div><div class="wf wf-ghost">残業/月</div>
           </div>
         </div>
-        <div class="wf"><span class="pin">3</span><span class="t">院長メッセージ</span>
-          <div class="cols" style="margin-top:6px"><div class="wf wf-img" style="flex:1;min-height:52px">顔写真</div>
+        <div class="wf"><span class="pin">3</span><span class="t">院長メッセージ・理念</span>
+          <div class="cols" style="margin-top:6px"><div class="wf wf-img" style="flex:1;min-height:48px">顔写真</div>
           <div class="lines" style="flex:2"><i class="w80"></i><i class="w80"></i><i class="w60"></i></div></div>
         </div>
-        <div class="wf"><span class="pin">4</span><span class="t">1日の流れ（タイムライン）</span>
-          <div class="lines"><i class="w60"></i><i class="w80"></i><i class="w60"></i><i class="w40"></i></div>
+        <div class="wf"><span class="pin">4</span><span class="t">職種から探す</span>
+          <div class="cols" style="margin-top:6px">
+            <div class="wf wf-ghost">看護師<br>→ /jobs/nurse</div>
+            <div class="wf wf-ghost">医療事務<br>→ /jobs/clerk</div>
+          </div>
         </div>
         <div class="wf"><span class="pin">5</span><span class="t">スタッフの声 ×3</span>
           <div class="cols" style="margin-top:6px">
-            <div class="wf wf-img" style="min-height:64px">写真</div>
-            <div class="wf wf-img" style="min-height:64px">写真</div>
-            <div class="wf wf-img" style="min-height:64px">写真</div>
+            <div class="wf wf-img" style="min-height:56px">写真</div>
+            <div class="wf wf-img" style="min-height:56px">写真</div>
+            <div class="wf wf-img" style="min-height:56px">写真</div>
           </div>
           <div class="chip-row"><span class="chip">→ /voice へ</span></div>
         </div>
-        <div class="wf"><span class="pin">6</span><span class="t">教育・働き方支援</span>ブランク復帰／時短／急なお休み対応</div>
-        <div class="wf"><span class="pin">7</span><span class="t">募集要項（抜粋）</span>
-          <div class="chip-row"><span class="chip">看護師</span><span class="chip">医療事務</span></div>
-          <div class="lines"><i class="w80"></i><i class="w80"></i><i class="w60"></i></div>
-          <div class="chip-row"><span class="chip">→ /recruit/{job} へ</span></div>
+        <div class="wf"><span class="pin">6</span><span class="t">教育・福利厚生</span>トレーナー制（最初の3ヶ月）／時短／社保</div>
+        <div class="wf wf-chat" style="min-height:72px"><span class="pin">7</span><span class="t">💬 チャットで採用相談</span>匿名OK・24時間。チャットUIモック＋質問チップ
+          <div class="chip-row"><span class="chip on">ブランクあり</span><span class="chip on">シフト融通</span><span class="chip on">見学だけ</span></div>
         </div>
-        <div class="wf"><span class="pin">8</span><span class="t">FAQ（アコーディオン）</span>人間関係／残業／子育て／ブランク</div>
-        <div class="wf wf-cta" style="min-height:56px"><span class="pin">9</span><span class="t">まずは30分、見学だけでも</span>見学予約へ</div>
-        <div class="wf"><span class="pin">10</span><span class="t">応募フォーム（4項目）＋ LINE応募</span></div>
+        <div class="wf"><span class="pin">8</span><span class="t">見学・応募の流れ（4ステップ）</span>相談 → 見学 → 面接 → 入職</div>
+        <div class="wf"><span class="pin">9</span><span class="t">FAQ</span>末尾に「解決しなければチャットへ」</div>
+        <div class="wf"><span class="pin">10</span><span class="t">エントリー</span>フォーム4項目＋LINE＋チャット</div>
         <div class="wf">フッター：所在地・アクセス・患者向けサイトへ</div>
-        <div class="wf wf-cta sticky-bar"><span class="t">固定バー：応募する｜LINEで相談</span>（常時追従）</div>
+        <div class="wf wf-cta"><span class="t">固定バー：応募する｜💬 チャットで相談</span>（常時追従）</div>
       </div>
     </div>
 
     <div class="notes">
       <ol>
-        <li><div><strong>ファーストビュー</strong><span>求職者の最重視項目「勤務地・休日」をFVで即答。写真は必ず実写 — 素材写真は信頼を毀損する。</span></div></li>
-        <li><div><strong>数字で見る</strong><span>型Cから移植。離職理由（残業・休暇）を定量で払拭。数字は嘘がつけないため信頼性が高い。</span></div></li>
-        <li><div><strong>院長メッセージ</strong><span>小規模医療機関では「院長がどんな人か」が応募判断の最大変数。</span></div></li>
-        <li><div><strong>1日の流れ</strong><span>入職後ギャップの防止。「残業がない」ことを時刻で示せる。</span></div></li>
-        <li><div><strong>スタッフの声</strong><span>看護職の就活で最も見られるコンテンツ。質問を全員共通にして制作を型化。</span></div></li>
-        <li><div><strong>教育・働き方支援</strong><span>教育制度は施設選びの主要チェック項目。クリニックでは「ブランク復帰可」が特に効く。</span></div></li>
-        <li><div><strong>募集要項（抜粋）</strong><span>職種タブで主要条件のみ。「休日・給与」を探させない。詳細は下層で法定明示を担保。</span></div></li>
-        <li><div><strong>FAQ</strong><span>応募直前の不安の最終処理。「見学だけでも可？」を必ず入れる。</span></div></li>
-        <li><div><strong>見学CTA</strong><span>応募より心理ハードルの低い中間コンバージョン。見学・説明会は求職行動として定着している。</span></div></li>
-        <li><div><strong>フォーム</strong><span>必須4項目まで（名前・連絡先・職種・連絡時間帯）。履歴書添付は求めない。LINE応募を並列。</span></div></li>
+        <li><div><strong>ファーストビュー</strong><span class="d">全参考サイト同様に実写。CTAは3段（応募/見学/相談）をFVから提示。勤務地・休日を即答。</span></div></li>
+        <li><div><strong>数字で見る</strong><span class="d">REF 2が独立ページ化するほど機能しているコンテンツ。TOPセクションとして採用。</span></div></li>
+        <li><div><strong>院長メッセージ・理念</strong><span class="d">REF 2に倣い、理念は患者向けでなく「働く人に向けた言葉」にする。</span></div></li>
+        <li><div><strong>職種から探す<span class="new">v2新設</span></strong><span class="d">4サイト共通の職種中心構造を反映。1日の流れは職種ページへ移動。</span></div></li>
+        <li><div><strong>スタッフの声</strong><span class="d">全サイト標準装備（REF 3 /voice/、REF 1 /interview/）。職種別に紐づけて /jobs/ にも抜粋。</span></div></li>
+        <li><div><strong>教育・福利厚生</strong><span class="d">REF 3式に「制度名＋期間」で具体化。REF 1式に福利厚生を明示。</span></div></li>
+        <li><div><strong>チャットで採用相談<span class="new">v2新設</span></strong><span class="d">4サイトに存在しない差別化。質問チップで入力ハードルを下げ、終端で見学へ橋渡し。</span></div></li>
+        <li><div><strong>見学・応募の流れ</strong><span class="d">REF 2 /tour/・REF 4 /explanation/ を4ステップ図に簡略化。</span></div></li>
+        <li><div><strong>FAQ</strong><span class="d">チャットとナレッジを共通化し二重管理を防ぐ。末尾からチャットへ接続。</span></div></li>
+        <li><div><strong>エントリー</strong><span class="d">必須4項目・履歴書添付なし。REF 4式に問合せと統合。</span></div></li>
       </ol>
     </div>
   </div>
 
-  <h3 style="margin:40px 0 12px;font-size:16px">PC表示（同一構成・2カラム化のみ）</h3>
+  <h3 class="sub">PC表示（同一構成・2カラム化のみ）</h3>
   <div class="frame frame-pc">
-    <div class="bar">PC 1200px — セクション順はSPと同一。FVと院長・声セクションのみ横組みに展開</div>
+    <div class="bar">PC 1200px — セクション順はSPと同一</div>
+    <div class="float-chat">💬</div>
     <div class="screen">
       <div class="cols">
         <div class="wf" style="flex:3"><span class="t">ロゴ</span></div>
-        <div class="wf wf-ghost" style="flex:2">グロナビ（要項/声/FAQ）</div>
+        <div class="wf wf-ghost" style="flex:2">グロナビ（職種/声/流れ/FAQ）</div>
         <div class="wf wf-cta" style="flex:1"><span class="t">応募する</span></div>
       </div>
       <div class="cols">
-        <div class="wf wf-img" style="flex:3;min-height:120px"><span class="t">実写ビジュアル</span></div>
-        <div class="wf" style="flex:2"><span class="t">コピー＋職種チップ＋CTA×2</span>
-          <div class="chip-row"><span class="chip">看護師</span><span class="chip">医療事務</span></div>
-          <div class="cols" style="margin-top:6px"><div class="wf wf-cta">応募</div><div class="wf wf-ghost">見学</div></div>
+        <div class="wf wf-img" style="flex:3;min-height:110px"><span class="t">実写ビジュアル</span></div>
+        <div class="wf" style="flex:2"><span class="t">コピー＋職種チップ</span>
+          <div class="cols" style="margin-top:6px"><div class="wf wf-cta">応募</div><div class="wf wf-ghost">見学</div><div class="wf wf-chat">相談</div></div>
         </div>
       </div>
       <div class="cols">
         <div class="wf wf-ghost">数字1</div><div class="wf wf-ghost">数字2</div><div class="wf wf-ghost">数字3</div><div class="wf wf-ghost">数字4</div><div class="wf wf-ghost">数字5</div>
       </div>
       <div class="cols">
-        <div class="wf wf-img" style="flex:1;min-height:70px">院長写真</div>
-        <div class="wf" style="flex:2"><span class="t">メッセージ</span><div class="lines"><i class="w80"></i><i class="w80"></i><i class="w60"></i></div></div>
+        <div class="wf" style="flex:1"><span class="t">院長メッセージ</span><div class="lines"><i class="w80"></i><i class="w60"></i></div></div>
+        <div class="wf" style="flex:1"><span class="t">職種カード×3 → /jobs/</span><div class="lines"><i class="w80"></i><i class="w60"></i></div></div>
       </div>
       <div class="cols">
-        <div class="wf"><span class="t">1日の流れ</span><div class="lines"><i class="w80"></i><i class="w60"></i></div></div>
-        <div class="wf"><span class="t">教育・働き方支援</span><div class="lines"><i class="w80"></i><i class="w60"></i></div></div>
+        <div class="wf wf-img" style="min-height:56px">声1</div><div class="wf wf-img" style="min-height:56px">声2</div><div class="wf wf-img" style="min-height:56px">声3</div>
       </div>
       <div class="cols">
-        <div class="wf wf-img" style="min-height:60px">声1</div><div class="wf wf-img" style="min-height:60px">声2</div><div class="wf wf-img" style="min-height:60px">声3</div>
+        <div class="wf" style="flex:1"><span class="t">教育・福利厚生</span></div>
+        <div class="wf wf-chat" style="flex:1"><span class="t">💬 チャットで採用相談</span>質問チップ＋UIモック</div>
       </div>
-      <div class="wf"><span class="t">募集要項（職種タブ＋表）→ FAQ → 見学CTA帯 → フォーム＋LINE</span></div>
+      <div class="wf"><span class="t">見学・応募の流れ → FAQ → エントリー（フォーム＋LINE＋チャット）</span></div>
     </div>
   </div>
 
-  <h2><span class="no">04</span>下層ページ ワイヤー</h2>
+  <h2><span class="no">05</span>チャット「採用相談」の設計</h2>
+  <p class="lede">FAQ・募集要項と同一ナレッジを参照（SuguDeskの回答ルール資産を流用）。募集条件に触れる応答は労働条件明示（§07）と矛盾しないよう要項と同期させる。</p>
+  <div class="wf-row">
+    <div class="chat-mock">
+      <div class="head">💬 採用相談（匿名でOK）— 会話モック</div>
+      <div class="msg bot">こんにちは！採用について匿名で相談できます。気になることを選ぶか、自由に入力してください。
+        <div class="chips"><b>ブランクがあっても大丈夫？</b><b>シフトの融通は？</b><b>見学だけでもいい？</b></div>
+      </div>
+      <div class="msg user">ブランク5年ですが看護師応募できますか？</div>
+      <div class="msg bot">はい、ブランクのある方も歓迎です。入職後3ヶ月はトレーナーがついて業務チェックリストで段階的に慣れていけます。実際にブランク7年から復帰したスタッフもいます。</div>
+      <div class="msg bot">よければ30分の見学はいかがですか？私服でOKです。
+        <div class="chips"><b>見学を予約する</b><b>他の質問をする</b></div>
+      </div>
+    </div>
+    <div class="notes" style="align-self:center">
+      <div class="req-grid" style="margin-top:0">
+        <div class="req"><b>配置</b><span>全ページ右下フローティング＋TOP§7＋FAQ末尾＋フォーム離脱時</span></div>
+        <div class="req"><b>入力ハードル</b><span>初手は質問チップ選択式。連絡先取得は見学予約まで求めない（匿名性が価値）</span></div>
+        <div class="req"><b>ナレッジ</b><span>FAQ・募集要項と同一ソースで二重管理しない。ボット一次応答24時間→必要時に採用担当へ取次ぎ</span></div>
+        <div class="req"><b>計測</b><span>起動率／相談→見学転換率／相談テーマ分布（要項改善の材料になる）</span></div>
+      </div>
+    </div>
+  </div>
+
+  <h2><span class="no">06</span>下層ページ ワイヤー</h2>
   <div class="sub-row">
     <div>
       <div class="frame">
-        <div class="bar">/recruit/{job}</div>
+        <div class="bar">/jobs/{job} — 職種別ページ</div>
+        <div class="float-chat">💬</div>
         <div class="screen">
-          <div class="wf"><span class="t">職種名＋雇用形態タブ</span>常勤／パート</div>
-          <div class="wf"><span class="t">労働条件テーブル</span>
-            <div class="lines"><i class="w80"></i><i class="w80"></i><i class="w80"></i><i class="w80"></i><i class="w60"></i></div>
-            法定明示9項目（§05）
-          </div>
+          <div class="wf"><span class="t">職種名＋雇用形態タブ</span>常勤／パート（REF 3式）</div>
+          <div class="wf"><span class="t">仕事内容・1日の流れ</span><div class="lines"><i class="w80"></i><i class="w60"></i><i class="w80"></i></div></div>
+          <div class="wf wf-img" style="min-height:52px"><span class="t">この職種の先輩の声（1名）</span></div>
+          <div class="wf"><span class="t">募集要項テーブル</span>法定明示9項目（§07）<div class="lines"><i class="w80"></i><i class="w80"></i><i class="w60"></i></div></div>
           <div class="wf wf-cta"><span class="t">この職種に応募する</span></div>
-          <div class="wf wf-ghost">見学だけしてみる</div>
+          <div class="wf wf-chat"><span class="t">💬 この職種について質問する</span>職種コンテキストを引き継いで起動</div>
         </div>
       </div>
-      <p class="sub-cap"><b>募集要項</b><span>職安法の明示事項テンプレを内蔵。掲載側が迷わない＝型の実務価値。</span></p>
+      <p class="sub-cap"><b>職種別ページ（v2の中心）</b><span>4サイト共通構造の抽出。紹介＋要項を1枚に統合し運用負荷を下げる。媒体・検索からの直接着地先。</span></p>
     </div>
     <div>
       <div class="frame">
-        <div class="bar">/voice</div>
+        <div class="bar">/flow — 見学・応募の流れ</div>
         <div class="screen">
-          <div class="wf wf-img" style="min-height:90px"><span class="t">写真大（横位置）</span></div>
-          <div class="wf"><span class="t">Q. 入職の理由</span><div class="lines"><i class="w80"></i><i class="w60"></i></div></div>
-          <div class="wf"><span class="t">Q. 前職との違い</span><div class="lines"><i class="w80"></i><i class="w60"></i></div></div>
-          <div class="wf"><span class="t">Q. 応募者へ一言</span><div class="lines"><i class="w60"></i></div></div>
-          <div class="wf wf-cta"><span class="t">応募する</span></div>
+          <div class="wf wf-chat"><span class="t">STEP 0　チャットで相談</span>匿名OK（任意）</div>
+          <div class="wf"><span class="t">STEP 1　見学（30分・私服OK）</span>当日の流れを写真つきで</div>
+          <div class="wf"><span class="t">STEP 2　面接（1回）</span>持ち物・所要時間</div>
+          <div class="wf"><span class="t">STEP 3　入職</span>初日の流れ・トレーナー紹介</div>
+          <div class="wf wf-cta"><span class="t">見学を予約する</span></div>
         </div>
       </div>
-      <p class="sub-cap"><b>インタビュー</b><span>質問は全員共通4問に固定して取材・制作を型化。記事末尾にもCTA。</span></p>
+      <p class="sub-cap"><b>見学・応募の流れ</b><span>REF 2 /tour/・REF 4 /explanation/ の型。プロセスの可視化＝不安の除去。</span></p>
     </div>
     <div>
       <div class="frame">
-        <div class="bar">/entry</div>
+        <div class="bar">/entry — エントリー</div>
         <div class="screen">
           <div class="wf"><span class="t">応募 or 見学 の選択</span></div>
           <div class="wf wf-ghost">お名前</div>
@@ -379,15 +463,15 @@
           <div class="wf wf-ghost">希望職種</div>
           <div class="wf wf-ghost">連絡のつきやすい時間帯</div>
           <div class="wf wf-cta"><span class="t">送信する</span></div>
-          <div class="wf"><span class="t">LINEで応募・相談</span>フォームが面倒な人の受け皿</div>
+          <div class="wf wf-chat"><span class="t">💬 フォームより先に聞きたいことがある方はチャットへ</span></div>
         </div>
       </div>
-      <p class="sub-cap"><b>フォーム</b><span>必須4項目・履歴書添付なし。送信後「◯営業日以内に連絡」を明示。</span></p>
+      <p class="sub-cap"><b>エントリー</b><span>必須4項目・履歴書添付なし。離脱の受け皿をLINEからチャットに変更（自社資産に寄せる）。</span></p>
     </div>
   </div>
 
-  <h2><span class="no">05</span>法令チェックリスト（募集要項テンプレに内蔵）</h2>
-  <p class="lede">職業安定法により募集時の労働条件明示は義務。2024年4月改正の追加3項目（<em style="color:var(--accent);font-style:normal;font-weight:700">緑字</em>）を漏らさない。なお採用サイト自体は患者への誘引性がないため医療広告ガイドラインの対象外 — ただし患者向けHPと兼用すると対象になり得るため分離する。</p>
+  <h2><span class="no">07</span>法令チェックリスト（募集要項テンプレに内蔵）</h2>
+  <p class="lede">職業安定法により募集時の労働条件明示は義務。2024年4月改正の追加3項目（<em>緑字</em>）を漏らさない。採用サイト自体は誘引性がなく医療広告ガイドライン対象外 — REF 3のように患者向けサイトと分離するのが安全。<em>チャットの応答も募集条件に触れる場合は要項と同期させる。</em></p>
   <ul class="check">
     <li>業務内容 ＋ <em>変更の範囲（2024/4追加）</em></li>
     <li>就業場所 ＋ <em>変更の範囲（2024/4追加）</em></li>
@@ -401,12 +485,14 @@
   </ul>
 
   <footer class="src">
-    <h2><span class="no">06</span>主要ソース</h2>
+    <h2><span class="no">08</span>参考サイト・ソース</h2>
     <ul>
-      <li><a href="https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/koyou/haken-shoukai/r0604anteisokukaisei1.html">厚生労働省：令和6年4月 募集時等に明示すべき事項の追加</a></li>
-      <li><a href="https://www.mhlw.go.jp/content/10800000/000927804.pdf">厚生労働省：医療広告ガイドライン</a>（採用目的の情報は誘引性を欠くため対象外）</li>
-      <li><a href="https://medical-saponet.mynavi.jp/news/industry/detail_4498/">メディカルサポネット：看護学生就職活動意識調査</a>（重視項目：勤務地・休日休暇）</li>
-      <li>事例集：<a href="https://word-inc.com/tech-blog/tech-blog-3604">株式会社ワード 8選</a> / <a href="https://www.freestyle-entertainment.co.jp/blog/nurse-ranking/">看護部サイト9選</a> / <a href="https://local-saiyo.jp/blog/recruitment-site/design/job/p5241/">病院・クリニック11選</a> / <a href="https://itreat.co.jp/blog/recruit-design">itreat 8選</a> / <a href="https://medical-link.co.jp/recruiting-labor/14380/">メディカルリンク 8選</a></li>
+      <li><a href="https://jc-recruit.jp/">自由が丘クリニックグループ 求人・転職サイト</a>（REF 1）</li>
+      <li><a href="https://www.ritsuno-recruit.com/">りつの内視鏡クリニック 採用サイト</a>（REF 2）</li>
+      <li><a href="https://www.kajigaya-clinic.com/recruit/">梶ヶ谷クリニック 採用専用サイト</a>（REF 3）</li>
+      <li><a href="https://www.keiyu-hospital.com/recruit/">けいゆう病院 採用サイト</a>（REF 4）</li>
+      <li><a href="https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/koyou/haken-shoukai/r0604anteisokukaisei1.html">厚労省：令和6年4月 募集時等に明示すべき事項の追加</a> / <a href="https://www.mhlw.go.jp/content/10800000/000927804.pdf">医療広告ガイドライン</a></li>
     </ul>
+    <p class="caveat">注記: 参考4サイトはネットワーク制限によりページ本体を直接取得できなかったため、構造は検索エンジンにインデックスされた下層URL群と検索結果情報から再構成した。ページ内のセクション順序・ビジュアルトーンは推定を含む。</p>
   </footer>
 </div>
