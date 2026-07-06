@@ -2,7 +2,7 @@ import Link from 'next/link';
 import RecruitLayout, { Photo } from '../../components/recruit/RecruitLayout';
 import { useRecruitChat } from '../../components/recruit/ChatWidget';
 import { Reveal, CountUp } from '../../components/recruit/Reveal';
-import { clinic, stats, director, jobs, voices, support, flowSteps, faqs, chatScript } from '../../lib/recruit/site-data';
+import { clinic, stats, director, jobs, voices, support, flowSteps, faqs, chatScript, policies } from '../../lib/recruit/site-data';
 
 function Eyebrow({ en, ja }) {
   return (
@@ -63,7 +63,13 @@ function Hero() {
           </div>
         </div>
         <div className="rc-hero-in max-w-md ml-auto w-full" style={{ '--rc-delay': '260ms' }}>
-          <Photo label="スタッフの働く姿（実写に差し替え）" scene="staff" ratio="aspect-[4/5] md:aspect-[4/4.6]" className="shadow-xl shadow-rc-teal/10" />
+          <Photo
+            label="受付・院内の写真"
+            scene={clinic.heroScene || 'staff'}
+            src={clinic.photos?.hero}
+            ratio="aspect-[4/5] md:aspect-[4/4.6]"
+            className="shadow-xl shadow-rc-teal/10"
+          />
         </div>
       </div>
     </section>
@@ -103,7 +109,7 @@ function Director() {
   return (
     <section className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20 grid md:grid-cols-[1fr_1.4fr] gap-8 md:gap-12 items-start">
       <Reveal>
-        <Photo label="院長の写真" scene="director" ratio="aspect-[3/3.4]" />
+        <Photo label={`${director.title}の写真`} scene="director" src={clinic.photos?.director} ratio="aspect-[3/3.4]" />
         <div className="mt-3 text-sm">
           <span className="font-bold">{director.name}</span>
           <span className="text-rc-ink-soft ml-2">{director.title}</span>
@@ -115,6 +121,34 @@ function Director() {
           {director.message.map((p, i) => <p key={i}>{p}</p>)}
         </div>
       </Reveal>
+    </section>
+  );
+}
+
+/* 3.5 治療ポリシー（データに policies がある場合のみ表示） */
+function Policies() {
+  if (!policies) return null;
+  return (
+    <section className="bg-white border-y border-rc-sand">
+      <div className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20">
+        <Reveal>
+          <div className="text-center max-w-2xl mx-auto">
+            <div className="text-[11px] tracking-[0.25em] text-rc-teal font-bold">OUR POLICY</div>
+            <p className="rc-mincho text-2xl md:text-[32px] font-semibold text-rc-ink mt-2 leading-snug" style={{ textWrap: 'balance' }}>
+              「{policies.slogan}」
+            </p>
+            <p className="text-sm text-rc-ink-soft mt-4 leading-7">{policies.intro}</p>
+          </div>
+        </Reveal>
+        <ol className="grid md:grid-cols-2 gap-4 mt-10 max-w-3xl mx-auto">
+          {policies.items.map((p, i) => (
+            <Reveal key={p} delay={i * 90} as="li" className="flex gap-4 rounded-xl bg-rc-ivory border border-rc-sand p-5">
+              <span className="rc-mincho text-2xl font-semibold text-rc-teal shrink-0 leading-none mt-0.5">{String(i + 1).padStart(2, '0')}</span>
+              <p className="text-[14px] leading-7">{p}</p>
+            </Reveal>
+          ))}
+        </ol>
+      </div>
     </section>
   );
 }
@@ -352,6 +386,7 @@ export default function RecruitTop() {
       <Hero />
       <Stats />
       <Director />
+      <Policies />
       <JobsIndex />
       <Voices />
       <Support />

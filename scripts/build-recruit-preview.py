@@ -1,0 +1,175 @@
+#!/usr/bin/env python3
+# 採用LPの自己完結プレビューHTMLを生成する。
+# 使い方: npm run build && python3 scripts/build-recruit-preview.py
+# 出力: docs/recruit-site-template/adeb-lp-preview.html
+# （ビルド済みSSG HTMLを1ファイルに束ね、ページ遷移とチャットをバニラJSで再現。
+#   Vercel等が使えない相手にもブラウザだけで見せられる。）
+
+import glob
+import json
+import os
+import re
+
+css = open(glob.glob(".next/static/chunks/*.css")[0]).read()
+
+
+def extract(path):
+    html = open(path).read()
+    start = html.index('<div id="__next">') + len('<div id="__next">')
+    end = html.index('<script id="__NEXT_DATA__"')
+    content = html[start:end].rstrip()
+    assert content.endswith("</div>")
+    content = content[: -len("</div>")]
+    # 未配置の実写<img>を除去（プレビューでは下層のイラストを見せる）
+    content = re.sub(r'<img[^>]*recruit-photos[^>]*/?>', "", content)
+    return content
+
+
+PAGES = {
+    "r-top": ".next/server/pages/recruit.html",
+    "r-flow": ".next/server/pages/recruit/flow.html",
+    "r-entry": ".next/server/pages/recruit/entry.html",
+    "r-nurse": ".next/server/pages/recruit/jobs/nurse.html",
+    "r-counselor": ".next/server/pages/recruit/jobs/counselor.html",
+    "r-clerk": ".next/server/pages/recruit/jobs/clerk.html",
+}
+sections = "".join(
+    f'<div class="route{" active" if rid == "r-top" else ""}" id="{rid}">{extract(p)}</div>'
+    for rid, p in PAGES.items()
+)
+
+# チャットのナレッジ（lib/recruit/clinics/adeb.js の faqs/chatScript と同期させること）
+FAQS = [
+    'はい。スタッフの多くが美容未経験で入職しています（病棟・一般外来・接客業出身など）。入職後3ヶ月はカウンセリング同席→介助→照射の順に段階的な研修があるので、未経験を前提にした受け入れ体制です。',
+    '個人ノルマはありません。患者さまに必要のない施術を勧めることは医療機関としてしない、というのが院の方針です。給与は歩合ではなく固定給ベースで、詳細は面接時にすべて明示します。',
+    '月平均5.5時間です（サンプル値）。完全予約制の施術が中心のため、終わり時間が読みやすいのが美容クリニックの特徴です。夜勤もありません。',
+    'もちろんです。応募の意思がなくても構いません。30分・私服OK・履歴書不要です。施術室やレーザー機器も見られます。',
+    'あります。施術と院内化粧品を社員価格で利用できます（対象範囲と割引率は面接時にご案内します）。自分で施術を体験できるので、患者さまへの説明にも説得力が出ます。',
+]
+CHAT = {
+    "greeting": "こんにちは！AdeBクリニック採用相談です。匿名のままで大丈夫ですよ。気になることを選ぶか、自由に入力してください。",
+    "chips": [
+        {"label": "美容未経験でも大丈夫？", "i": 0},
+        {"label": "ノルマはある？", "i": 1},
+        {"label": "社員割引はある？", "i": 4},
+        {"label": "見学だけでもいい？", "i": 3},
+    ],
+    "faqs": FAQS,
+    "keywords": [
+        [["未経験", "病棟", "美容経験", "初めて", "はじめて"], 0],
+        [["ノルマ", "営業", "売上", "インセンティブ", "歩合"], 1],
+        [["残業", "定時", "夜勤"], 2],
+        [["見学", "雰囲気", "機器"], 3],
+        [["割引", "社割", "化粧品"], 4],
+    ],
+    "bridge": "よければ30分の見学はいかがですか？私服OK・履歴書不要で、施術室も見られます。",
+    "fallback": "ご質問ありがとうございます。担当者から直接お答えしたいので、よければ見学予約フォームの備考欄にご質問を書いてお送りください。チャットのまま他の質問も歓迎です。",
+}
+
+out = f"""<title>AdeBクリニック 採用LP プレビュー</title>
+<style>
+{css}
+.rc-reveal {{ opacity: 1 !important; transform: none !important; }}
+.route {{ display: none; }}
+.route.active {{ display: block; }}
+body.chat-open button[aria-label="採用相談チャットを開く"] {{ display: none !important; }}
+.pv-note {{ background:#33282C; color:#fff; font-size:12px; padding:7px 14px; text-align:center;
+  font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans",sans-serif; }}
+.pv-note b {{ color:#F1C7D2; }}
+#pv-chat {{ display:none; }}
+#pv-chat.open {{ display:flex; }}
+</style>
+<div class="pv-note"><b>プレビュー版</b>（実装コードの静的書き出し）— ページ遷移・チャット・FAQは動作します。実写写真は public/recruit-photos/ に配置後に反映（現在はイラスト表示）。</div>
+{sections}
+
+<div id="pv-chat" class="theme-adeb fixed z-50 inset-x-0 bottom-0 md:inset-auto md:bottom-6 md:right-6 md:w-[380px] flex-col bg-white md:rounded-2xl shadow-2xl border border-rc-sand max-h-[85dvh] md:max-h-[600px]" style="flex-direction:column" role="dialog" aria-label="採用相談チャット">
+  <div class="flex items-center gap-3 px-4 py-3 bg-rc-teal text-white md:rounded-t-2xl">
+    <div class="flex-1 leading-tight">
+      <div class="text-sm font-bold">採用相談チャット</div>
+      <div class="text-[11px] text-white/80">匿名OK・24時間受付 — AdeBクリニック</div>
+    </div>
+    <button id="pv-chat-close" class="p-1 rounded hover:bg-white/15" aria-label="チャットを閉じる">✕</button>
+  </div>
+  <div id="pv-chat-log" class="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-rc-ivory" style="min-height:260px"></div>
+  <form id="pv-chat-form" class="flex items-center gap-2 px-3 py-3 border-t border-rc-sand bg-white md:rounded-b-2xl">
+    <input id="pv-chat-input" placeholder="質問を入力（匿名OK）" class="flex-1 text-sm rounded-full border border-rc-sand bg-rc-ivory px-4 py-2.5" aria-label="質問を入力" />
+    <button type="submit" class="shrink-0 rounded-full bg-rc-teal text-white px-4 py-2.5 text-sm font-bold" aria-label="送信">→</button>
+  </form>
+</div>
+
+<script>
+var CHAT = {json.dumps(CHAT, ensure_ascii=False)};
+var ROUTES = {{'/recruit':'r-top','/recruit/flow':'r-flow','/recruit/entry':'r-entry','/recruit/jobs/nurse':'r-nurse','/recruit/jobs/counselor':'r-counselor','/recruit/jobs/clerk':'r-clerk'}};
+function go(path, hash) {{
+  var id = ROUTES[path] || 'r-top';
+  document.querySelectorAll('.route').forEach(function(r) {{ r.classList.toggle('active', r.id === id); }});
+  if (hash) {{ var el = document.querySelector('#' + id + ' [id="' + hash + '"]'); if (el) {{ el.scrollIntoView(); return; }} }}
+  window.scrollTo(0, 0);
+}}
+document.addEventListener('click', function(e) {{
+  var a = e.target.closest('a');
+  if (a) {{
+    var href = a.getAttribute('href') || '';
+    if (href.startsWith('/recruit')) {{ e.preventDefault(); var parts = href.split('#'); go(parts[0].split('?')[0], parts[1]); return; }}
+    if (href === '#') {{ e.preventDefault(); return; }}
+  }}
+  var b = e.target.closest('button');
+  if (b) {{
+    var t = (b.textContent || '') + (b.getAttribute('aria-label') || '');
+    if (/採用相談チャットを開く|チャットで相談|相談してみる|匿名で相談|チャットで質問|匿名チャットで相談|日程をチャットで相談|いまチャットで相談/.test(t)) {{ e.preventDefault(); openChat(); }}
+  }}
+}});
+var chatEl = document.getElementById('pv-chat');
+var logEl = document.getElementById('pv-chat-log');
+var started = false;
+function esc(s) {{ var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }}
+function addMsg(from, text) {{
+  var div = document.createElement('div');
+  div.innerHTML = from === 'user'
+    ? '<div class="ml-auto max-w-[85%] w-fit rounded-2xl rounded-br-sm bg-rc-teal text-white px-4 py-2.5 text-sm leading-relaxed">' + esc(text) + '</div>'
+    : '<div class="max-w-[90%] w-fit rounded-2xl rounded-bl-sm bg-white border border-rc-sand px-4 py-2.5 text-sm text-rc-ink leading-relaxed">' + esc(text) + '</div>';
+  logEl.appendChild(div); logEl.scrollTop = logEl.scrollHeight;
+}}
+function addChips() {{
+  var wrap = document.createElement('div'); wrap.className = 'flex flex-wrap gap-2 mt-1';
+  CHAT.chips.forEach(function(c) {{
+    var btn = document.createElement('button');
+    btn.className = 'text-xs font-medium border border-rc-teal text-rc-teal bg-white rounded-full px-3.5 py-1.5';
+    btn.textContent = c.label; btn.onclick = function() {{ answer(c.i, c.label); }};
+    wrap.appendChild(btn);
+  }});
+  logEl.appendChild(wrap); logEl.scrollTop = logEl.scrollHeight;
+}}
+function addBridge() {{
+  addMsg('bot', CHAT.bridge);
+  var wrap = document.createElement('div'); wrap.className = 'flex flex-wrap gap-2 mt-1';
+  var tour = document.createElement('button');
+  tour.className = 'text-xs font-bold bg-rc-teal text-white rounded-full px-4 py-2';
+  tour.textContent = '見学を予約する'; tour.onclick = function() {{ closeChat(); go('/recruit/entry'); }};
+  var more = document.createElement('button');
+  more.className = 'text-xs font-medium border border-rc-sand text-rc-ink-soft bg-white rounded-full px-3.5 py-1.5';
+  more.textContent = '他の質問をする'; more.onclick = function() {{ addMsg('bot', 'どうぞ！よくあるご質問はこちらです。'); addChips(); }};
+  wrap.appendChild(tour); wrap.appendChild(more);
+  logEl.appendChild(wrap); logEl.scrollTop = logEl.scrollHeight;
+}}
+function answer(i, userText) {{ addMsg('user', userText); addMsg('bot', CHAT.faqs[i]); addBridge(); }}
+function openChat() {{
+  chatEl.classList.add('open'); document.body.classList.add('chat-open');
+  if (!started) {{ started = true; addMsg('bot', CHAT.greeting); addChips(); }}
+}}
+function closeChat() {{ chatEl.classList.remove('open'); document.body.classList.remove('chat-open'); }}
+document.getElementById('pv-chat-close').onclick = closeChat;
+document.getElementById('pv-chat-form').addEventListener('submit', function(e) {{
+  e.preventDefault();
+  var input = document.getElementById('pv-chat-input'); var text = input.value.trim();
+  if (!text) return; input.value = '';
+  var hit = null;
+  CHAT.keywords.forEach(function(k) {{ if (hit === null && k[0].some(function(m) {{ return text.indexOf(m) !== -1; }})) hit = k[1]; }});
+  if (hit !== null) {{ answer(hit, text); }} else {{ addMsg('user', text); addMsg('bot', CHAT.fallback); addBridge(); }}
+}});
+</script>
+"""
+
+path = "docs/recruit-site-template/adeb-lp-preview.html"
+open(path, "w").write(out)
+print("written:", path, f"{os.path.getsize(path) / 1024:.0f} KB")

@@ -1,23 +1,36 @@
+import { useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { clinic } from '../../lib/recruit/site-data';
 import { ChatProvider, useRecruitChat } from './ChatWidget';
 import Illust from './Illust';
 
-// 実写差し替え前提のビジュアル枠。scene を渡すとテーマ連動のシーンイラストを描画する。
-// 本番では中身を <img> / next/image に置き換えるだけ（素材写真は使わず必ず院内で撮影する）。
-export function Photo({ label, scene, ratio = 'aspect-[4/3]', className = '' }) {
+// ビジュアル枠。src（実写パス）があれば写真を表示し、
+// 画像が未配置・読み込み失敗のときは scene のイラストに自動フォールバックする。
+// 実写は public/recruit-photos/ にデータ側（clinic.photos）のファイル名で置くだけ。
+export function Photo({ label, scene, src, ratio = 'aspect-[4/3]', className = '' }) {
+  const [imgOk, setImgOk] = useState(Boolean(src));
   return (
     <div
       className={`group/photo relative overflow-hidden rounded-xl bg-gradient-to-br from-rc-teal-soft via-rc-sand to-rc-ivory ${ratio} ${className}`}
       role="img"
-      aria-label={`写真プレースホルダー：${label}`}
+      aria-label={label}
     >
+      {/* イラストは常に下層に敷く（実写が読めないときのフォールバック） */}
       {scene && (
         <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover/photo:scale-[1.04]">
           <Illust scene={scene} />
         </div>
       )}
+      {src && imgOk && (
+        <img
+          src={src}
+          alt=""
+          onError={() => setImgOk(false)}
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover/photo:scale-[1.04]"
+        />
+      )}
+      {imgOk ? null : (
       <div className="absolute bottom-2.5 left-3 flex items-center gap-1.5 text-[11px] text-rc-teal-dark/70 font-medium bg-white/60 rounded-full px-2 py-0.5 backdrop-blur-sm">
         <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
@@ -25,6 +38,7 @@ export function Photo({ label, scene, ratio = 'aspect-[4/3]', className = '' }) 
         </svg>
         {label}
       </div>
+      )}
     </div>
   );
 }

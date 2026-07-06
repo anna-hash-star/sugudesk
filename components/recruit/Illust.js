@@ -99,6 +99,43 @@ const scenes = {
       <rect x="0" y="256" width="400" height="44" fill="var(--color-rc-sand)" opacity="0.6" />
     </>
   ),
+  // AdeBクリニック受付の再現（木ルーバーの天蓋・白い円形カウンター・ピンクのリング床・ロゴ）
+  adebReception: (
+    <>
+      {/* 天井（ダーク）と間接照明 */}
+      <rect x="0" y="0" width="400" height="66" fill="#332D2B" />
+      <path d="M 0 66 Q 90 46 180 60 L 180 66 Z" fill="#F7EFE4" opacity="0.9" />
+      {/* 放射状の木ルーバー */}
+      {Array.from({ length: 17 }).map((_, i) => {
+        const x1 = 200 + (i - 8) * 4;
+        const x2 = 200 + (i - 8) * 22;
+        return <path key={i} d={`M ${x1} 0 L ${x2} 96`} stroke="#E3C48F" strokeWidth="7" strokeLinecap="round" />;
+      })}
+      {/* ルーバーの冠（垂直スラット帯） */}
+      {Array.from({ length: 22 }).map((_, i) => (
+        <rect key={`c${i}`} x={68 + i * 12.5} y={92 + (i % 2) * 5} width="7" height={26 - (i % 2) * 6} rx="2" fill="#DDB97F" />
+      ))}
+      <rect x="64" y="118" width="286" height="5" rx="2.5" fill="#C9A264" />
+      {/* 受付の白壁とロゴ */}
+      <path d="M 96 130 Q 96 122 108 122 L 292 122 Q 304 122 304 130 L 304 216 L 96 216 Z" fill="#FDFBF9" />
+      <path d="M 176 152 L 188 170 L 164 170 Z" fill="#EA4E74" />
+      <circle cx="176" cy="166" r="4" fill="#FDFBF9" />
+      <text x="196" y="164" fontFamily="Helvetica, Arial, sans-serif" fontSize="15" fontWeight="bold" fill="#EA4E74">AdeB</text>
+      <text x="196" y="177" fontFamily="Helvetica, Arial, sans-serif" fontSize="9" fill="#F0879F">Clinic</text>
+      {/* ピンクのリング床 */}
+      <ellipse cx="200" cy="242" rx="130" ry="26" fill="#EA4E74" opacity="0.85" />
+      {/* 円形カウンター（白・下端に光の帯） */}
+      <path d="M 78 208 Q 200 176 322 208 L 322 244 Q 200 270 78 244 Z" fill="#F3EDE2" />
+      <path d="M 78 208 Q 200 176 322 208 L 322 216 Q 200 186 78 216 Z" fill="#FFFFFF" />
+      <rect x="150" y="150" width="34" height="24" rx="3" fill="#E9E2D6" opacity="0" />
+      {/* 木の床 */}
+      <rect x="0" y="258" width="400" height="42" fill="#EBD3A4" />
+      <g stroke="#DCBE86" strokeWidth="1.5">
+        <line x1="0" y1="272" x2="400" y2="272" /><line x1="0" y1="286" x2="400" y2="286" />
+        <line x1="60" y1="258" x2="52" y2="300" /><line x1="180" y1="258" x2="174" y2="300" /><line x1="300" y1="258" x2="296" y2="300" />
+      </g>
+    </>
+  ),
   // 院内（受付カウンターとペンダントライト）
   clinic: (
     <>
