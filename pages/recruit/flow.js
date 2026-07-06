@@ -1,21 +1,24 @@
 import Link from 'next/link';
-import RecruitLayout, { Photo } from '../../components/recruit/RecruitLayout';
+import RecruitLayout, { Photo, hasTour } from '../../components/recruit/RecruitLayout';
 import { useRecruitChat } from '../../components/recruit/ChatWidget';
 import { flowSteps, tourDetail } from '../../lib/recruit/site-data';
 
 export default function FlowPage() {
   const { openChat } = useRecruitChat();
+  const pageTitle = hasTour ? '見学・応募の流れ' : '応募の流れ';
   return (
-    <RecruitLayout title="見学・応募の流れ" description="見学は30分・私服OK・履歴書不要。入職まで最短2週間の流れをご案内します。">
+    <RecruitLayout title={pageTitle} description="入職まで最短2週間。応募は1分・履歴書不要でご案内します。">
       <section className="max-w-3xl mx-auto px-4 md:px-6 pt-10 md:pt-16 pb-12">
         <nav className="text-[12px] text-rc-ink-soft mb-6" aria-label="パンくず">
           <Link href="/recruit" className="hover:text-rc-teal">採用トップ</Link>
           <span className="mx-2">/</span>
-          <span>見学・応募の流れ</span>
+          <span>{pageTitle}</span>
         </nav>
-        <h1 className="rc-mincho text-3xl md:text-4xl font-semibold">見学・応募の流れ</h1>
+        <h1 className="rc-mincho text-3xl md:text-4xl font-semibold">{pageTitle}</h1>
         <p className="text-[15px] leading-8 text-rc-ink-soft mt-4">
-          応募より先に、まず職場を見てほしいと考えています。見学は選考ではありません——評価もメモも取りません。入職まで最短2週間です。
+          {hasTour
+            ? '応募より先に、まず職場を見てほしいと考えています。見学は選考ではありません——評価もメモも取りません。入職まで最短2週間です。'
+            : '応募フォームは1分、面接は1回だけ。面接は選考のためというより、お互いのミスマッチをなくすための場です。院内のご案内もこのときに行います。入職まで最短2週間です。'}
         </p>
 
         <ol className="mt-10 space-y-4">
@@ -37,36 +40,40 @@ export default function FlowPage() {
         </ol>
       </section>
 
-      <section className="bg-white border-y border-rc-sand">
-        <div className="max-w-3xl mx-auto px-4 md:px-6 py-12 md:py-16">
-          <h2 className="rc-mincho text-2xl font-semibold">見学当日の30分</h2>
-          <p className="text-[13px] text-rc-ink-soft mt-2">私服OK・履歴書不要・手ぶらでどうぞ。</p>
-          <div className="grid md:grid-cols-[1fr_240px] gap-8 mt-8 items-start">
-            <ol className="relative border-l-2 border-rc-teal-soft ml-3 space-y-6">
-              {tourDetail.map(d => (
-                <li key={d.time} className="pl-6 relative">
-                  <span className="absolute -left-[7px] top-1.5 w-3 h-3 rounded-full bg-rc-teal" aria-hidden="true" />
-                  <div className="text-[12px] font-bold text-rc-teal" style={{ fontVariantNumeric: 'tabular-nums' }}>{d.time}〜</div>
-                  <h3 className="font-bold text-[15px] mt-0.5">{d.title}</h3>
-                  <p className="text-[13px] text-rc-ink-soft leading-6 mt-1">{d.text}</p>
-                </li>
-              ))}
-            </ol>
-            <Photo label="院内見学の様子" scene="clinic" ratio="aspect-[3/4]" />
+      {hasTour && (
+        <section className="bg-white border-y border-rc-sand">
+          <div className="max-w-3xl mx-auto px-4 md:px-6 py-12 md:py-16">
+            <h2 className="rc-mincho text-2xl font-semibold">見学当日の30分</h2>
+            <p className="text-[13px] text-rc-ink-soft mt-2">私服OK・履歴書不要・手ぶらでどうぞ。</p>
+            <div className="grid md:grid-cols-[1fr_240px] gap-8 mt-8 items-start">
+              <ol className="relative border-l-2 border-rc-teal-soft ml-3 space-y-6">
+                {tourDetail.map(d => (
+                  <li key={d.time} className="pl-6 relative">
+                    <span className="absolute -left-[7px] top-1.5 w-3 h-3 rounded-full bg-rc-teal" aria-hidden="true" />
+                    <div className="text-[12px] font-bold text-rc-teal" style={{ fontVariantNumeric: 'tabular-nums' }}>{d.time}〜</div>
+                    <h3 className="font-bold text-[15px] mt-0.5">{d.title}</h3>
+                    <p className="text-[13px] text-rc-ink-soft leading-6 mt-1">{d.text}</p>
+                  </li>
+                ))}
+              </ol>
+              <Photo label="院内見学の様子" scene="clinic" ratio="aspect-[3/4]" />
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="max-w-3xl mx-auto px-4 md:px-6 py-12 md:py-16 text-center">
-        <p className="rc-mincho text-xl text-rc-teal-dark">見学だけで終わっても、まったく問題ありません。</p>
+        <p className="rc-mincho text-xl text-rc-teal-dark">
+          {hasTour ? '見学だけで終わっても、まったく問題ありません。' : '聞くだけで終わっても、まったく問題ありません。'}
+        </p>
         <div className="flex flex-wrap justify-center gap-3 mt-6">
-          <Link href="/recruit/entry?mode=tour"
+          <Link href={hasTour ? '/recruit/entry?mode=tour' : '/recruit/entry'}
             className="bg-rc-teal text-white font-bold text-[15px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
-            見学を予約する
+            {hasTour ? '見学を予約する' : '応募する（1分）'}
           </Link>
           <button onClick={() => openChat()}
             className="border-2 border-rc-teal text-rc-teal font-bold text-[14px] rounded-full px-6 py-3 hover:bg-rc-teal-soft transition-colors">
-            💬 日程をチャットで相談
+            {hasTour ? '💬 日程をチャットで相談' : '💬 まずチャットで相談'}
           </button>
         </div>
       </section>

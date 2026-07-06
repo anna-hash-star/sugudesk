@@ -43,8 +43,6 @@ PAGES = {
     "r-flow": ".next/server/pages/recruit/flow.html",
     "r-entry": ".next/server/pages/recruit/entry.html",
     "r-nurse": ".next/server/pages/recruit/jobs/nurse.html",
-    "r-counselor": ".next/server/pages/recruit/jobs/counselor.html",
-    "r-clerk": ".next/server/pages/recruit/jobs/clerk.html",
 }
 sections = "".join(
     f'<div class="route{" active" if rid == "r-top" else ""}" id="{rid}">{extract(p)}</div>'
@@ -53,30 +51,30 @@ sections = "".join(
 
 # チャットのナレッジ（lib/recruit/clinics/adeb.js の faqs/chatScript と同期させること）
 FAQS = [
-    'はい。スタッフの多くが美容未経験で入職しています（病棟・一般外来・接客業出身など）。入職後3ヶ月はカウンセリング同席→介助→照射の順に段階的な研修があるので、未経験を前提にした受け入れ体制です。',
-    '個人ノルマはありません。患者さまに必要のない施術を勧めることは医療機関としてしない、というのが院の方針です。給与は歩合ではなく固定給ベースで、詳細は面接時にすべて明示します。',
+    'はい。スタッフの多くが美容未経験で入職しています（病棟・一般外来出身など）。入職後3ヶ月はカウンセリング同席→介助→照射の順に段階的な研修があるので、未経験を前提にした受け入れ体制です。',
+    '個人ノルマはありません。「必要以上の美容治療は行わない」が当院のポリシーとして明文化されており、患者さまに不要なものを勧める仕事はそもそも存在しません。給与は歩合ではなく固定給ベースです。',
     '月平均5.5時間です（サンプル値）。完全予約制の施術が中心のため、終わり時間が読みやすいのが美容クリニックの特徴です。夜勤もありません。',
-    'もちろんです。応募の意思がなくても構いません。30分・私服OK・履歴書不要です。施術室やレーザー機器も見られます。',
-    'あります。施術と院内化粧品を社員価格で利用できます（対象範囲と割引率は面接時にご案内します）。自分で施術を体験できるので、患者さまへの説明にも説得力が出ます。',
+    '応募フォーム（1分・履歴書不要）→ 面接1回（理事長・事務責任者と約45分、院内のご案内つき）→ 入職、で最短2週間です。面接時に給与・シフト・研修内容をすべて明示します。',
+    'あります。施術に加えて、自社開発のスキンケア「FLALU COSME」を社員価格で使えます。自分で使って良さを実感しているから、患者さまへのホームケア提案にも説得力が出ます。',
 ]
 CHAT = {
     "greeting": "こんにちは！AdeBクリニック採用相談です。匿名のままで大丈夫ですよ。気になることを選ぶか、自由に入力してください。",
     "chips": [
         {"label": "美容未経験でも大丈夫？", "i": 0},
         {"label": "ノルマはある？", "i": 1},
+        {"label": "応募の流れは？", "i": 3},
         {"label": "社員割引はある？", "i": 4},
-        {"label": "見学だけでもいい？", "i": 3},
     ],
     "faqs": FAQS,
     "keywords": [
         [["未経験", "病棟", "美容経験", "初めて", "はじめて"], 0],
         [["ノルマ", "営業", "売上", "インセンティブ", "歩合"], 1],
         [["残業", "定時", "夜勤"], 2],
-        [["見学", "雰囲気", "機器"], 3],
-        [["割引", "社割", "化粧品"], 4],
+        [["流れ", "応募方法", "入職", "面接", "見学", "選考"], 3],
+        [["割引", "社割", "化粧品", "FLALU", "フラル"], 4],
     ],
-    "bridge": "よければ30分の見学はいかがですか？私服OK・履歴書不要で、施術室も見られます。",
-    "fallback": "ご質問ありがとうございます。担当者から直接お答えしたいので、よければ見学予約フォームの備考欄にご質問を書いてお送りください。チャットのまま他の質問も歓迎です。",
+    "bridge": "応募は1分で完了します（履歴書はまだ不要・面接は1回だけ）。よければどうぞ。",
+    "fallback": "ご質問ありがとうございます。担当者から直接お答えしたいので、よければ応募フォームの備考欄にご質問を書いてお送りください。チャットのまま他の質問も歓迎です。",
 }
 
 out = f"""<title>AdeBクリニック 採用LP プレビュー</title>
@@ -112,7 +110,7 @@ body.chat-open button[aria-label="採用相談チャットを開く"] {{ display
 
 <script>
 var CHAT = {json.dumps(CHAT, ensure_ascii=False)};
-var ROUTES = {{'/recruit':'r-top','/recruit/flow':'r-flow','/recruit/entry':'r-entry','/recruit/jobs/nurse':'r-nurse','/recruit/jobs/counselor':'r-counselor','/recruit/jobs/clerk':'r-clerk'}};
+var ROUTES = {{'/recruit':'r-top','/recruit/flow':'r-flow','/recruit/entry':'r-entry','/recruit/jobs/nurse':'r-nurse'}};
 function go(path, hash) {{
   var id = ROUTES[path] || 'r-top';
   document.querySelectorAll('.route').forEach(function(r) {{ r.classList.toggle('active', r.id === id); }});
@@ -158,7 +156,7 @@ function addBridge() {{
   var wrap = document.createElement('div'); wrap.className = 'flex flex-wrap gap-2 mt-1';
   var tour = document.createElement('button');
   tour.className = 'text-xs font-bold bg-rc-teal text-white rounded-full px-4 py-2';
-  tour.textContent = '見学を予約する'; tour.onclick = function() {{ closeChat(); go('/recruit/entry'); }};
+  tour.textContent = '応募フォームへ'; tour.onclick = function() {{ closeChat(); go('/recruit/entry'); }};
   var more = document.createElement('button');
   more.className = 'text-xs font-medium border border-rc-sand text-rc-ink-soft bg-white rounded-full px-3.5 py-1.5';
   more.textContent = '他の質問をする'; more.onclick = function() {{ addMsg('bot', 'どうぞ！よくあるご質問はこちらです。'); addChips(); }};

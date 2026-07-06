@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import RecruitLayout, { Photo } from '../../components/recruit/RecruitLayout';
+import RecruitLayout, { Photo, hasTour } from '../../components/recruit/RecruitLayout';
 import { useRecruitChat } from '../../components/recruit/ChatWidget';
 import { Reveal, CountUp } from '../../components/recruit/Reveal';
-import { clinic, stats, director, jobs, voices, support, flowSteps, faqs, chatScript, policies } from '../../lib/recruit/site-data';
+import { clinic, stats, director, jobs, voices, support, flowSteps, faqs, chatScript, policies, signature } from '../../lib/recruit/site-data';
 
 function Eyebrow({ en, ja }) {
   return (
@@ -52,10 +52,12 @@ function Hero() {
               className="bg-rc-teal text-white font-bold text-[15px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
               応募する
             </Link>
-            <Link href="/recruit/flow"
-              className="border-2 border-rc-teal text-rc-teal font-bold text-[15px] rounded-full px-7 py-3 hover:bg-rc-teal-soft transition-colors">
-              まず見学する
-            </Link>
+            {hasTour && (
+              <Link href="/recruit/flow"
+                className="border-2 border-rc-teal text-rc-teal font-bold text-[15px] rounded-full px-7 py-3 hover:bg-rc-teal-soft transition-colors">
+                まず見学する
+              </Link>
+            )}
             <button onClick={() => openChat()}
               className="text-[14px] font-bold text-rc-teal underline underline-offset-4 decoration-rc-teal/40 hover:decoration-rc-teal transition-colors">
               💬 匿名で相談する
@@ -153,6 +155,26 @@ function Policies() {
   );
 }
 
+/* 3.7 当院ならではの強み（データに signature がある場合のみ表示・FLALU COSME等） */
+function Signature() {
+  if (!signature) return null;
+  return (
+    <section className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20 grid md:grid-cols-[1.1fr_1fr] gap-10 items-center">
+      <Reveal>
+        <Eyebrow en={signature.eyebrow} ja={signature.title} />
+        <div className="space-y-4 text-[15px] leading-8 text-rc-ink max-w-xl">
+          {signature.body.map((p, i) => <p key={i}>{p}</p>)}
+        </div>
+      </Reveal>
+      <Reveal delay={150}>
+        <figure className="rounded-xl overflow-hidden bg-white border border-rc-sand shadow-lg shadow-rc-teal/10">
+          <img src={signature.image} alt={signature.imageAlt} className="w-full h-auto" />
+        </figure>
+      </Reveal>
+    </section>
+  );
+}
+
 /* 4. 職種から探す（v2の中心：職種別ページへのハブ） */
 function JobsIndex() {
   return (
@@ -160,9 +182,11 @@ function JobsIndex() {
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20">
         <div className="mb-8">
           <div className="text-[11px] tracking-[0.25em] text-rc-teal-soft font-bold">OPEN POSITIONS</div>
-          <h2 className="rc-mincho text-2xl md:text-[32px] font-semibold text-white mt-1.5">職種から探す</h2>
+          <h2 className="rc-mincho text-2xl md:text-[32px] font-semibold text-white mt-1.5">
+            {jobs.length === 1 ? `募集職種：${jobs[0].title}` : '職種から探す'}
+          </h2>
         </div>
-        <div className="grid md:grid-cols-3 gap-4">
+        <div className={jobs.length === 1 ? 'grid max-w-xl' : 'grid md:grid-cols-3 gap-4'}>
           {jobs.map((j, i) => (
             <Reveal key={j.slug} delay={i * 110}>
             <Link href={`/recruit/jobs/${j.slug}`}
@@ -261,7 +285,7 @@ function ChatSection() {
         <Eyebrow en="CHAT" ja="応募の前に、聞きにくいことを聞いてください。" />
         <p className="text-[15px] leading-8 text-rc-ink-soft">
           電話は緊張するし、メールは重い。だから当院は<b className="text-rc-ink">匿名で使えるチャット相談</b>を用意しました。
-          給与のこと、ブランクのこと、シフトの融通のこと——応募を決める前の質問こそ歓迎です。お名前や連絡先は、見学を予約するときまで不要です。
+          給与のこと、未経験のこと、シフトの融通のこと——応募を決める前の質問こそ歓迎です。お名前や連絡先は、応募するときまで不要です。
         </p>
         <ul className="mt-5 space-y-2 text-[14px]">
           {['匿名のままでOK・連絡先は不要', '24時間いつでも受付（夜勤明けでも）', '回答は募集要項と同じ内容を保証'].map(t => (
@@ -319,7 +343,7 @@ function FlowDigest() {
         </ol>
         <div className="mt-8">
           <Link href="/recruit/flow" className="text-[14px] font-bold text-rc-teal hover:underline underline-offset-4">
-            見学当日の流れをくわしく見る →
+            {hasTour ? '見学当日の流れをくわしく見る →' : '応募から入職までをくわしく見る →'}
           </Link>
         </div>
       </div>
@@ -362,13 +386,17 @@ function Closing() {
     <section className="bg-rc-teal">
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-16 md:py-20 text-center">
         <h2 className="rc-mincho text-2xl md:text-[32px] font-semibold text-white leading-snug" style={{ textWrap: 'balance' }}>
-          まずは30分、見学だけでも。
+          {hasTour ? 'まずは30分、見学だけでも。' : '迷ったら、まず聞くだけでも。'}
         </h2>
-        <p className="text-white/80 text-[14px] mt-3">私服OK・履歴書不要。職場の空気を見てから決めてください。</p>
+        <p className="text-white/80 text-[14px] mt-3">
+          {hasTour
+            ? '私服OK・履歴書不要。職場の空気を見てから決めてください。'
+            : '匿名チャットOK・応募は1分・面接は1回だけ。履歴書はまだ不要です。'}
+        </p>
         <div className="flex flex-wrap justify-center items-center gap-3 mt-8">
           <Link href="/recruit/entry"
             className="bg-white text-rc-teal font-bold text-[15px] rounded-full px-8 py-3.5 hover:bg-rc-ivory transition-colors">
-            応募・見学を予約する
+            {hasTour ? '応募・見学を予約する' : '応募する'}
           </Link>
           <button onClick={() => openChat()}
             className="border-2 border-white/70 text-white font-bold text-[15px] rounded-full px-7 py-3 hover:bg-white/10 transition-colors">
@@ -387,6 +415,7 @@ export default function RecruitTop() {
       <Stats />
       <Director />
       <Policies />
+      <Signature />
       <JobsIndex />
       <Voices />
       <Support />

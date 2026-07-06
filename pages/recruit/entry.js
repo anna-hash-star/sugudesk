@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import RecruitLayout from '../../components/recruit/RecruitLayout';
+import RecruitLayout, { hasTour } from '../../components/recruit/RecruitLayout';
 import { useRecruitChat } from '../../components/recruit/ChatWidget';
 import { jobs } from '../../lib/recruit/site-data';
 
@@ -18,7 +18,7 @@ export default function EntryPage() {
   // クエリを初期値に反映（?mode=tour：チャット/フローからの見学導線、?job=nurse：職種ページからの導線）
   useEffect(() => {
     if (!router.isReady) return;
-    if (router.query.mode === 'tour') setMode('tour');
+    if (hasTour && router.query.mode === 'tour') setMode('tour');
     if (typeof router.query.job === 'string') {
       setForm(f => (f.job ? f : { ...f, job: router.query.job }));
     }
@@ -74,36 +74,39 @@ export default function EntryPage() {
       errors[key] ? 'border-rc-apricot focus:border-rc-apricot focus:ring-rc-apricot' : 'border-rc-sand focus:border-rc-teal focus:ring-rc-teal'
     }`;
 
+  const pageTitle = hasTour ? '応募・見学予約' : '応募フォーム';
   return (
-    <RecruitLayout title="応募・見学予約" description="入力は4項目・1分で完了。履歴書は不要です。">
+    <RecruitLayout title={pageTitle} description="入力は4項目・1分で完了。履歴書は不要です。">
       <section className="max-w-xl mx-auto px-4 md:px-6 pt-10 md:pt-16 pb-16">
         <nav className="text-[12px] text-rc-ink-soft mb-6" aria-label="パンくず">
           <Link href="/recruit" className="hover:text-rc-teal">採用トップ</Link>
           <span className="mx-2">/</span>
-          <span>応募・見学予約</span>
+          <span>{pageTitle}</span>
         </nav>
-        <h1 className="rc-mincho text-3xl font-semibold">応募・見学予約</h1>
+        <h1 className="rc-mincho text-3xl font-semibold">{pageTitle}</h1>
         <p className="text-[14px] text-rc-ink-soft mt-3">入力は4項目・1分で完了します。履歴書はまだ不要です。</p>
 
-        {/* 応募 or 見学 */}
-        <div className="grid grid-cols-2 gap-2 mt-8 rounded-full bg-white border border-rc-sand p-1.5" role="tablist" aria-label="応募か見学かを選択">
-          {[
-            { key: 'apply', label: '応募する' },
-            { key: 'tour', label: 'まず見学する' },
-          ].map(t => (
-            <button
-              key={t.key}
-              role="tab"
-              aria-selected={mode === t.key}
-              onClick={() => setMode(t.key)}
-              className={`text-[14px] font-bold rounded-full py-2.5 transition-colors ${
-                mode === t.key ? 'bg-rc-teal text-white' : 'text-rc-ink-soft hover:text-rc-teal'
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
+        {/* 応募 or 見学（見学を実施するクリニックのみ） */}
+        {hasTour && (
+          <div className="grid grid-cols-2 gap-2 mt-8 rounded-full bg-white border border-rc-sand p-1.5" role="tablist" aria-label="応募か見学かを選択">
+            {[
+              { key: 'apply', label: '応募する' },
+              { key: 'tour', label: 'まず見学する' },
+            ].map(t => (
+              <button
+                key={t.key}
+                role="tab"
+                aria-selected={mode === t.key}
+                onClick={() => setMode(t.key)}
+                className={`text-[14px] font-bold rounded-full py-2.5 transition-colors ${
+                  mode === t.key ? 'bg-rc-teal text-white' : 'text-rc-ink-soft hover:text-rc-teal'
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6" noValidate>
           <div>

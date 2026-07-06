@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import RecruitLayout, { Photo } from '../../../components/recruit/RecruitLayout';
+import RecruitLayout, { Photo, hasTour } from '../../../components/recruit/RecruitLayout';
 import { useRecruitChat } from '../../../components/recruit/ChatWidget';
 import { Reveal } from '../../../components/recruit/Reveal';
 import { clinic, jobs, voices } from '../../../lib/recruit/site-data';
@@ -174,7 +174,9 @@ export default function JobPage({ slug }) {
 
       {/* クロージング */}
       <section className="max-w-3xl mx-auto px-4 md:px-6 py-12 md:py-16 text-center">
-        <p className="rc-mincho text-xl text-rc-teal-dark mb-6">迷っているなら、見学からで大丈夫です。</p>
+        <p className="rc-mincho text-xl text-rc-teal-dark mb-6">
+          {hasTour ? '迷っているなら、見学からで大丈夫です。' : '迷っているなら、チャットで聞くだけでも大丈夫です。'}
+        </p>
         <div className="flex justify-center">
           <JobCta job={job} />
         </div>

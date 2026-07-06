@@ -140,10 +140,10 @@ export function ChatProvider({ children }) {
                 {m.bridge && (
                   <div className="flex flex-wrap gap-2 mt-2.5">
                     <Link
-                      href="/recruit/entry?mode=tour"
+                      href={chatScript.bridgeCta?.href || '/recruit/entry'}
                       className="text-xs font-bold bg-rc-teal text-white rounded-full px-4 py-2 hover:bg-rc-teal-dark transition-colors"
                     >
-                      見学を予約する
+                      {chatScript.bridgeCta?.label || '応募フォームへ'}
                     </Link>
                     <button
                       onClick={askMore}

@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { clinic } from '../../lib/recruit/site-data';
+import { clinic, tourDetail } from '../../lib/recruit/site-data';
+
+// 見学を実施しないクリニック（tourDetail が null）では見学系の導線・文言を出さない
+export const hasTour = Boolean(tourDetail);
 import { ChatProvider, useRecruitChat } from './ChatWidget';
 import Illust from './Illust';
 
@@ -49,7 +52,7 @@ function HeaderNav() {
     { label: '数字で見る', href: '/recruit#stats' },
     { label: '職種', href: '/recruit#jobs' },
     { label: 'スタッフの声', href: '/recruit#voice' },
-    { label: '見学・応募の流れ', href: '/recruit/flow' },
+    { label: hasTour ? '見学・応募の流れ' : '応募の流れ', href: '/recruit/flow' },
     { label: 'FAQ', href: '/recruit#faq' },
   ];
   return (
