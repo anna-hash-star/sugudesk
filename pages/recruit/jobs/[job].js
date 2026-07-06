@@ -1,0 +1,150 @@
+import { useState } from 'react';
+import Link from 'next/link';
+import RecruitLayout, { Photo } from '../../../components/recruit/RecruitLayout';
+import { useRecruitChat } from '../../../components/recruit/ChatWidget';
+import { jobs, voices } from '../../../lib/recruit/site-data';
+
+export function getStaticPaths() {
+  return {
+    paths: jobs.map(j => ({ params: { job: j.slug } })),
+    fallback: false,
+  };
+}
+
+export function getStaticProps({ params }) {
+  const job = jobs.find(j => j.slug === params.job);
+  return { props: { slug: job.slug } };
+}
+
+function JobCta({ job }) {
+  const { openChat } = useRecruitChat();
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Link href={`/recruit/entry?job=${job.slug}`}
+        className="bg-rc-teal text-white font-bold text-[15px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
+        {job.title}に応募する
+      </Link>
+      {/* 職種コンテキストを引き継いでチャット起動 */}
+      <button onClick={() => openChat(job.title)}
+        className="border-2 border-rc-teal text-rc-teal font-bold text-[14px] rounded-full px-6 py-3 hover:bg-rc-teal-soft transition-colors">
+        💬 この職種について質問する
+      </button>
+    </div>
+  );
+}
+
+export default function JobPage({ slug }) {
+  const job = jobs.find(j => j.slug === slug);
+  const voice = voices.find(v => v.id === job.voiceId);
+  const [typeIndex, setTypeIndex] = useState(0);
+  const employment = job.employmentTypes[typeIndex];
+
+  return (
+    <RecruitLayout title={`${job.title} 募集要項`} description={job.summary}>
+      {/* 職種ヒーロー */}
+      <section className="max-w-6xl mx-auto px-4 md:px-6 pt-10 md:pt-16 pb-10">
+        <nav className="text-[12px] text-rc-ink-soft mb-6" aria-label="パンくず">
+          <Link href="/recruit" className="hover:text-rc-teal">採用トップ</Link>
+          <span className="mx-2">/</span>
+          <span>{job.title}</span>
+        </nav>
+        <div className="grid md:grid-cols-[1.2fr_1fr] gap-8 items-center">
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="rc-mincho text-3xl md:text-4xl font-semibold">{job.title}</h1>
+              <div className="flex gap-1.5">
+                {job.employmentTypes.map(e => (
+                  <span key={e.type} className="text-[11px] font-bold text-rc-teal bg-rc-teal-soft rounded px-2 py-1">{e.type}</span>
+                ))}
+              </div>
+            </div>
+            <p className="rc-mincho text-lg md:text-xl text-rc-teal-dark mt-4 leading-relaxed">{job.catch}</p>
+            <p className="text-[14px] leading-7 text-rc-ink-soft mt-4 max-w-xl">{job.summary}</p>
+            <div className="mt-7">
+              <JobCta job={job} />
+            </div>
+          </div>
+          <Photo label={`${job.title}の働く姿`} ratio="aspect-[4/3]" />
+        </div>
+      </section>
+
+      {/* 1日の流れ */}
+      <section className="bg-white border-y border-rc-sand">
+        <div className="max-w-3xl mx-auto px-4 md:px-6 py-12 md:py-16">
+          <h2 className="rc-mincho text-2xl font-semibold mb-8">1日の流れ</h2>
+          <ol className="relative border-l-2 border-rc-teal-soft ml-3 space-y-6">
+            {job.day.map(d => (
+              <li key={d.time} className="pl-6 relative">
+                <span className="absolute -left-[7px] top-1.5 w-3 h-3 rounded-full bg-rc-teal" aria-hidden="true" />
+                <span className="text-[13px] font-bold text-rc-teal mr-3" style={{ fontVariantNumeric: 'tabular-nums' }}>{d.time}</span>
+                <span className="text-[14px]">{d.text}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* この職種の先輩の声 */}
+      {voice && (
+        <section className="max-w-3xl mx-auto px-4 md:px-6 py-12 md:py-16">
+          <h2 className="rc-mincho text-2xl font-semibold mb-6">この職種の先輩</h2>
+          <div className="rounded-2xl bg-white border border-rc-sand p-6 md:p-8 grid md:grid-cols-[160px_1fr] gap-6">
+            <Photo label={voice.photoLabel} ratio="aspect-square" />
+            <div>
+              <div className="text-[12px] text-rc-ink-soft">{voice.role}・{voice.years}</div>
+              <p className="text-[14px] leading-7 mt-3">{voice.reason}</p>
+              <p className="text-[13px] text-rc-ink-soft leading-relaxed mt-3">{voice.gap}</p>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* 募集要項：職安法の明示9項目（2024年4月改正対応）を内蔵 */}
+      <section className="bg-white border-y border-rc-sand">
+        <div className="max-w-3xl mx-auto px-4 md:px-6 py-12 md:py-16">
+          <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
+            <h2 className="rc-mincho text-2xl font-semibold">募集要項</h2>
+            {job.employmentTypes.length > 1 && (
+              <div className="flex rounded-full bg-rc-ivory border border-rc-sand p-1" role="tablist" aria-label="雇用形態">
+                {job.employmentTypes.map((e, i) => (
+                  <button
+                    key={e.type}
+                    role="tab"
+                    aria-selected={typeIndex === i}
+                    onClick={() => setTypeIndex(i)}
+                    className={`text-[13px] font-bold rounded-full px-5 py-1.5 transition-colors ${
+                      typeIndex === i ? 'bg-rc-teal text-white' : 'text-rc-ink-soft hover:text-rc-teal'
+                    }`}
+                  >
+                    {e.type}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          <table className="w-full text-[14px]">
+            <tbody>
+              {Object.entries(employment.requirements).map(([k, v]) => (
+                <tr key={k} className="border-b border-rc-sand">
+                  <th className="text-left align-top py-4 pr-4 w-32 md:w-40 font-bold text-rc-teal-dark text-[13px]">{k}</th>
+                  <td className="py-4 leading-7 text-rc-ink">{v}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p className="text-[11px] text-rc-ink-soft mt-4">
+            ※ 記載の労働条件は職業安定法に基づく明示事項です。面接時に書面でも交付します。
+          </p>
+        </div>
+      </section>
+
+      {/* クロージング */}
+      <section className="max-w-3xl mx-auto px-4 md:px-6 py-12 md:py-16 text-center">
+        <p className="rc-mincho text-xl text-rc-teal-dark mb-6">迷っているなら、見学からで大丈夫です。</p>
+        <div className="flex justify-center">
+          <JobCta job={job} />
+        </div>
+      </section>
+    </RecruitLayout>
+  );
+}

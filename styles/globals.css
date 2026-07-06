@@ -1,1 +1,24 @@
 @import "tailwindcss";
+
+/* ===== 採用サイトテンプレート（/recruit）用テーマ ===== */
+@theme {
+  --color-rc-teal: #0F6E63;
+  --color-rc-teal-dark: #0A5049;
+  --color-rc-teal-soft: #E3F0ED;
+  --color-rc-ivory: #F8F7F2;
+  --color-rc-sand: #EFEAE0;
+  --color-rc-ink: #26332F;
+  --color-rc-ink-soft: #5E6E68;
+  --color-rc-apricot: #C96F45;
+}
+
+.rc-mincho {
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
