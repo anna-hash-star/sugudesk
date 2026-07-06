@@ -7,6 +7,8 @@
 > - チャット採用相談: `components/recruit/ChatWidget.js`（全ページ常駐。デモはスクリプト応答、実運用はSuguDeskボットに接続）
 > - テーマ: `styles/globals.css` の `.theme-adeb` のようにCSS変数を上書きするクラスを追加し、`clinic.themeClass` で指定
 > - フォーム送信とチャットのボット接続は未配線（TODO: `/api/recruit-entry` とSuguDesk連携）
+> - ビジュアル: `components/recruit/Illust.js` がテーマ連動のシーンイラストを描画（実写撮影後は `Photo` の中身を `<img>` に置換するだけ）。モーションは `Reveal`/`CountUp`（スクロールリビール・数字カウントアップ、`prefers-reduced-motion` 対応）
+> - 集客実装済み: 職種ページに Google しごと検索向け **JobPosting 構造化データ**（`clinic.postedAt` を掲載更新時に変更）、全ページに OGP メタ。実写撮影後に `og:image` を追加すること
 >
 > **AdeBサンプルの注意（クライアント提示前に必ず確認）**
 > - 事実ベース: 所在地（秋田市中通・エリアなかいち1F）、診療内容・施術メニュー（`docs/【AdeBクリニック】FAQ (1).xlsx` のチャットボットナレッジと公開情報に基づく）

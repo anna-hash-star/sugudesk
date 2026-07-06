@@ -1,8 +1,34 @@
 import { useState } from 'react';
+import Head from 'next/head';
 import Link from 'next/link';
 import RecruitLayout, { Photo } from '../../../components/recruit/RecruitLayout';
 import { useRecruitChat } from '../../../components/recruit/ChatWidget';
-import { jobs, voices } from '../../../lib/recruit/site-data';
+import { Reveal } from '../../../components/recruit/Reveal';
+import { clinic, jobs, voices } from '../../../lib/recruit/site-data';
+
+// Google しごと検索（Google for Jobs）向けの JobPosting 構造化データ。
+// 採用サイト単体でも「職種名＋地域」の検索結果に求人枠で露出できる集客施策。
+function buildJobPostingJsonLd(job) {
+  const typeMap = { '常勤': 'FULL_TIME', 'パート': 'PART_TIME' };
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'JobPosting',
+    title: `${job.title}（${clinic.name}）`,
+    description: `${job.catch} ${job.summary}`,
+    datePosted: clinic.postedAt,
+    employmentType: job.employmentTypes.map(e => typeMap[e.type] || 'OTHER'),
+    hiringOrganization: {
+      '@type': 'MedicalOrganization',
+      name: clinic.name,
+      sameAs: clinic.patientSiteUrl,
+    },
+    jobLocation: {
+      '@type': 'Place',
+      address: { '@type': 'PostalAddress', streetAddress: clinic.address, addressCountry: 'JP' },
+    },
+    directApplyEnabled: true,
+  };
+}
 
 export function getStaticPaths() {
   return {
@@ -41,6 +67,12 @@ export default function JobPage({ slug }) {
 
   return (
     <RecruitLayout title={`${job.title} 募集要項`} description={job.summary}>
+      <Head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(buildJobPostingJsonLd(job)) }}
+        />
+      </Head>
       {/* 職種ヒーロー */}
       <section className="max-w-6xl mx-auto px-4 md:px-6 pt-10 md:pt-16 pb-10">
         <nav className="text-[12px] text-rc-ink-soft mb-6" aria-label="パンくず">
@@ -64,7 +96,9 @@ export default function JobPage({ slug }) {
               <JobCta job={job} />
             </div>
           </div>
-          <Photo label={`${job.title}の働く姿`} ratio="aspect-[4/3]" />
+          <Reveal delay={150}>
+            <Photo label={`${job.title}の働く姿`} scene={job.scene} ratio="aspect-[4/3]" className="shadow-lg shadow-rc-teal/10" />
+          </Reveal>
         </div>
       </section>
 
@@ -89,7 +123,7 @@ export default function JobPage({ slug }) {
         <section className="max-w-3xl mx-auto px-4 md:px-6 py-12 md:py-16">
           <h2 className="rc-mincho text-2xl font-semibold mb-6">この職種の先輩</h2>
           <div className="rounded-2xl bg-white border border-rc-sand p-6 md:p-8 grid md:grid-cols-[160px_1fr] gap-6">
-            <Photo label={voice.photoLabel} ratio="aspect-square" />
+            <Photo label={voice.photoLabel} scene={voice.scene} ratio="aspect-square" />
             <div>
               <div className="text-[12px] text-rc-ink-soft">{voice.role}・{voice.years}</div>
               <p className="text-[14px] leading-7 mt-3">{voice.reason}</p>

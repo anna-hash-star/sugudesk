@@ -30,6 +30,48 @@
 html {
   scroll-behavior: smooth;
 }
+
+/* スクロールリビール（Reveal コンポーネントが is-in を付与） */
+.rc-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--rc-delay, 0ms);
+}
+.rc-reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ヒーローの登場アニメーション */
+@keyframes rc-hero-in {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: none; }
+}
+.rc-hero-in {
+  animation: rc-hero-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--rc-delay, 0ms);
+}
+
+/* 背景の装飾ブロブのゆらぎ */
+@keyframes rc-drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(12px, -18px) scale(1.06); }
+}
+.rc-drift { animation: rc-drift 14s ease-in-out infinite; }
+
+/* チャット起動ボタンの注意喚起パルス */
+@keyframes rc-pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-rc-teal) 45%, transparent); }
+  70% { box-shadow: 0 0 0 14px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+.rc-pulse { animation: rc-pulse 2.6s ease-out infinite; }
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+  .rc-reveal { opacity: 1; transform: none; transition: none; }
+  .rc-hero-in { animation: none; }
+  .rc-drift { animation: none; }
+  .rc-pulse { animation: none; }
 }

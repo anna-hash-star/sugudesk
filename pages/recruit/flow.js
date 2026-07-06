@@ -52,7 +52,7 @@ export default function FlowPage() {
                 </li>
               ))}
             </ol>
-            <Photo label="院内見学の様子" ratio="aspect-[3/4]" />
+            <Photo label="院内見学の様子" scene="clinic" ratio="aspect-[3/4]" />
           </div>
         </div>
       </section>

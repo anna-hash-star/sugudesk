@@ -2,19 +2,23 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { clinic } from '../../lib/recruit/site-data';
 import { ChatProvider, useRecruitChat } from './ChatWidget';
+import Illust from './Illust';
 
-// 実写写真の差し替え前提プレースホルダー。
-// 本番では <img> / next/image に置き換える（素材写真は使わず必ず院内で撮影する）。
-export function Photo({ label, ratio = 'aspect-[4/3]', className = '' }) {
+// 実写差し替え前提のビジュアル枠。scene を渡すとテーマ連動のシーンイラストを描画する。
+// 本番では中身を <img> / next/image に置き換えるだけ（素材写真は使わず必ず院内で撮影する）。
+export function Photo({ label, scene, ratio = 'aspect-[4/3]', className = '' }) {
   return (
     <div
-      className={`relative overflow-hidden rounded-xl bg-gradient-to-br from-rc-teal-soft via-rc-sand to-rc-ivory ${ratio} ${className}`}
+      className={`group/photo relative overflow-hidden rounded-xl bg-gradient-to-br from-rc-teal-soft via-rc-sand to-rc-ivory ${ratio} ${className}`}
       role="img"
       aria-label={`写真プレースホルダー：${label}`}
     >
-      <div className="absolute inset-0 opacity-[0.06]"
-        style={{ backgroundImage: 'repeating-linear-gradient(45deg, var(--color-rc-teal) 0 1px, transparent 1px 12px)' }} />
-      <div className="absolute bottom-2.5 left-3 flex items-center gap-1.5 text-[11px] text-rc-teal-dark/70 font-medium">
+      {scene && (
+        <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover/photo:scale-[1.04]">
+          <Illust scene={scene} />
+        </div>
+      )}
+      <div className="absolute bottom-2.5 left-3 flex items-center gap-1.5 text-[11px] text-rc-teal-dark/70 font-medium bg-white/60 rounded-full px-2 py-0.5 backdrop-blur-sm">
         <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
           <circle cx="12" cy="13" r="3.75" />
@@ -111,6 +115,12 @@ export default function RecruitLayout({ children, title, description }) {
           <title>{pageTitle}</title>
           <meta name="description" content={description || clinic.lead} />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
+          {/* OGP：求人媒体・SNS・LINEでシェアされたときの見え方（og:imageは実写撮影後に追加） */}
+          <meta property="og:title" content={pageTitle} />
+          <meta property="og:description" content={description || clinic.lead} />
+          <meta property="og:type" content="website" />
+          <meta property="og:site_name" content={`${clinic.shortName} 採用サイト`} />
+          <meta name="twitter:card" content="summary" />
         </Head>
         <div className="min-h-screen bg-rc-ivory text-rc-ink antialiased">
           <HeaderNav />

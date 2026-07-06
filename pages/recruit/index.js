@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import RecruitLayout, { Photo } from '../../components/recruit/RecruitLayout';
 import { useRecruitChat } from '../../components/recruit/ChatWidget';
+import { Reveal, CountUp } from '../../components/recruit/Reveal';
 import { clinic, stats, director, jobs, voices, support, flowSteps, faqs, chatScript } from '../../lib/recruit/site-data';
 
 function Eyebrow({ en, ja }) {
@@ -17,15 +18,19 @@ function Hero() {
   const { openChat } = useRecruitChat();
   return (
     <section className="relative overflow-hidden">
-      <div className="max-w-6xl mx-auto px-4 md:px-6 pt-12 md:pt-20 pb-14 md:pb-24 grid md:grid-cols-[1.1fr_1fr] gap-10 items-center">
+      {/* 背景の装飾（ゆっくり漂う） */}
+      <div className="rc-drift absolute -top-24 -right-24 w-96 h-96 rounded-full bg-rc-teal-soft/70 blur-3xl" aria-hidden="true" />
+      <div className="rc-drift absolute top-64 -left-32 w-80 h-80 rounded-full bg-rc-sand/80 blur-3xl" style={{ animationDelay: '-7s' }} aria-hidden="true" />
+
+      <div className="relative max-w-6xl mx-auto px-4 md:px-6 pt-12 md:pt-20 pb-14 md:pb-24 grid md:grid-cols-[1.1fr_1fr] gap-10 items-center">
         <div>
-          <p className="text-[12px] tracking-[0.3em] text-rc-teal font-bold">{clinic.enName}</p>
-          <h1 className="rc-mincho text-[34px] md:text-5xl font-semibold leading-[1.35] mt-4 text-rc-ink" style={{ textWrap: 'balance' }}>
+          <p className="rc-hero-in text-[12px] tracking-[0.3em] text-rc-teal font-bold">{clinic.enName}</p>
+          <h1 className="rc-hero-in rc-mincho text-[34px] md:text-5xl font-semibold leading-[1.35] mt-4 text-rc-ink" style={{ textWrap: 'balance', '--rc-delay': '120ms' }}>
             {clinic.tagline}
           </h1>
-          <p className="mt-5 text-[15px] leading-8 text-rc-ink-soft max-w-lg">{clinic.lead}</p>
+          <p className="rc-hero-in mt-5 text-[15px] leading-8 text-rc-ink-soft max-w-lg" style={{ '--rc-delay': '240ms' }}>{clinic.lead}</p>
 
-          <div className="flex flex-wrap gap-2 mt-6" aria-label="働きやすさの要点">
+          <div className="rc-hero-in flex flex-wrap gap-2 mt-6" style={{ '--rc-delay': '340ms' }} aria-label="働きやすさの要点">
             {clinic.badges.map(b => (
               <span key={b} className="text-[12px] font-medium bg-white border border-rc-sand rounded-full px-3.5 py-1.5 text-rc-ink">
                 {b}
@@ -33,7 +38,7 @@ function Hero() {
             ))}
           </div>
 
-          <div className="flex flex-wrap gap-2 mt-4" aria-label="募集中の職種">
+          <div className="rc-hero-in flex flex-wrap gap-2 mt-4" style={{ '--rc-delay': '420ms' }} aria-label="募集中の職種">
             {jobs.map(j => (
               <Link key={j.slug} href={`/recruit/jobs/${j.slug}`}
                 className="text-[12px] font-bold text-rc-teal bg-rc-teal-soft rounded-full px-3.5 py-1.5 hover:bg-rc-teal hover:text-white transition-colors">
@@ -42,7 +47,7 @@ function Hero() {
             ))}
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 mt-8">
+          <div className="rc-hero-in flex flex-wrap items-center gap-3 mt-8" style={{ '--rc-delay': '500ms' }}>
             <Link href="/recruit/entry"
               className="bg-rc-teal text-white font-bold text-[15px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
               応募する
@@ -57,7 +62,9 @@ function Hero() {
             </button>
           </div>
         </div>
-        <Photo label="スタッフの働く姿（実写に差し替え）" ratio="aspect-[4/5] md:aspect-[4/4.6]" className="max-w-md ml-auto w-full" />
+        <div className="rc-hero-in max-w-md ml-auto w-full" style={{ '--rc-delay': '260ms' }}>
+          <Photo label="スタッフの働く姿（実写に差し替え）" scene="staff" ratio="aspect-[4/5] md:aspect-[4/4.6]" className="shadow-xl shadow-rc-teal/10" />
+        </div>
       </div>
     </section>
   );
@@ -71,15 +78,19 @@ function Stats() {
         <Eyebrow en="BY THE NUMBERS" ja={`数字で見る、${clinic.shortName}`} />
         <p className="text-sm text-rc-ink-soft mb-8 max-w-xl">言葉より、実績で。働きやすさに関わる数字をそのまま公開しています。</p>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
-          {stats.map(s => (
-            <div key={s.label} className="rounded-xl bg-rc-ivory border border-rc-sand px-4 py-5 text-center">
-              <div className="rc-mincho text-rc-teal-dark">
-                <span className="text-4xl font-semibold tracking-tight" style={{ fontVariantNumeric: 'tabular-nums' }}>{s.value}</span>
-                <span className="text-base ml-0.5">{s.unit}</span>
+          {stats.map((s, i) => (
+            <Reveal key={s.label} delay={i * 90}>
+              <div className="rounded-xl bg-rc-ivory border border-rc-sand px-4 py-5 text-center h-full">
+                <div className="rc-mincho text-rc-teal-dark">
+                  <span className="text-4xl font-semibold tracking-tight" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                    <CountUp value={s.value} />
+                  </span>
+                  <span className="text-base ml-0.5">{s.unit}</span>
+                </div>
+                <div className="text-[13px] font-bold mt-2">{s.label}</div>
+                <div className="text-[11px] text-rc-ink-soft mt-1">{s.note}</div>
               </div>
-              <div className="text-[13px] font-bold mt-2">{s.label}</div>
-              <div className="text-[11px] text-rc-ink-soft mt-1">{s.note}</div>
-            </div>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -91,19 +102,19 @@ function Stats() {
 function Director() {
   return (
     <section className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20 grid md:grid-cols-[1fr_1.4fr] gap-8 md:gap-12 items-start">
-      <div>
-        <Photo label="院長の写真" ratio="aspect-[3/3.4]" />
+      <Reveal>
+        <Photo label="院長の写真" scene="director" ratio="aspect-[3/3.4]" />
         <div className="mt-3 text-sm">
           <span className="font-bold">{director.name}</span>
           <span className="text-rc-ink-soft ml-2">{director.title}</span>
         </div>
-      </div>
-      <div>
+      </Reveal>
+      <Reveal delay={140}>
         <Eyebrow en="MESSAGE" ja={director.headline} />
         <div className="space-y-5 text-[15px] leading-8 text-rc-ink max-w-xl">
           {director.message.map((p, i) => <p key={i}>{p}</p>)}
         </div>
-      </div>
+      </Reveal>
     </section>
   );
 }
@@ -118,9 +129,10 @@ function JobsIndex() {
           <h2 className="rc-mincho text-2xl md:text-[32px] font-semibold text-white mt-1.5">職種から探す</h2>
         </div>
         <div className="grid md:grid-cols-3 gap-4">
-          {jobs.map(j => (
-            <Link key={j.slug} href={`/recruit/jobs/${j.slug}`}
-              className="group rounded-2xl bg-white p-6 hover:-translate-y-1 transition-transform shadow-sm">
+          {jobs.map((j, i) => (
+            <Reveal key={j.slug} delay={i * 110}>
+            <Link href={`/recruit/jobs/${j.slug}`}
+              className="group rounded-2xl bg-white p-6 hover:-translate-y-1 transition-transform shadow-sm block h-full">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-bold text-rc-ink">{j.title}</h3>
                 <div className="flex gap-1">
@@ -136,6 +148,7 @@ function JobsIndex() {
                 <span className="transition-transform group-hover:translate-x-1">→</span>
               </div>
             </Link>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -149,9 +162,9 @@ function Voices() {
     <section id="voice" className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20 scroll-mt-20">
       <Eyebrow en="STAFF VOICE" ja="先に働いている人の、正直な話。" />
       <div className="grid md:grid-cols-3 gap-5 mt-8">
-        {voices.map(v => (
-          <article key={v.id} className="rounded-2xl bg-white border border-rc-sand overflow-hidden flex flex-col">
-            <Photo label={v.photoLabel} ratio="aspect-[16/10]" className="!rounded-none" />
+        {voices.map((v, i) => (
+          <Reveal key={v.id} delay={i * 110} as="article" className="rounded-2xl bg-white border border-rc-sand overflow-hidden flex flex-col">
+            <Photo label={v.photoLabel} scene={v.scene} ratio="aspect-[16/10]" className="!rounded-none" />
             <div className="p-6 flex-1 flex flex-col">
               <div className="text-[12px] text-rc-ink-soft">{v.role}・{v.years}</div>
               <h3 className="rc-mincho text-[17px] text-rc-teal-dark leading-relaxed mt-2">「{v.reason.slice(0, 42)}…」</h3>
@@ -169,7 +182,7 @@ function Voices() {
                 <span className="font-bold">応募を考えている方へ：</span>{v.message}
               </p>
             </div>
-          </article>
+          </Reveal>
         ))}
       </div>
     </section>
@@ -184,11 +197,13 @@ function Support() {
         <Eyebrow en="EDUCATION & BENEFITS" ja="「ついていけるかな」を、制度でなくす。" />
         <div className="grid md:grid-cols-3 gap-4 mt-8">
           {support.education.map((e, i) => (
-            <div key={e.title} className="rounded-xl border border-rc-sand bg-rc-ivory p-6">
-              <div className="text-[11px] tracking-[0.2em] text-rc-teal font-bold">SUPPORT {String(i + 1).padStart(2, '0')}</div>
-              <h3 className="font-bold text-[15px] mt-2">{e.title}</h3>
-              <p className="text-[13px] text-rc-ink-soft leading-relaxed mt-2">{e.text}</p>
-            </div>
+            <Reveal key={e.title} delay={i * 100}>
+              <div className="rounded-xl border border-rc-sand bg-rc-ivory p-6 h-full">
+                <div className="text-[11px] tracking-[0.2em] text-rc-teal font-bold">SUPPORT {String(i + 1).padStart(2, '0')}</div>
+                <h3 className="font-bold text-[15px] mt-2">{e.title}</h3>
+                <p className="text-[13px] text-rc-ink-soft leading-relaxed mt-2">{e.text}</p>
+              </div>
+            </Reveal>
           ))}
         </div>
         <ul className="flex flex-wrap gap-2 mt-6" aria-label="福利厚生">
@@ -260,12 +275,12 @@ function FlowDigest() {
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20">
         <Eyebrow en="PROCESS" ja="入職まで、最短2週間。" />
         <ol className="grid md:grid-cols-4 gap-4 mt-8">
-          {flowSteps.map(s => (
-            <li key={s.step} className={`rounded-xl p-5 border ${s.chat ? 'bg-rc-teal-soft border-rc-teal/40' : 'bg-rc-ivory border-rc-sand'}`}>
+          {flowSteps.map((s, i) => (
+            <Reveal key={s.step} delay={i * 110} as="li" className={`rounded-xl p-5 border ${s.chat ? 'bg-rc-teal-soft border-rc-teal/40' : 'bg-rc-ivory border-rc-sand'}`}>
               <div className={`text-[11px] tracking-[0.2em] font-bold ${s.chat ? 'text-rc-teal' : 'text-rc-ink-soft'}`}>{s.step}</div>
               <h3 className="font-bold text-[15px] mt-1.5">{s.title}</h3>
               <p className="text-[12.5px] text-rc-ink-soft leading-relaxed mt-2">{s.text}</p>
-            </li>
+            </Reveal>
           ))}
         </ol>
         <div className="mt-8">
