@@ -57,12 +57,12 @@ export default function EntryPage() {
           <h1 className="rc-mincho text-2xl md:text-3xl font-semibold mt-6">
             {mode === 'tour' ? '見学のご予約を受け付けました' : 'ご応募を受け付けました'}
           </h1>
-          <p className="text-[14px] leading-7 text-rc-ink-soft mt-4">
+          <p className="text-[15px] leading-7 text-rc-ink-soft mt-4">
             <b className="text-rc-ink">2営業日以内</b>に、ご希望の時間帯にご連絡します。
             発信元は院の代表番号です。もしお急ぎの場合や補足があれば、チャットからも受け付けています。
           </p>
           <div className="flex justify-center gap-3 mt-8">
-            <Link href="/recruit" className="text-[14px] font-bold text-rc-teal hover:underline underline-offset-4">採用トップへ戻る</Link>
+            <Link href="/recruit" className="text-[15px] font-bold text-rc-teal hover:underline underline-offset-4">採用トップへ戻る</Link>
           </div>
         </section>
       </RecruitLayout>
@@ -70,7 +70,7 @@ export default function EntryPage() {
   }
 
   const inputClass = (key) =>
-    `w-full rounded-xl border bg-white px-4 py-3 text-[15px] focus:outline-none focus:ring-1 transition-colors ${
+    `w-full rounded-xl border bg-white px-4 py-3 text-[16px] focus:outline-none focus:ring-1 transition-colors ${
       errors[key] ? 'border-rc-apricot focus:border-rc-apricot focus:ring-rc-apricot' : 'border-rc-sand focus:border-rc-teal focus:ring-rc-teal'
     }`;
 
@@ -78,15 +78,15 @@ export default function EntryPage() {
   return (
     <RecruitLayout title={pageTitle} description="入力は4項目・1分で完了。履歴書は不要です。">
       <section className="max-w-xl mx-auto px-4 md:px-6 pt-10 md:pt-16 pb-16">
-        <nav className="text-[12px] text-rc-ink-soft mb-6" aria-label="パンくず">
+        <nav className="text-[13px] text-rc-ink-soft mb-6" aria-label="パンくず">
           <Link href="/recruit" className="hover:text-rc-teal">採用トップ</Link>
           <span className="mx-2">/</span>
           <span>{pageTitle}</span>
         </nav>
         <h1 className="rc-mincho text-3xl font-semibold">{pageTitle}</h1>
-        <p className="text-[14px] text-rc-ink-soft mt-3">入力は4項目・1分で完了します。履歴書はまだ不要です。</p>
+        <p className="text-[15px] text-rc-ink-soft mt-3">入力は4項目・1分で完了します。履歴書はまだ不要です。</p>
         {clinic.phone && (
-          <p className="mt-4 rounded-xl bg-white border border-rc-sand px-4 py-3 text-[13px]">
+          <p className="mt-4 rounded-xl bg-white border border-rc-sand px-4 py-3 text-[14px]">
             お電話でも応募できます：
             <a href={`tel:${clinic.phone}`} className="font-bold text-rc-teal mx-1" style={{ fontVariantNumeric: 'tabular-nums' }}>{clinic.phone}</a>
             （{clinic.recruitContact}）
@@ -105,7 +105,7 @@ export default function EntryPage() {
                 role="tab"
                 aria-selected={mode === t.key}
                 onClick={() => setMode(t.key)}
-                className={`text-[14px] font-bold rounded-full py-2.5 transition-colors ${
+                className={`text-[15px] font-bold rounded-full py-2.5 transition-colors ${
                   mode === t.key ? 'bg-rc-teal text-white' : 'text-rc-ink-soft hover:text-rc-teal'
                 }`}
               >
@@ -117,23 +117,23 @@ export default function EntryPage() {
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6" noValidate>
           <div>
-            <label htmlFor="name" className="block text-[13px] font-bold mb-1.5">
+            <label htmlFor="name" className="block text-[14px] font-bold mb-1.5">
               お名前 <span className="text-rc-apricot">必須</span>
             </label>
             <input id="name" value={form.name} onChange={set('name')} className={inputClass('name')} placeholder="山田 花子" autoComplete="name" />
-            {errors.name && <p className="text-[12px] text-rc-apricot mt-1.5" role="alert">{errors.name}</p>}
+            {errors.name && <p className="text-[13px] text-rc-apricot mt-1.5" role="alert">{errors.name}</p>}
           </div>
 
           <div>
-            <label htmlFor="contact" className="block text-[13px] font-bold mb-1.5">
+            <label htmlFor="contact" className="block text-[14px] font-bold mb-1.5">
               電話番号 または メールアドレス <span className="text-rc-apricot">必須</span>
             </label>
             <input id="contact" value={form.contact} onChange={set('contact')} className={inputClass('contact')} placeholder="090-1234-5678 / hanako@example.com" autoComplete="tel email" />
-            {errors.contact && <p className="text-[12px] text-rc-apricot mt-1.5" role="alert">{errors.contact}</p>}
+            {errors.contact && <p className="text-[13px] text-rc-apricot mt-1.5" role="alert">{errors.contact}</p>}
           </div>
 
           <div>
-            <label htmlFor="job" className="block text-[13px] font-bold mb-1.5">
+            <label htmlFor="job" className="block text-[14px] font-bold mb-1.5">
               希望職種 <span className="text-rc-apricot">必須</span>
             </label>
             <select id="job" value={form.job} onChange={set('job')} className={inputClass('job')}>
@@ -141,11 +141,11 @@ export default function EntryPage() {
               {jobs.map(j => <option key={j.slug} value={j.slug}>{j.title}</option>)}
               <option value="undecided">迷っている（見学で相談したい）</option>
             </select>
-            {errors.job && <p className="text-[12px] text-rc-apricot mt-1.5" role="alert">{errors.job}</p>}
+            {errors.job && <p className="text-[13px] text-rc-apricot mt-1.5" role="alert">{errors.job}</p>}
           </div>
 
           <div>
-            <span className="block text-[13px] font-bold mb-1.5">
+            <span className="block text-[14px] font-bold mb-1.5">
               連絡のつきやすい時間帯 <span className="text-rc-apricot">必須</span>
             </span>
             <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="連絡のつきやすい時間帯">
@@ -156,7 +156,7 @@ export default function EntryPage() {
                   role="radio"
                   aria-checked={form.timeslot === t}
                   onClick={() => setForm(f => ({ ...f, timeslot: t }))}
-                  className={`text-[13px] font-medium rounded-full px-4 py-2 border transition-colors ${
+                  className={`text-[14px] font-medium rounded-full px-4 py-2 border transition-colors ${
                     form.timeslot === t
                       ? 'bg-rc-teal text-white border-rc-teal'
                       : 'bg-white text-rc-ink-soft border-rc-sand hover:border-rc-teal hover:text-rc-teal'
@@ -166,11 +166,11 @@ export default function EntryPage() {
                 </button>
               ))}
             </div>
-            {errors.timeslot && <p className="text-[12px] text-rc-apricot mt-1.5" role="alert">{errors.timeslot}</p>}
+            {errors.timeslot && <p className="text-[13px] text-rc-apricot mt-1.5" role="alert">{errors.timeslot}</p>}
           </div>
 
           <div>
-            <label htmlFor="note" className="block text-[13px] font-bold mb-1.5">
+            <label htmlFor="note" className="block text-[14px] font-bold mb-1.5">
               備考 <span className="text-rc-ink-soft font-normal">任意（質問・希望シフトなど）</span>
             </label>
             <textarea id="note" value={form.note} onChange={set('note')} rows={3} className={inputClass('note')} placeholder="例：週3日・午前のみの勤務を希望しています" />
@@ -180,14 +180,14 @@ export default function EntryPage() {
             className="w-full bg-rc-teal text-white font-bold text-[16px] rounded-full py-4 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
             {mode === 'tour' ? '見学を予約する' : 'この内容で応募する'}
           </button>
-          <p className="text-[11px] text-rc-ink-soft text-center">
+          <p className="text-[12px] text-rc-ink-soft text-center">
             送信後、2営業日以内にご連絡します。ご入力いただいた情報は採用選考の目的にのみ使用します。
           </p>
         </form>
 
         <div className="mt-10 rounded-xl bg-rc-teal-soft border border-rc-teal/30 p-5 text-center">
-          <p className="text-[13px] text-rc-ink">フォームより先に聞きたいことがある方は</p>
-          <button onClick={() => openChat()} className="mt-2 text-[14px] font-bold text-rc-teal underline underline-offset-4 decoration-rc-teal/40 hover:decoration-rc-teal">
+          <p className="text-[14px] text-rc-ink">フォームより先に聞きたいことがある方は</p>
+          <button onClick={() => openChat()} className="mt-2 text-[15px] font-bold text-rc-teal underline underline-offset-4 decoration-rc-teal/40 hover:decoration-rc-teal">
             💬 匿名チャットで相談する
           </button>
         </div>

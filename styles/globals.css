@@ -12,19 +12,25 @@
   --color-rc-apricot: #C96F45;
 }
 
+/* 見出し書体（クラス名は歴史的経緯で rc-mincho のまま）。
+   G-Mark DESIGN.md に倣い、太いゴシック＋プラス字間で視認性を最優先する */
 .rc-mincho {
-  font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 /* クリニック別テーマ：clinic.themeClass でルートに付与すると rc-* トークンが差し替わる */
+/* AdeB：ブランドピンク（ロゴ色をテキスト用に深めたトーン）×純白。
+   テキストは G-Mark 準拠の 84%黒相当・56%黒相当でコントラストを確保 */
 .theme-adeb {
-  --color-rc-teal: #9C4F63;      /* ローズ（美容皮膚科向け） */
-  --color-rc-teal-dark: #713A4A;
-  --color-rc-teal-soft: #F6E7EB;
-  --color-rc-ivory: #FBF8F7;
-  --color-rc-sand: #EFE4E3;
-  --color-rc-ink: #33282C;
-  --color-rc-ink-soft: #7A6169;
+  --color-rc-teal: #D6335A;      /* AdeBピンク（CTA・アクセント） */
+  --color-rc-teal-dark: #A81F43; /* ホバー・ダーク面 */
+  --color-rc-teal-soft: #FBE7EC; /* ピンクの薄面 */
+  --color-rc-ivory: #FFFFFF;     /* ページ背景（純白） */
+  --color-rc-sand: #EEE7E4;      /* 罫線・クリーム面 */
+  --color-rc-ink: #292526;       /* 本文 ≈ rgba(0,0,0,0.84) */
+  --color-rc-ink-soft: #6D6568;  /* 補助テキスト ≈ rgba(0,0,0,0.56) */
 }
 
 html {

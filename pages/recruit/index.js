@@ -7,7 +7,7 @@ import { clinic, stats, director, jobs, voices, support, flowSteps, faqs, chatSc
 function Eyebrow({ en, ja }) {
   return (
     <div className="mb-4">
-      <div className="text-[11px] tracking-[0.25em] text-rc-teal font-bold">{en}</div>
+      <div className="text-[12px] tracking-[0.25em] text-rc-teal font-bold">{en}</div>
       <h2 className="rc-mincho text-2xl md:text-[32px] font-semibold text-rc-ink mt-1.5 leading-snug">{ja}</h2>
     </div>
   );
@@ -24,7 +24,7 @@ function Hero() {
 
       <div className="relative max-w-6xl mx-auto px-4 md:px-6 pt-12 md:pt-20 pb-14 md:pb-24 grid md:grid-cols-[1.1fr_1fr] gap-10 items-center">
         <div>
-          <p className="rc-hero-in text-[12px] tracking-[0.3em] text-rc-teal font-bold">{clinic.enName}</p>
+          <p className="rc-hero-in text-[13px] tracking-[0.3em] text-rc-teal font-bold">{clinic.enName}</p>
           {(() => {
             const lines = clinic.tagline.split('\n');
             return (
@@ -38,11 +38,11 @@ function Hero() {
               </h1>
             );
           })()}
-          <p className="rc-hero-in mt-5 text-[15px] leading-8 text-rc-ink-soft max-w-lg" style={{ '--rc-delay': '240ms' }}>{clinic.lead}</p>
+          <p className="rc-hero-in mt-5 text-[16px] leading-8 text-rc-ink-soft max-w-lg" style={{ '--rc-delay': '240ms' }}>{clinic.lead}</p>
 
           <div className="rc-hero-in flex flex-wrap gap-2 mt-6" style={{ '--rc-delay': '340ms' }} aria-label="働きやすさの要点">
             {clinic.badges.map(b => (
-              <span key={b} className="text-[12px] font-medium bg-white border border-rc-sand rounded-full px-3.5 py-1.5 text-rc-ink">
+              <span key={b} className="text-[13px] font-medium bg-white border border-rc-sand rounded-full px-3.5 py-1.5 text-rc-ink">
                 {b}
               </span>
             ))}
@@ -51,7 +51,7 @@ function Hero() {
           <div className="rc-hero-in flex flex-wrap gap-2 mt-4" style={{ '--rc-delay': '420ms' }} aria-label="募集中の職種">
             {jobs.map(j => (
               <Link key={j.slug} href={`/recruit/jobs/${j.slug}`}
-                className="text-[12px] font-bold text-rc-teal bg-rc-teal-soft rounded-full px-3.5 py-1.5 hover:bg-rc-teal hover:text-white transition-colors">
+                className="text-[13px] font-bold text-rc-teal bg-rc-teal-soft rounded-full px-3.5 py-1.5 hover:bg-rc-teal hover:text-white transition-colors">
                 {j.title} 募集中
               </Link>
             ))}
@@ -59,17 +59,17 @@ function Hero() {
 
           <div className="rc-hero-in flex flex-wrap items-center gap-3 mt-8" style={{ '--rc-delay': '500ms' }}>
             <Link href="/recruit/entry"
-              className="bg-rc-teal text-white font-bold text-[15px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
+              className="bg-rc-teal text-white font-bold text-[16px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
               応募する
             </Link>
             {hasTour && (
               <Link href="/recruit/flow"
-                className="border-2 border-rc-teal text-rc-teal font-bold text-[15px] rounded-full px-7 py-3 hover:bg-rc-teal-soft transition-colors">
+                className="border-2 border-rc-teal text-rc-teal font-bold text-[16px] rounded-full px-7 py-3 hover:bg-rc-teal-soft transition-colors">
                 まず見学する
               </Link>
             )}
             <button onClick={() => openChat()}
-              className="text-[14px] font-bold text-rc-teal underline underline-offset-4 decoration-rc-teal/40 hover:decoration-rc-teal transition-colors">
+              className="text-[15px] font-bold text-rc-teal underline underline-offset-4 decoration-rc-teal/40 hover:decoration-rc-teal transition-colors">
               💬 匿名で相談する
             </button>
           </div>
@@ -94,7 +94,7 @@ function Stats() {
     <section id="stats" className="bg-white border-y border-rc-sand scroll-mt-20">
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20">
         <Eyebrow en="BY THE NUMBERS" ja={`数字で見る、${clinic.shortName}`} />
-        <p className="text-sm text-rc-ink-soft mb-8 max-w-xl">言葉より、実績で。働きやすさに関わる数字をそのまま公開しています。</p>
+        <p className="text-[15px] text-rc-ink-soft mb-8 max-w-xl">言葉より、実績で。働きやすさに関わる数字をそのまま公開しています。</p>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
           {stats.map((s, i) => (
             <Reveal key={s.label} delay={i * 90}>
@@ -105,8 +105,8 @@ function Stats() {
                   </span>
                   <span className="text-base ml-0.5">{s.unit}</span>
                 </div>
-                <div className="text-[13px] font-bold mt-2">{s.label}</div>
-                <div className="text-[11px] text-rc-ink-soft mt-1">{s.note}</div>
+                <div className="text-[14px] font-bold mt-2">{s.label}</div>
+                <div className="text-[12px] text-rc-ink-soft mt-1">{s.note}</div>
               </div>
             </Reveal>
           ))}
@@ -122,14 +122,14 @@ function Director() {
     <section className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20 grid md:grid-cols-[1fr_1.4fr] gap-8 md:gap-12 items-start">
       <Reveal>
         <Photo label={`${director.title}の写真`} scene="director" src={clinic.photos?.director} ratio="aspect-[3/3.4]" />
-        <div className="mt-3 text-sm">
+        <div className="mt-3 text-[15px]">
           <span className="font-bold">{director.name}</span>
           <span className="text-rc-ink-soft ml-2">{director.title}</span>
         </div>
       </Reveal>
       <Reveal delay={140}>
         <Eyebrow en="MESSAGE" ja={director.headline} />
-        <div className="space-y-5 text-[15px] leading-8 text-rc-ink max-w-xl">
+        <div className="space-y-5 text-[16px] leading-8 text-rc-ink max-w-xl">
           {director.message.map((p, i) => <p key={i}>{p}</p>)}
         </div>
       </Reveal>
@@ -145,18 +145,18 @@ function Policies() {
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20">
         <Reveal>
           <div className="text-center max-w-2xl mx-auto">
-            <div className="text-[11px] tracking-[0.25em] text-rc-teal font-bold">OUR POLICY</div>
+            <div className="text-[12px] tracking-[0.25em] text-rc-teal font-bold">OUR POLICY</div>
             <p className="rc-mincho text-2xl md:text-[32px] font-semibold text-rc-ink mt-2 leading-snug" style={{ textWrap: 'balance' }}>
               「{policies.slogan}」
             </p>
-            <p className="text-sm text-rc-ink-soft mt-4 leading-7">{policies.intro}</p>
+            <p className="text-[15px] text-rc-ink-soft mt-4 leading-7">{policies.intro}</p>
           </div>
         </Reveal>
         <ol className="grid md:grid-cols-2 gap-4 mt-10 max-w-3xl mx-auto">
           {policies.items.map((p, i) => (
             <Reveal key={p} delay={i * 90} as="li" className="flex gap-4 rounded-xl bg-rc-ivory border border-rc-sand p-5">
               <span className="rc-mincho text-2xl font-semibold text-rc-teal shrink-0 leading-none mt-0.5">{String(i + 1).padStart(2, '0')}</span>
-              <p className="text-[14px] leading-7">{p}</p>
+              <p className="text-[15px] leading-7">{p}</p>
             </Reveal>
           ))}
         </ol>
@@ -172,7 +172,7 @@ function Signature() {
     <section className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20 grid md:grid-cols-[1.1fr_1fr] gap-10 items-center">
       <Reveal>
         <Eyebrow en={signature.eyebrow} ja={signature.title} />
-        <div className="space-y-4 text-[15px] leading-8 text-rc-ink max-w-xl">
+        <div className="space-y-4 text-[16px] leading-8 text-rc-ink max-w-xl">
           {signature.body.map((p, i) => <p key={i}>{p}</p>)}
         </div>
       </Reveal>
@@ -191,7 +191,7 @@ function JobsIndex() {
     <section id="jobs" className="bg-rc-teal-dark scroll-mt-20">
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20">
         <div className="mb-8">
-          <div className="text-[11px] tracking-[0.25em] text-rc-teal-soft font-bold">OPEN POSITIONS</div>
+          <div className="text-[12px] tracking-[0.25em] text-rc-teal-soft font-bold">OPEN POSITIONS</div>
           <h2 className="rc-mincho text-2xl md:text-[32px] font-semibold text-white mt-1.5">
             {jobs.length === 1 ? `募集職種：${jobs[0].title}` : '募集職種'}
           </h2>
@@ -209,13 +209,13 @@ function JobsIndex() {
                 <h3 className="text-lg font-bold text-rc-ink">{j.title}</h3>
                 <div className="flex gap-1">
                   {j.employmentTypes.map(e => (
-                    <span key={e.type} className="text-[10px] font-bold text-rc-teal bg-rc-teal-soft rounded px-1.5 py-0.5">{e.type}</span>
+                    <span key={e.type} className="text-[11px] font-bold text-rc-teal bg-rc-teal-soft rounded px-1.5 py-0.5">{e.type}</span>
                   ))}
                 </div>
               </div>
-              <p className="rc-mincho text-[15px] text-rc-teal-dark mt-3 leading-relaxed">{j.catch}</p>
-              <p className="text-[13px] text-rc-ink-soft mt-3 leading-relaxed line-clamp-3">{j.summary}</p>
-              <div className="mt-5 text-[13px] font-bold text-rc-teal flex items-center gap-1">
+              <p className="rc-mincho text-[16px] text-rc-teal-dark mt-3 leading-relaxed">{j.catch}</p>
+              <p className="text-[14px] text-rc-ink-soft mt-3 leading-relaxed line-clamp-3">{j.summary}</p>
+              <div className="mt-5 text-[14px] font-bold text-rc-teal flex items-center gap-1">
                 仕事内容と募集要項を見る
                 <span className="transition-transform group-hover:translate-x-1">→</span>
               </div>
@@ -238,9 +238,9 @@ function Voices() {
           <Reveal key={v.id} delay={i * 110} as="article" className="rounded-2xl bg-white border border-rc-sand overflow-hidden flex flex-col">
             <Photo label={v.photoLabel} scene={v.scene} ratio="aspect-[16/10]" className="!rounded-none" />
             <div className="p-6 flex-1 flex flex-col">
-              <div className="text-[12px] text-rc-ink-soft">{v.role}・{v.years}</div>
+              <div className="text-[13px] text-rc-ink-soft">{v.role}・{v.years}</div>
               <h3 className="rc-mincho text-[17px] text-rc-teal-dark leading-relaxed mt-2">「{v.reason.slice(0, 42)}…」</h3>
-              <dl className="mt-4 space-y-3 text-[13px] leading-relaxed flex-1">
+              <dl className="mt-4 space-y-3 text-[14px] leading-relaxed flex-1">
                 <div>
                   <dt className="font-bold text-rc-teal">入職の決め手</dt>
                   <dd className="text-rc-ink-soft mt-0.5">{v.reason}</dd>
@@ -250,7 +250,7 @@ function Voices() {
                   <dd className="text-rc-ink-soft mt-0.5">{v.gap}</dd>
                 </div>
               </dl>
-              <p className="mt-4 pt-4 border-t border-rc-sand text-[13px] text-rc-ink">
+              <p className="mt-4 pt-4 border-t border-rc-sand text-[14px] text-rc-ink">
                 <span className="font-bold">応募を考えている方へ：</span>{v.message}
               </p>
             </div>
@@ -271,16 +271,16 @@ function Support() {
           {support.education.map((e, i) => (
             <Reveal key={e.title} delay={i * 100}>
               <div className="rounded-xl border border-rc-sand bg-rc-ivory p-6 h-full">
-                <div className="text-[11px] tracking-[0.2em] text-rc-teal font-bold">SUPPORT {String(i + 1).padStart(2, '0')}</div>
-                <h3 className="font-bold text-[15px] mt-2">{e.title}</h3>
-                <p className="text-[13px] text-rc-ink-soft leading-relaxed mt-2">{e.text}</p>
+                <div className="text-[12px] tracking-[0.2em] text-rc-teal font-bold">SUPPORT {String(i + 1).padStart(2, '0')}</div>
+                <h3 className="font-bold text-[16px] mt-2">{e.title}</h3>
+                <p className="text-[14px] text-rc-ink-soft leading-relaxed mt-2">{e.text}</p>
               </div>
             </Reveal>
           ))}
         </div>
         <ul className="flex flex-wrap gap-2 mt-6" aria-label="福利厚生">
           {support.benefits.map(b => (
-            <li key={b} className="text-[12px] font-medium bg-rc-ivory border border-rc-sand rounded-full px-3.5 py-1.5 text-rc-ink-soft">
+            <li key={b} className="text-[13px] font-medium bg-rc-ivory border border-rc-sand rounded-full px-3.5 py-1.5 text-rc-ink-soft">
               {b}
             </li>
           ))}
@@ -297,11 +297,11 @@ function ChatSection() {
     <section className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20 grid md:grid-cols-2 gap-10 items-center">
       <div>
         <Eyebrow en="CHAT" ja="応募の前に、聞きにくいことを聞いてください。" />
-        <p className="text-[15px] leading-8 text-rc-ink-soft">
+        <p className="text-[16px] leading-8 text-rc-ink-soft">
           電話は緊張するし、メールは重い。だから当院は<b className="text-rc-ink">匿名で使えるチャット相談</b>を用意しました。
           給与のこと、未経験のこと、シフトの融通のこと——応募を決める前の質問こそ歓迎です。お名前や連絡先は、応募するときまで不要です。
         </p>
-        <ul className="mt-5 space-y-2 text-[14px]">
+        <ul className="mt-5 space-y-2 text-[15px]">
           {['匿名のままでOK・連絡先は不要', '24時間いつでも受付（夜勤明けでも）', '回答は募集要項と同じ内容を保証'].map(t => (
             <li key={t} className="flex items-start gap-2.5">
               <span className="mt-1.5 w-2 h-2 rounded-full bg-rc-teal shrink-0" aria-hidden="true" />
@@ -310,7 +310,7 @@ function ChatSection() {
           ))}
         </ul>
         <button onClick={() => openChat()}
-          className="mt-7 bg-rc-teal text-white font-bold text-[15px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
+          className="mt-7 bg-rc-teal text-white font-bold text-[16px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
           💬 チャットで相談してみる
         </button>
       </div>
@@ -318,20 +318,20 @@ function ChatSection() {
       {/* 会話プレビュー（クリックで実チャットが開く） */}
       <button onClick={() => openChat()} className="text-left rounded-2xl bg-white border border-rc-sand p-5 shadow-sm hover:shadow-md transition-shadow cursor-pointer w-full"
         aria-label="チャットのプレビュー。クリックで相談を開始">
-        <div className="text-[11px] font-bold text-rc-teal border-b border-rc-sand pb-3 mb-4">💬 採用相談チャット — 匿名OK</div>
+        <div className="text-[12px] font-bold text-rc-teal border-b border-rc-sand pb-3 mb-4">💬 採用相談チャット — 匿名OK</div>
         <div className="space-y-3">
-          <div className="max-w-[85%] rounded-2xl rounded-bl-sm bg-rc-ivory border border-rc-sand px-4 py-2.5 text-[13px] leading-relaxed">
+          <div className="max-w-[85%] rounded-2xl rounded-bl-sm bg-rc-ivory border border-rc-sand px-4 py-2.5 text-[14px] leading-relaxed">
             {chatScript.greeting}
           </div>
-          <div className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-sm bg-rc-teal text-white px-4 py-2.5 text-[13px]">
+          <div className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-sm bg-rc-teal text-white px-4 py-2.5 text-[14px]">
             {chatScript.sampleQuestion}
           </div>
-          <div className="max-w-[85%] rounded-2xl rounded-bl-sm bg-rc-ivory border border-rc-sand px-4 py-2.5 text-[13px] leading-relaxed">
+          <div className="max-w-[85%] rounded-2xl rounded-bl-sm bg-rc-ivory border border-rc-sand px-4 py-2.5 text-[14px] leading-relaxed">
             {faqs[0].a}
           </div>
           <div className="flex flex-wrap gap-2 pt-1">
             {chatScript.chips.slice(0, 3).map(c => (
-              <span key={c.key} className="text-[11px] font-medium border border-rc-teal text-rc-teal rounded-full px-3 py-1">{c.label}</span>
+              <span key={c.key} className="text-[12px] font-medium border border-rc-teal text-rc-teal rounded-full px-3 py-1">{c.label}</span>
             ))}
           </div>
         </div>
@@ -349,14 +349,14 @@ function FlowDigest() {
         <ol className="grid md:grid-cols-4 gap-4 mt-8">
           {flowSteps.map((s, i) => (
             <Reveal key={s.step} delay={i * 110} as="li" className={`rounded-xl p-5 border ${s.chat ? 'bg-rc-teal-soft border-rc-teal/40' : 'bg-rc-ivory border-rc-sand'}`}>
-              <div className={`text-[11px] tracking-[0.2em] font-bold ${s.chat ? 'text-rc-teal' : 'text-rc-ink-soft'}`}>{s.step}</div>
-              <h3 className="font-bold text-[15px] mt-1.5">{s.title}</h3>
-              <p className="text-[12.5px] text-rc-ink-soft leading-relaxed mt-2">{s.text}</p>
+              <div className={`text-[12px] tracking-[0.2em] font-bold ${s.chat ? 'text-rc-teal' : 'text-rc-ink-soft'}`}>{s.step}</div>
+              <h3 className="font-bold text-[16px] mt-1.5">{s.title}</h3>
+              <p className="text-[13.5px] text-rc-ink-soft leading-relaxed mt-2">{s.text}</p>
             </Reveal>
           ))}
         </ol>
         <div className="mt-8">
-          <Link href="/recruit/flow" className="text-[14px] font-bold text-rc-teal hover:underline underline-offset-4">
+          <Link href="/recruit/flow" className="text-[15px] font-bold text-rc-teal hover:underline underline-offset-4">
             {hasTour ? '見学当日の流れをくわしく見る →' : '応募から入職までをくわしく見る →'}
           </Link>
         </div>
@@ -374,16 +374,16 @@ function Faq() {
       <div className="mt-6 divide-y divide-rc-sand border-y border-rc-sand">
         {faqs.map(f => (
           <details key={f.q} className="group py-1">
-            <summary className="flex items-center gap-3 cursor-pointer list-none py-4 text-[15px] font-bold hover:text-rc-teal transition-colors">
+            <summary className="flex items-center gap-3 cursor-pointer list-none py-4 text-[16px] font-bold hover:text-rc-teal transition-colors">
               <span className="rc-mincho text-rc-teal text-lg shrink-0" aria-hidden="true">Q</span>
               <span className="flex-1">{f.q}</span>
               <span className="text-rc-ink-soft transition-transform group-open:rotate-45 text-xl leading-none" aria-hidden="true">＋</span>
             </summary>
-            <p className="pl-8 pb-5 text-[14px] leading-7 text-rc-ink-soft">{f.a}</p>
+            <p className="pl-8 pb-5 text-[15px] leading-7 text-rc-ink-soft">{f.a}</p>
           </details>
         ))}
       </div>
-      <p className="mt-6 text-[14px] text-rc-ink-soft">
+      <p className="mt-6 text-[15px] text-rc-ink-soft">
         解決しませんでしたか？
         <button onClick={() => openChat()} className="ml-2 font-bold text-rc-teal underline underline-offset-4 decoration-rc-teal/40 hover:decoration-rc-teal">
           チャットで質問する（匿名OK）
@@ -402,18 +402,18 @@ function Closing() {
         <h2 className="rc-mincho text-2xl md:text-[32px] font-semibold text-white leading-snug" style={{ textWrap: 'balance' }}>
           {hasTour ? 'まずは30分、見学だけでも。' : '迷ったら、まず聞くだけでも。'}
         </h2>
-        <p className="text-white/80 text-[14px] mt-3">
+        <p className="text-white/80 text-[15px] mt-3">
           {hasTour
             ? '私服OK・履歴書不要。職場の空気を見てから決めてください。'
             : '匿名チャットOK・フォームは1分・お電話でもOK。履歴書はまだ不要です。'}
         </p>
         <div className="flex flex-wrap justify-center items-center gap-3 mt-8">
           <Link href="/recruit/entry"
-            className="bg-white text-rc-teal font-bold text-[15px] rounded-full px-8 py-3.5 hover:bg-rc-ivory transition-colors">
+            className="bg-white text-rc-teal font-bold text-[16px] rounded-full px-8 py-3.5 hover:bg-rc-ivory transition-colors">
             {hasTour ? '応募・見学を予約する' : '応募する'}
           </Link>
           <button onClick={() => openChat()}
-            className="border-2 border-white/70 text-white font-bold text-[15px] rounded-full px-7 py-3 hover:bg-white/10 transition-colors">
+            className="border-2 border-white/70 text-white font-bold text-[16px] rounded-full px-7 py-3 hover:bg-white/10 transition-colors">
             💬 その前に相談する
           </button>
         </div>

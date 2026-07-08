@@ -84,7 +84,7 @@ export function ChatProvider({ children }) {
           aria-label="採用相談チャットを開く"
         >
           <BotIcon />
-          <span className="text-sm font-bold">採用相談</span>
+          <span className="text-[15px] font-bold">採用相談</span>
         </button>
       )}
 
@@ -98,8 +98,8 @@ export function ChatProvider({ children }) {
           <div className="flex items-center gap-3 px-4 py-3 bg-rc-teal text-white md:rounded-t-2xl">
             <BotIcon />
             <div className="flex-1 leading-tight">
-              <div className="text-sm font-bold">採用相談チャット</div>
-              <div className="text-[11px] text-white/80">匿名OK・24時間受付 — {clinic.shortName}</div>
+              <div className="text-[15px] font-bold">採用相談チャット</div>
+              <div className="text-[12px] text-white/80">匿名OK・24時間受付 — {clinic.shortName}</div>
             </div>
             <button
               onClick={() => setOpen(false)}
@@ -118,8 +118,8 @@ export function ChatProvider({ children }) {
                 <div
                   className={
                     m.from === 'user'
-                      ? 'ml-auto max-w-[85%] w-fit rounded-2xl rounded-br-sm bg-rc-teal text-white px-4 py-2.5 text-sm leading-relaxed'
-                      : 'max-w-[90%] w-fit rounded-2xl rounded-bl-sm bg-white border border-rc-sand px-4 py-2.5 text-sm text-rc-ink leading-relaxed'
+                      ? 'ml-auto max-w-[85%] w-fit rounded-2xl rounded-br-sm bg-rc-teal text-white px-4 py-2.5 text-[15px] leading-relaxed'
+                      : 'max-w-[90%] w-fit rounded-2xl rounded-bl-sm bg-white border border-rc-sand px-4 py-2.5 text-[15px] text-rc-ink leading-relaxed'
                   }
                 >
                   {m.text}
@@ -130,7 +130,7 @@ export function ChatProvider({ children }) {
                       <button
                         key={chip.key}
                         onClick={() => handleChip(chip)}
-                        className="text-xs font-medium border border-rc-teal text-rc-teal bg-white rounded-full px-3.5 py-1.5 hover:bg-rc-teal-soft transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-rc-teal"
+                        className="text-[13px] font-medium border border-rc-teal text-rc-teal bg-white rounded-full px-3.5 py-1.5 hover:bg-rc-teal-soft transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-rc-teal"
                       >
                         {chip.label}
                       </button>
@@ -141,13 +141,13 @@ export function ChatProvider({ children }) {
                   <div className="flex flex-wrap gap-2 mt-2.5">
                     <Link
                       href={chatScript.bridgeCta?.href || '/recruit/entry'}
-                      className="text-xs font-bold bg-rc-teal text-white rounded-full px-4 py-2 hover:bg-rc-teal-dark transition-colors"
+                      className="text-[13px] font-bold bg-rc-teal text-white rounded-full px-4 py-2 hover:bg-rc-teal-dark transition-colors"
                     >
                       {chatScript.bridgeCta?.label || '応募フォームへ'}
                     </Link>
                     <button
                       onClick={askMore}
-                      className="text-xs font-medium border border-rc-ink-soft/40 text-rc-ink-soft bg-white rounded-full px-3.5 py-1.5 hover:border-rc-teal hover:text-rc-teal transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-rc-teal"
+                      className="text-[13px] font-medium border border-rc-ink-soft/40 text-rc-ink-soft bg-white rounded-full px-3.5 py-1.5 hover:border-rc-teal hover:text-rc-teal transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-rc-teal"
                     >
                       他の質問をする
                     </button>
@@ -162,7 +162,7 @@ export function ChatProvider({ children }) {
               value={input}
               onChange={e => setInput(e.target.value)}
               placeholder="質問を入力（匿名OK）"
-              className="flex-1 text-sm rounded-full border border-rc-sand bg-rc-ivory px-4 py-2.5 focus:outline-none focus:border-rc-teal focus:ring-1 focus:ring-rc-teal"
+              className="flex-1 text-[15px] rounded-full border border-rc-sand bg-rc-ivory px-4 py-2.5 focus:outline-none focus:border-rc-teal focus:ring-1 focus:ring-rc-teal"
               aria-label="質問を入力"
             />
             <button

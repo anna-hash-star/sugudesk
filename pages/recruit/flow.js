@@ -9,13 +9,13 @@ export default function FlowPage() {
   return (
     <RecruitLayout title={pageTitle} description="入職まで最短2週間。応募は1分・履歴書不要でご案内します。">
       <section className="max-w-3xl mx-auto px-4 md:px-6 pt-10 md:pt-16 pb-12">
-        <nav className="text-[12px] text-rc-ink-soft mb-6" aria-label="パンくず">
+        <nav className="text-[13px] text-rc-ink-soft mb-6" aria-label="パンくず">
           <Link href="/recruit" className="hover:text-rc-teal">採用トップ</Link>
           <span className="mx-2">/</span>
           <span>{pageTitle}</span>
         </nav>
         <h1 className="rc-mincho text-3xl md:text-4xl font-semibold">{pageTitle}</h1>
-        <p className="text-[15px] leading-8 text-rc-ink-soft mt-4">
+        <p className="text-[16px] leading-8 text-rc-ink-soft mt-4">
           {hasTour
             ? '応募より先に、まず職場を見てほしいと考えています。見学は選考ではありません——評価もメモも取りません。入職まで最短2週間です。'
             : '応募はフォーム1分・お電話でもOK。面接では条件をすべて明示し、院内のご案内も行います。ミスマッチをなくすための場だと考えてください。'}
@@ -25,13 +25,13 @@ export default function FlowPage() {
           {flowSteps.map(s => (
             <li key={s.step} className={`rounded-xl border p-6 ${s.chat ? 'bg-rc-teal-soft border-rc-teal/40' : 'bg-white border-rc-sand'}`}>
               <div className="flex items-baseline gap-3">
-                <span className={`text-[11px] tracking-[0.2em] font-bold ${s.chat ? 'text-rc-teal' : 'text-rc-ink-soft'}`}>{s.step}</span>
+                <span className={`text-[12px] tracking-[0.2em] font-bold ${s.chat ? 'text-rc-teal' : 'text-rc-ink-soft'}`}>{s.step}</span>
                 <h2 className="font-bold text-[16px]">{s.title}</h2>
               </div>
-              <p className="text-[14px] text-rc-ink-soft leading-7 mt-2">{s.text}</p>
+              <p className="text-[15px] text-rc-ink-soft leading-7 mt-2">{s.text}</p>
               {s.chat && (
                 <button onClick={() => openChat()}
-                  className="mt-3 text-[13px] font-bold text-rc-teal underline underline-offset-4 decoration-rc-teal/40 hover:decoration-rc-teal">
+                  className="mt-3 text-[14px] font-bold text-rc-teal underline underline-offset-4 decoration-rc-teal/40 hover:decoration-rc-teal">
                   💬 いまチャットで相談する
                 </button>
               )}
@@ -44,15 +44,15 @@ export default function FlowPage() {
         <section className="bg-white border-y border-rc-sand">
           <div className="max-w-3xl mx-auto px-4 md:px-6 py-12 md:py-16">
             <h2 className="rc-mincho text-2xl font-semibold">見学当日の30分</h2>
-            <p className="text-[13px] text-rc-ink-soft mt-2">私服OK・履歴書不要・手ぶらでどうぞ。</p>
+            <p className="text-[14px] text-rc-ink-soft mt-2">私服OK・履歴書不要・手ぶらでどうぞ。</p>
             <div className="grid md:grid-cols-[1fr_240px] gap-8 mt-8 items-start">
               <ol className="relative border-l-2 border-rc-teal-soft ml-3 space-y-6">
                 {tourDetail.map(d => (
                   <li key={d.time} className="pl-6 relative">
                     <span className="absolute -left-[7px] top-1.5 w-3 h-3 rounded-full bg-rc-teal" aria-hidden="true" />
-                    <div className="text-[12px] font-bold text-rc-teal" style={{ fontVariantNumeric: 'tabular-nums' }}>{d.time}〜</div>
-                    <h3 className="font-bold text-[15px] mt-0.5">{d.title}</h3>
-                    <p className="text-[13px] text-rc-ink-soft leading-6 mt-1">{d.text}</p>
+                    <div className="text-[13px] font-bold text-rc-teal" style={{ fontVariantNumeric: 'tabular-nums' }}>{d.time}〜</div>
+                    <h3 className="font-bold text-[16px] mt-0.5">{d.title}</h3>
+                    <p className="text-[14px] text-rc-ink-soft leading-6 mt-1">{d.text}</p>
                   </li>
                 ))}
               </ol>
@@ -68,11 +68,11 @@ export default function FlowPage() {
         </p>
         <div className="flex flex-wrap justify-center gap-3 mt-6">
           <Link href={hasTour ? '/recruit/entry?mode=tour' : '/recruit/entry'}
-            className="bg-rc-teal text-white font-bold text-[15px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
+            className="bg-rc-teal text-white font-bold text-[16px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
             {hasTour ? '見学を予約する' : '応募する（1分）'}
           </Link>
           <button onClick={() => openChat()}
-            className="border-2 border-rc-teal text-rc-teal font-bold text-[14px] rounded-full px-6 py-3 hover:bg-rc-teal-soft transition-colors">
+            className="border-2 border-rc-teal text-rc-teal font-bold text-[15px] rounded-full px-6 py-3 hover:bg-rc-teal-soft transition-colors">
             {hasTour ? '💬 日程をチャットで相談' : '💬 まずチャットで相談'}
           </button>
         </div>
