@@ -47,12 +47,12 @@ function JobCta({ job }) {
   return (
     <div className="flex flex-wrap items-center gap-3">
       <Link href={`/recruit/entry?job=${job.slug}`}
-        className="bg-rc-teal text-white font-bold text-[16px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
+        className="bg-rc-teal text-white font-bold text-[17px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
         {job.title}に応募する
       </Link>
       {/* 職種コンテキストを引き継いでチャット起動 */}
       <button onClick={() => openChat(job.title)}
-        className="inline-flex items-center gap-2 border-2 border-rc-teal text-rc-teal font-bold text-[15px] rounded-full px-6 py-3 hover:bg-rc-teal-soft transition-colors">
+        className="inline-flex items-center gap-2 border-2 border-rc-teal text-rc-teal font-bold text-[16px] rounded-full px-6 py-3 hover:bg-rc-teal-soft transition-colors">
         <ChatIcon className="w-4 h-4" /> この職種について質問する
       </button>
     </div>
@@ -76,11 +76,11 @@ export default function JobPage({ slug }) {
       {/* 職種ヒーロー */}
       <section className="max-w-6xl mx-auto px-4 md:px-6 pt-10 md:pt-16 pb-10">
         <nav className="mb-6" aria-label="パンくず">
-          <Link href="/recruit" className="inline-flex items-center gap-1.5 text-[14px] font-bold text-rc-teal hover:text-rc-teal-dark transition-colors">
+          <Link href="/recruit" className="inline-flex items-center gap-1.5 text-[15px] font-bold text-rc-teal hover:text-rc-teal-dark transition-colors">
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M19 12H5M11 6l-6 6 6 6" /></svg>
             採用トップへ戻る
           </Link>
-          <span className="text-[13px] text-rc-ink-soft ml-3">／ {job.title}</span>
+          <span className="text-[14px] text-rc-ink-soft ml-3">／ {job.title}</span>
         </nav>
         <div className="grid md:grid-cols-[1.2fr_1fr] gap-8 items-center">
           <div>
@@ -88,12 +88,12 @@ export default function JobPage({ slug }) {
               <h1 className="rc-mincho text-3xl md:text-4xl font-semibold">{job.title}</h1>
               <div className="flex gap-1.5">
                 {job.employmentTypes.map(e => (
-                  <span key={e.type} className="text-[12px] font-bold text-rc-teal bg-rc-teal-soft rounded px-2 py-1">{e.type}</span>
+                  <span key={e.type} className="text-[13px] font-bold text-rc-teal bg-rc-teal-soft rounded px-2 py-1">{e.type}</span>
                 ))}
               </div>
             </div>
-            <p className="rc-mincho text-lg md:text-xl text-rc-teal-dark mt-4 leading-relaxed">{job.catch}</p>
-            <p className="text-[15px] leading-7 text-rc-ink-soft mt-4 max-w-xl">{job.summary}</p>
+            <p className="rc-mincho text-xl md:text-[22px] text-rc-teal-dark mt-4 leading-relaxed">{job.catch}</p>
+            <p className="text-[16px] leading-7 text-rc-ink-soft mt-4 max-w-xl">{job.summary}</p>
             <div className="mt-7">
               <JobCta job={job} />
             </div>
@@ -112,8 +112,8 @@ export default function JobPage({ slug }) {
             {job.day.map(d => (
               <li key={d.time} className="pl-6 relative">
                 <span className="absolute -left-[7px] top-1.5 w-3 h-3 rounded-full bg-rc-teal" aria-hidden="true" />
-                <span className="text-[14px] font-bold text-rc-teal mr-3" style={{ fontVariantNumeric: 'tabular-nums' }}>{d.time}</span>
-                <span className="text-[15px]">{d.text}</span>
+                <span className="text-[15px] font-bold text-rc-teal mr-3" style={{ fontVariantNumeric: 'tabular-nums' }}>{d.time}</span>
+                <span className="text-[16px]">{d.text}</span>
               </li>
             ))}
           </ol>
@@ -127,9 +127,9 @@ export default function JobPage({ slug }) {
           <div className="rounded-2xl bg-white border border-rc-sand p-6 md:p-8 grid md:grid-cols-[160px_1fr] gap-6">
             <Photo label={voice.photoLabel} scene={voice.scene} ratio="aspect-square" />
             <div>
-              <div className="text-[13px] text-rc-ink-soft">{voice.role}・{voice.years}</div>
-              <p className="text-[15px] leading-7 mt-3">{voice.reason}</p>
-              <p className="text-[14px] text-rc-ink-soft leading-relaxed mt-3">{voice.gap}</p>
+              <div className="text-[14px] text-rc-ink-soft">{voice.role}・{voice.years}</div>
+              <p className="text-[16px] leading-7 mt-3">{voice.reason}</p>
+              <p className="text-[15px] text-rc-ink-soft leading-relaxed mt-3">{voice.gap}</p>
             </div>
           </div>
         </section>
@@ -148,7 +148,7 @@ export default function JobPage({ slug }) {
                     role="tab"
                     aria-selected={typeIndex === i}
                     onClick={() => setTypeIndex(i)}
-                    className={`text-[14px] font-bold rounded-full px-5 py-1.5 transition-colors ${
+                    className={`text-[15px] font-bold rounded-full px-5 py-1.5 transition-colors ${
                       typeIndex === i ? 'bg-rc-teal text-white' : 'text-rc-ink-soft hover:text-rc-teal'
                     }`}
                   >
@@ -158,17 +158,17 @@ export default function JobPage({ slug }) {
               </div>
             )}
           </div>
-          <table className="w-full text-[15px]">
+          <table className="w-full text-[16px]">
             <tbody>
               {Object.entries(employment.requirements).map(([k, v]) => (
                 <tr key={k} className="border-b border-rc-sand">
-                  <th className="text-left align-top py-4 pr-4 w-32 md:w-40 font-bold text-rc-teal-dark text-[14px]">{k}</th>
+                  <th className="text-left align-top py-4 pr-4 w-32 md:w-40 font-bold text-rc-teal-dark text-[15px]">{k}</th>
                   <td className="py-4 leading-7 text-rc-ink">{v}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <p className="text-[12px] text-rc-ink-soft mt-4">
+          <p className="text-[13px] text-rc-ink-soft mt-4">
             ※ 記載の労働条件は職業安定法に基づく明示事項です。面接時に書面でも交付します。
           </p>
         </div>
@@ -183,7 +183,7 @@ export default function JobPage({ slug }) {
           <JobCta job={job} />
         </div>
         <div className="mt-10">
-          <Link href="/recruit" className="inline-flex items-center gap-1.5 text-[15px] font-bold text-rc-teal border-2 border-rc-teal rounded-full px-6 py-2.5 hover:bg-rc-teal-soft transition-colors">
+          <Link href="/recruit" className="inline-flex items-center gap-1.5 text-[16px] font-bold text-rc-teal border-2 border-rc-teal rounded-full px-6 py-2.5 hover:bg-rc-teal-soft transition-colors">
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M19 12H5M11 6l-6 6 6 6" /></svg>
             採用トップへ戻る
           </Link>

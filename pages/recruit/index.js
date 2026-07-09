@@ -7,8 +7,8 @@ import { clinic, stats, director, jobs, voices, support, flowSteps, faqs, polici
 function Eyebrow({ en, ja }) {
   return (
     <div className="mb-4">
-      <div className="text-[13px] tracking-[0.16em] text-rc-teal font-bold">{en}</div>
-      <h2 className="rc-mincho text-2xl md:text-[32px] font-semibold text-rc-ink mt-1.5 leading-snug">{ja}</h2>
+      <div className="text-[14px] tracking-[0.16em] text-rc-teal font-bold">{en}</div>
+      <h2 className="rc-mincho text-[26px] md:text-[36px] font-semibold text-rc-ink mt-1.5 leading-snug">{ja}</h2>
     </div>
   );
 }
@@ -24,13 +24,13 @@ function Hero() {
 
       <div className="relative max-w-6xl mx-auto px-4 md:px-6 pt-12 md:pt-20 pb-14 md:pb-24 grid md:grid-cols-[1.1fr_1fr] gap-10 items-center">
         <div>
-          <p className="rc-hero-in text-[13px] tracking-[0.2em] text-rc-teal font-bold">{clinic.shortName} 採用サイト</p>
+          <p className="rc-hero-in text-[14px] tracking-[0.2em] text-rc-teal font-bold">{clinic.shortName} 採用サイト</p>
           {(() => {
             const lines = clinic.tagline.split('\n');
             return (
               <h1
                 className={`rc-hero-in rc-mincho font-semibold leading-[1.4] mt-4 text-rc-ink ${
-                  lines.length > 1 ? 'text-[24px] md:text-[38px]' : 'text-[34px] md:text-5xl'
+                  lines.length > 1 ? 'text-[26px] md:text-[39px]' : 'text-[34px] md:text-5xl'
                 }`}
                 style={{ textWrap: lines.length > 1 ? undefined : 'balance', '--rc-delay': '120ms' }}
               >
@@ -38,11 +38,11 @@ function Hero() {
               </h1>
             );
           })()}
-          <p className="rc-hero-in mt-5 text-[16px] leading-8 text-rc-ink-soft max-w-lg" style={{ '--rc-delay': '240ms' }}>{clinic.lead}</p>
+          <p className="rc-hero-in mt-5 text-[17px] leading-8 text-rc-ink-soft max-w-lg" style={{ '--rc-delay': '240ms' }}>{clinic.lead}</p>
 
           <div className="rc-hero-in flex flex-wrap gap-2 mt-6" style={{ '--rc-delay': '340ms' }} aria-label="働きやすさの要点">
             {clinic.badges.map(b => (
-              <span key={b} className="text-[13px] font-medium bg-white border border-rc-sand rounded-full px-3.5 py-1.5 text-rc-ink">
+              <span key={b} className="text-[14px] font-medium bg-white border border-rc-sand rounded-full px-3.5 py-1.5 text-rc-ink">
                 {b}
               </span>
             ))}
@@ -51,7 +51,7 @@ function Hero() {
           <div className="rc-hero-in flex flex-wrap gap-2 mt-4" style={{ '--rc-delay': '420ms' }} aria-label="募集中の職種">
             {jobs.map(j => (
               <Link key={j.slug} href={`/recruit/jobs/${j.slug}`}
-                className="text-[13px] font-bold text-rc-teal bg-rc-teal-soft rounded-full px-3.5 py-1.5 hover:bg-rc-teal hover:text-white transition-colors">
+                className="text-[14px] font-bold text-rc-teal bg-rc-teal-soft rounded-full px-3.5 py-1.5 hover:bg-rc-teal hover:text-white transition-colors">
                 {j.title} 募集中
               </Link>
             ))}
@@ -59,17 +59,17 @@ function Hero() {
 
           <div className="rc-hero-in flex flex-wrap items-center gap-3 mt-8" style={{ '--rc-delay': '500ms' }}>
             <Link href="/recruit/entry"
-              className="bg-rc-teal text-white font-bold text-[16px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
+              className="bg-rc-teal text-white font-bold text-[17px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
               応募する
             </Link>
             {hasTour && (
               <Link href="/recruit/flow"
-                className="border-2 border-rc-teal text-rc-teal font-bold text-[16px] rounded-full px-7 py-3 hover:bg-rc-teal-soft transition-colors">
+                className="border-2 border-rc-teal text-rc-teal font-bold text-[17px] rounded-full px-7 py-3 hover:bg-rc-teal-soft transition-colors">
                 まず見学する
               </Link>
             )}
             <button onClick={() => openChat()}
-              className="inline-flex items-center gap-1.5 text-[15px] font-bold text-rc-teal underline underline-offset-4 decoration-rc-teal/40 hover:decoration-rc-teal transition-colors">
+              className="inline-flex items-center gap-1.5 text-[16px] font-bold text-rc-teal underline underline-offset-4 decoration-rc-teal/40 hover:decoration-rc-teal transition-colors">
               <ChatIcon className="w-4 h-4" /> 匿名で相談する
             </button>
           </div>
@@ -93,20 +93,20 @@ function Stats() {
   return (
     <section id="stats" className="bg-white border-y border-rc-sand scroll-mt-20">
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20">
-        <Eyebrow en="数字で見る" ja="言葉より、実績で。" />
-        <p className="text-[15px] text-rc-ink-soft mb-8 max-w-xl">働きやすさに関わる数字を、そのまま公開しています。</p>
+        <Eyebrow en="数字で見る" ja={clinic.statsHeadline || '言葉より、実績で。'} />
+        <p className="text-[16px] text-rc-ink-soft mb-8 max-w-xl">働きやすさに関わる数字を、そのまま公開しています。</p>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
           {stats.map((s, i) => (
             <Reveal key={s.label} delay={i * 90}>
               <div className="rounded-xl bg-rc-ivory border border-rc-sand px-4 py-5 text-center h-full">
                 <div className="rc-mincho text-rc-teal-dark">
-                  <span className="text-4xl font-semibold tracking-tight" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                  <span className="text-[44px] font-semibold tracking-tight" style={{ fontVariantNumeric: 'tabular-nums' }}>
                     <CountUp value={s.value} />
                   </span>
                   <span className="text-base ml-0.5">{s.unit}</span>
                 </div>
-                <div className="text-[14px] font-bold mt-2">{s.label}</div>
-                <div className="text-[12px] text-rc-ink-soft mt-1">{s.note}</div>
+                <div className="text-[15px] font-bold mt-2">{s.label}</div>
+                <div className="text-[13px] text-rc-ink-soft mt-1">{s.note}</div>
               </div>
             </Reveal>
           ))}
@@ -122,14 +122,14 @@ function Director() {
     <section className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20 grid md:grid-cols-[1fr_1.4fr] gap-8 md:gap-12 items-start">
       <Reveal>
         <Photo label={`${director.title}の写真`} scene="director" src={clinic.photos?.director} ratio="aspect-[3/3.4]" />
-        <div className="mt-3 text-[15px]">
+        <div className="mt-3 text-[16px]">
           <span className="font-bold">{director.name}</span>
           <span className="text-rc-ink-soft ml-2">{director.title}</span>
         </div>
       </Reveal>
       <Reveal delay={140}>
         <Eyebrow en={`${director.title}メッセージ`} ja={director.headline} />
-        <div className="space-y-5 text-[16px] leading-8 text-rc-ink max-w-xl">
+        <div className="space-y-5 text-[17px] leading-8 text-rc-ink max-w-xl">
           {director.message.map((p, i) => <p key={i}>{p}</p>)}
         </div>
       </Reveal>
@@ -145,18 +145,18 @@ function Policies() {
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20">
         <Reveal>
           <div className="text-center max-w-2xl mx-auto">
-            <div className="text-[13px] tracking-[0.16em] text-rc-teal font-bold">当院のポリシー</div>
-            <p className="rc-mincho text-2xl md:text-[32px] font-semibold text-rc-ink mt-2 leading-snug" style={{ textWrap: 'balance' }}>
+            <div className="text-[14px] tracking-[0.16em] text-rc-teal font-bold">当院のポリシー</div>
+            <p className="rc-mincho text-[26px] md:text-[36px] font-semibold text-rc-ink mt-2 leading-snug" style={{ textWrap: 'balance' }}>
               「{policies.slogan}」
             </p>
-            <p className="text-[15px] text-rc-ink-soft mt-4 leading-7">{policies.intro}</p>
+            <p className="text-[16px] text-rc-ink-soft mt-4 leading-7">{policies.intro}</p>
           </div>
         </Reveal>
         <ol className="grid md:grid-cols-2 gap-4 mt-10 max-w-3xl mx-auto">
           {policies.items.map((p, i) => (
             <Reveal key={p} delay={i * 90} as="li" className="flex gap-4 rounded-xl bg-rc-ivory border border-rc-sand p-5">
               <span className="rc-mincho text-2xl font-semibold text-rc-teal shrink-0 leading-none mt-0.5">{String(i + 1).padStart(2, '0')}</span>
-              <p className="text-[15px] leading-7">{p}</p>
+              <p className="text-[16px] leading-7">{p}</p>
             </Reveal>
           ))}
         </ol>
@@ -172,7 +172,7 @@ function Signature() {
     <section className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20 grid md:grid-cols-[1.1fr_1fr] gap-10 items-center">
       <Reveal>
         <Eyebrow en={signature.eyebrow} ja={signature.title} />
-        <div className="space-y-4 text-[16px] leading-8 text-rc-ink max-w-xl">
+        <div className="space-y-4 text-[17px] leading-8 text-rc-ink max-w-xl">
           {signature.body.map((p, i) => <p key={i}>{p}</p>)}
         </div>
       </Reveal>
@@ -191,8 +191,8 @@ function JobsIndex() {
     <section id="jobs" className="bg-rc-teal-dark scroll-mt-20">
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20">
         <div className="mb-8">
-          <div className="text-[13px] tracking-[0.16em] text-rc-teal-soft font-bold">募集職種</div>
-          <h2 className="rc-mincho text-2xl md:text-[32px] font-semibold text-white mt-1.5">
+          <div className="text-[14px] tracking-[0.16em] text-rc-teal-soft font-bold">募集職種</div>
+          <h2 className="rc-mincho text-[26px] md:text-[36px] font-semibold text-white mt-1.5">
             {jobs.length === 1 ? `${jobs[0].title}を募集しています` : `現在、${jobs.length}職種を募集しています`}
           </h2>
         </div>
@@ -209,13 +209,13 @@ function JobsIndex() {
                 <h3 className="text-lg font-bold text-rc-ink">{j.title}</h3>
                 <div className="flex gap-1">
                   {j.employmentTypes.map(e => (
-                    <span key={e.type} className="text-[11px] font-bold text-rc-teal bg-rc-teal-soft rounded px-1.5 py-0.5">{e.type}</span>
+                    <span key={e.type} className="text-[12px] font-bold text-rc-teal bg-rc-teal-soft rounded px-1.5 py-0.5">{e.type}</span>
                   ))}
                 </div>
               </div>
-              <p className="rc-mincho text-[16px] text-rc-teal-dark mt-3 leading-relaxed">{j.catch}</p>
-              <p className="text-[14px] text-rc-ink-soft mt-3 leading-relaxed line-clamp-3">{j.summary}</p>
-              <div className="mt-5 text-[14px] font-bold text-rc-teal flex items-center gap-1">
+              <p className="rc-mincho text-[17px] text-rc-teal-dark mt-3 leading-relaxed">{j.catch}</p>
+              <p className="text-[15px] text-rc-ink-soft mt-3 leading-relaxed line-clamp-3">{j.summary}</p>
+              <div className="mt-5 text-[15px] font-bold text-rc-teal flex items-center gap-1">
                 仕事内容と募集要項を見る
                 <span className="transition-transform group-hover:translate-x-1">→</span>
               </div>
@@ -245,7 +245,7 @@ function Gallery() {
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover/g:scale-[1.04]"
                 />
               </div>
-              <figcaption className="text-[14px] text-rc-ink-soft mt-2.5">{g.caption}</figcaption>
+              <figcaption className="text-[15px] text-rc-ink-soft mt-2.5">{g.caption}</figcaption>
             </figure>
           </Reveal>
         ))}
@@ -264,9 +264,9 @@ function Voices() {
           <Reveal key={v.id} delay={i * 110} as="article" className="rounded-2xl bg-white border border-rc-sand overflow-hidden flex flex-col">
             <Photo label={v.photoLabel} scene={v.scene} ratio="aspect-[16/10]" className="!rounded-none" />
             <div className="p-6 flex-1 flex flex-col">
-              <div className="text-[13px] text-rc-ink-soft">{v.role}・{v.years}</div>
+              <div className="text-[14px] text-rc-ink-soft">{v.role}・{v.years}</div>
               <h3 className="rc-mincho text-[17px] text-rc-teal-dark leading-relaxed mt-2">「{v.reason.slice(0, 42)}…」</h3>
-              <dl className="mt-4 space-y-3 text-[14px] leading-relaxed flex-1">
+              <dl className="mt-4 space-y-3 text-[15px] leading-relaxed flex-1">
                 <div>
                   <dt className="font-bold text-rc-teal">入職の決め手</dt>
                   <dd className="text-rc-ink-soft mt-0.5">{v.reason}</dd>
@@ -276,7 +276,7 @@ function Voices() {
                   <dd className="text-rc-ink-soft mt-0.5">{v.gap}</dd>
                 </div>
               </dl>
-              <p className="mt-4 pt-4 border-t border-rc-sand text-[14px] text-rc-ink">
+              <p className="mt-4 pt-4 border-t border-rc-sand text-[15px] text-rc-ink">
                 <span className="font-bold">応募を考えている方へ：</span>{v.message}
               </p>
             </div>
@@ -297,16 +297,16 @@ function Support() {
           {support.education.map((e, i) => (
             <Reveal key={e.title} delay={i * 100}>
               <div className="rounded-xl border border-rc-sand bg-rc-ivory p-6 h-full">
-                <div className="text-[12px] tracking-[0.2em] text-rc-teal font-bold">サポート {String(i + 1).padStart(2, '0')}</div>
-                <h3 className="font-bold text-[16px] mt-2">{e.title}</h3>
-                <p className="text-[14px] text-rc-ink-soft leading-relaxed mt-2">{e.text}</p>
+                <div className="text-[13px] tracking-[0.2em] text-rc-teal font-bold">サポート {String(i + 1).padStart(2, '0')}</div>
+                <h3 className="font-bold text-[17px] mt-2">{e.title}</h3>
+                <p className="text-[15px] text-rc-ink-soft leading-relaxed mt-2">{e.text}</p>
               </div>
             </Reveal>
           ))}
         </div>
         <ul className="flex flex-wrap gap-2 mt-6" aria-label="福利厚生">
           {support.benefits.map(b => (
-            <li key={b} className="text-[13px] font-medium bg-rc-ivory border border-rc-sand rounded-full px-3.5 py-1.5 text-rc-ink-soft">
+            <li key={b} className="text-[14px] font-medium bg-rc-ivory border border-rc-sand rounded-full px-3.5 py-1.5 text-rc-ink-soft">
               {b}
             </li>
           ))}
@@ -325,14 +325,14 @@ function FlowDigest() {
         <ol className="grid md:grid-cols-4 gap-4 mt-8">
           {flowSteps.map((s, i) => (
             <Reveal key={s.step} delay={i * 110} as="li" className={`rounded-xl p-5 border ${s.chat ? 'bg-rc-teal-soft border-rc-teal/40' : 'bg-rc-ivory border-rc-sand'}`}>
-              <div className={`text-[12px] tracking-[0.2em] font-bold ${s.chat ? 'text-rc-teal' : 'text-rc-ink-soft'}`}>{s.step}</div>
-              <h3 className="font-bold text-[16px] mt-1.5">{s.title}</h3>
-              <p className="text-[13.5px] text-rc-ink-soft leading-relaxed mt-2">{s.text}</p>
+              <div className={`text-[13px] tracking-[0.2em] font-bold ${s.chat ? 'text-rc-teal' : 'text-rc-ink-soft'}`}>{s.step}</div>
+              <h3 className="font-bold text-[17px] mt-1.5">{s.title}</h3>
+              <p className="text-[15px] text-rc-ink-soft leading-relaxed mt-2">{s.text}</p>
             </Reveal>
           ))}
         </ol>
         <div className="mt-8">
-          <Link href="/recruit/flow" className="text-[15px] font-bold text-rc-teal hover:underline underline-offset-4">
+          <Link href="/recruit/flow" className="text-[16px] font-bold text-rc-teal hover:underline underline-offset-4">
             {hasTour ? '見学当日の流れをくわしく見る →' : '応募から入職までをくわしく見る →'}
           </Link>
         </div>
@@ -350,16 +350,16 @@ function Faq() {
       <div className="mt-6 divide-y divide-rc-sand border-y border-rc-sand">
         {faqs.map(f => (
           <details key={f.q} className="group py-1">
-            <summary className="flex items-center gap-3 cursor-pointer list-none py-4 text-[16px] font-bold hover:text-rc-teal transition-colors">
+            <summary className="flex items-center gap-3 cursor-pointer list-none py-4 text-[17px] font-bold hover:text-rc-teal transition-colors">
               <span className="rc-mincho text-rc-teal text-lg shrink-0" aria-hidden="true">Q</span>
               <span className="flex-1">{f.q}</span>
               <span className="text-rc-ink-soft transition-transform group-open:rotate-45 text-xl leading-none" aria-hidden="true">＋</span>
             </summary>
-            <p className="pl-8 pb-5 text-[15px] leading-7 text-rc-ink-soft">{f.a}</p>
+            <p className="pl-8 pb-5 text-[16px] leading-7 text-rc-ink-soft">{f.a}</p>
           </details>
         ))}
       </div>
-      <p className="mt-6 text-[15px] text-rc-ink-soft">
+      <p className="mt-6 text-[16px] text-rc-ink-soft">
         解決しませんでしたか？
         <button onClick={() => openChat()} className="ml-2 font-bold text-rc-teal underline underline-offset-4 decoration-rc-teal/40 hover:decoration-rc-teal">
           チャットで質問する（匿名OK）
@@ -375,21 +375,21 @@ function Closing() {
   return (
     <section className="bg-rc-teal">
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-16 md:py-20 text-center">
-        <h2 className="rc-mincho text-2xl md:text-[32px] font-semibold text-white leading-snug" style={{ textWrap: 'balance' }}>
+        <h2 className="rc-mincho text-[26px] md:text-[36px] font-semibold text-white leading-snug" style={{ textWrap: 'balance' }}>
           {hasTour ? 'まずは30分、見学だけでも。' : '迷ったら、まず聞くだけでも。'}
         </h2>
-        <p className="text-white/80 text-[15px] mt-3">
+        <p className="text-white/80 text-[16px] mt-3">
           {hasTour
             ? '私服OK・履歴書不要。職場の空気を見てから決めてください。'
             : '匿名チャットOK・フォームは1分・お電話でもOK。履歴書はまだ不要です。'}
         </p>
         <div className="flex flex-wrap justify-center items-center gap-3 mt-8">
           <Link href="/recruit/entry"
-            className="bg-white text-rc-teal font-bold text-[16px] rounded-full px-8 py-3.5 hover:bg-rc-ivory transition-colors">
+            className="bg-white text-rc-teal font-bold text-[17px] rounded-full px-8 py-3.5 hover:bg-rc-ivory transition-colors">
             {hasTour ? '応募・見学を予約する' : '応募する'}
           </Link>
           <button onClick={() => openChat()}
-            className="inline-flex items-center gap-2 border-2 border-white/70 text-white font-bold text-[16px] rounded-full px-7 py-3 hover:bg-white/10 transition-colors">
+            className="inline-flex items-center gap-2 border-2 border-white/70 text-white font-bold text-[17px] rounded-full px-7 py-3 hover:bg-white/10 transition-colors">
             <ChatIcon className="w-5 h-5" /> その前に相談する
           </button>
         </div>
