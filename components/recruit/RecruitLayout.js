@@ -81,7 +81,7 @@ function HeaderNav() {
           ) : (
             <span className="rc-mincho text-lg font-semibold text-rc-teal-dark tracking-wide">{clinic.shortName}</span>
           )}
-          <span className="text-[11px] tracking-[0.2em] text-rc-ink-soft font-medium mt-1">RECRUIT</span>
+          <span className="text-[12px] tracking-[0.12em] text-rc-ink-soft font-medium mt-1">採用サイト</span>
         </Link>
         <nav className="hidden md:flex items-center gap-5 ml-auto" aria-label="メイン">
           {nav.map(n => (
@@ -134,7 +134,7 @@ function Footer() {
         <div className="rc-mincho text-lg">{clinic.name}</div>
         <p className="text-[15px] text-white/60 mt-2">{clinic.address}／{clinic.station}</p>
         <div className="flex flex-wrap gap-x-6 gap-y-2 mt-6 text-[14px]">
-          <Link href="/recruit/flow" className="hover:text-white">見学・応募の流れ</Link>
+          <Link href="/recruit/flow" className="hover:text-white">{hasTour ? '見学・応募の流れ' : '応募の流れ'}</Link>
           <Link href="/recruit/entry" className="hover:text-white">エントリー</Link>
           <a href={clinic.patientSiteUrl} className="hover:text-white">患者さま向けサイト</a>
         </div>

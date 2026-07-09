@@ -2,12 +2,12 @@ import Link from 'next/link';
 import RecruitLayout, { Photo, hasTour } from '../../components/recruit/RecruitLayout';
 import { useRecruitChat, ChatIcon } from '../../components/recruit/ChatWidget';
 import { Reveal, CountUp } from '../../components/recruit/Reveal';
-import { clinic, stats, director, jobs, voices, support, flowSteps, faqs, chatScript, policies, signature } from '../../lib/recruit/site-data';
+import { clinic, stats, director, jobs, voices, support, flowSteps, faqs, policies, signature } from '../../lib/recruit/site-data';
 
 function Eyebrow({ en, ja }) {
   return (
     <div className="mb-4">
-      <div className="text-[12px] tracking-[0.25em] text-rc-teal font-bold">{en}</div>
+      <div className="text-[13px] tracking-[0.16em] text-rc-teal font-bold">{en}</div>
       <h2 className="rc-mincho text-2xl md:text-[32px] font-semibold text-rc-ink mt-1.5 leading-snug">{ja}</h2>
     </div>
   );
@@ -24,7 +24,7 @@ function Hero() {
 
       <div className="relative max-w-6xl mx-auto px-4 md:px-6 pt-12 md:pt-20 pb-14 md:pb-24 grid md:grid-cols-[1.1fr_1fr] gap-10 items-center">
         <div>
-          <p className="rc-hero-in text-[13px] tracking-[0.3em] text-rc-teal font-bold">{clinic.enName}</p>
+          <p className="rc-hero-in text-[13px] tracking-[0.2em] text-rc-teal font-bold">{clinic.shortName} 採用サイト</p>
           {(() => {
             const lines = clinic.tagline.split('\n');
             return (
@@ -93,8 +93,8 @@ function Stats() {
   return (
     <section id="stats" className="bg-white border-y border-rc-sand scroll-mt-20">
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20">
-        <Eyebrow en="BY THE NUMBERS" ja={`数字で見る、${clinic.shortName}`} />
-        <p className="text-[15px] text-rc-ink-soft mb-8 max-w-xl">言葉より、実績で。働きやすさに関わる数字をそのまま公開しています。</p>
+        <Eyebrow en="数字で見る" ja="言葉より、実績で。" />
+        <p className="text-[15px] text-rc-ink-soft mb-8 max-w-xl">働きやすさに関わる数字を、そのまま公開しています。</p>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
           {stats.map((s, i) => (
             <Reveal key={s.label} delay={i * 90}>
@@ -128,7 +128,7 @@ function Director() {
         </div>
       </Reveal>
       <Reveal delay={140}>
-        <Eyebrow en="MESSAGE" ja={director.headline} />
+        <Eyebrow en={`${director.title}メッセージ`} ja={director.headline} />
         <div className="space-y-5 text-[16px] leading-8 text-rc-ink max-w-xl">
           {director.message.map((p, i) => <p key={i}>{p}</p>)}
         </div>
@@ -145,7 +145,7 @@ function Policies() {
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20">
         <Reveal>
           <div className="text-center max-w-2xl mx-auto">
-            <div className="text-[12px] tracking-[0.25em] text-rc-teal font-bold">OUR POLICY</div>
+            <div className="text-[13px] tracking-[0.16em] text-rc-teal font-bold">当院のポリシー</div>
             <p className="rc-mincho text-2xl md:text-[32px] font-semibold text-rc-ink mt-2 leading-snug" style={{ textWrap: 'balance' }}>
               「{policies.slogan}」
             </p>
@@ -191,9 +191,9 @@ function JobsIndex() {
     <section id="jobs" className="bg-rc-teal-dark scroll-mt-20">
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20">
         <div className="mb-8">
-          <div className="text-[12px] tracking-[0.25em] text-rc-teal-soft font-bold">OPEN POSITIONS</div>
+          <div className="text-[13px] tracking-[0.16em] text-rc-teal-soft font-bold">募集職種</div>
           <h2 className="rc-mincho text-2xl md:text-[32px] font-semibold text-white mt-1.5">
-            {jobs.length === 1 ? `募集職種：${jobs[0].title}` : '募集職種'}
+            {jobs.length === 1 ? `${jobs[0].title}を募集しています` : `現在、${jobs.length}職種を募集しています`}
           </h2>
         </div>
         <div className={
@@ -233,7 +233,7 @@ function Gallery() {
   if (!clinic.gallery?.length) return null;
   return (
     <section className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20">
-      <Eyebrow en="GALLERY" ja="院内の様子" />
+      <Eyebrow en="ギャラリー" ja="院内の様子" />
       <div className="grid md:grid-cols-2 gap-5 mt-8">
         {clinic.gallery.map((g, i) => (
           <Reveal key={g.src} delay={i * 110}>
@@ -258,7 +258,7 @@ function Gallery() {
 function Voices() {
   return (
     <section id="voice" className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20 scroll-mt-20">
-      <Eyebrow en="STAFF VOICE" ja="先に働いている人の、正直な話。" />
+      <Eyebrow en="スタッフの声" ja="先に働いている人の、正直な話。" />
       <div className="grid md:grid-cols-3 gap-5 mt-8">
         {voices.map((v, i) => (
           <Reveal key={v.id} delay={i * 110} as="article" className="rounded-2xl bg-white border border-rc-sand overflow-hidden flex flex-col">
@@ -292,12 +292,12 @@ function Support() {
   return (
     <section className="bg-white border-y border-rc-sand">
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20">
-        <Eyebrow en="EDUCATION & BENEFITS" ja="「ついていけるかな」を、制度でなくす。" />
+        <Eyebrow en="教育・福利厚生" ja="「ついていけるかな」を、制度でなくす。" />
         <div className="grid md:grid-cols-3 gap-4 mt-8">
           {support.education.map((e, i) => (
             <Reveal key={e.title} delay={i * 100}>
               <div className="rounded-xl border border-rc-sand bg-rc-ivory p-6 h-full">
-                <div className="text-[12px] tracking-[0.2em] text-rc-teal font-bold">SUPPORT {String(i + 1).padStart(2, '0')}</div>
+                <div className="text-[12px] tracking-[0.2em] text-rc-teal font-bold">サポート {String(i + 1).padStart(2, '0')}</div>
                 <h3 className="font-bold text-[16px] mt-2">{e.title}</h3>
                 <p className="text-[14px] text-rc-ink-soft leading-relaxed mt-2">{e.text}</p>
               </div>
@@ -316,62 +316,12 @@ function Support() {
   );
 }
 
-/* 7. チャットで採用相談（本テンプレートの差別化セクション） */
-function ChatSection() {
-  const { openChat } = useRecruitChat();
-  return (
-    <section className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20 grid md:grid-cols-2 gap-10 items-center">
-      <div>
-        <Eyebrow en="CHAT" ja="応募の前に、聞きにくいことを聞いてください。" />
-        <p className="text-[16px] leading-8 text-rc-ink-soft">
-          電話は緊張するし、メールは重い。だから当院は<b className="text-rc-ink">匿名で使えるチャット相談</b>を用意しました。
-          給与のこと、未経験のこと、シフトの融通のこと——応募を決める前の質問こそ歓迎です。お名前や連絡先は、応募するときまで不要です。
-        </p>
-        <ul className="mt-5 space-y-2 text-[15px]">
-          {['匿名のままでOK・連絡先は不要', '24時間いつでも受付（夜勤明けでも）', '回答は募集要項と同じ内容を保証'].map(t => (
-            <li key={t} className="flex items-start gap-2.5">
-              <span className="mt-1.5 w-2 h-2 rounded-full bg-rc-teal shrink-0" aria-hidden="true" />
-              {t}
-            </li>
-          ))}
-        </ul>
-        <button onClick={() => openChat()}
-          className="mt-7 inline-flex items-center gap-2 bg-rc-teal text-white font-bold text-[16px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
-          <ChatIcon className="w-5 h-5" /> チャットで相談してみる
-        </button>
-      </div>
-
-      {/* 会話プレビュー（クリックで実チャットが開く） */}
-      <button onClick={() => openChat()} className="text-left rounded-2xl bg-white border border-rc-sand p-5 shadow-sm hover:shadow-md transition-shadow cursor-pointer w-full"
-        aria-label="チャットのプレビュー。クリックで相談を開始">
-        <div className="flex items-center gap-1.5 text-[12px] font-bold text-rc-teal border-b border-rc-sand pb-3 mb-4"><ChatIcon className="w-4 h-4" /> 採用相談チャット — 匿名OK</div>
-        <div className="space-y-3">
-          <div className="max-w-[85%] rounded-2xl rounded-bl-sm bg-rc-ivory border border-rc-sand px-4 py-2.5 text-[14px] leading-relaxed">
-            {chatScript.greeting}
-          </div>
-          <div className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-sm bg-rc-teal text-white px-4 py-2.5 text-[14px]">
-            {chatScript.sampleQuestion}
-          </div>
-          <div className="max-w-[85%] rounded-2xl rounded-bl-sm bg-rc-ivory border border-rc-sand px-4 py-2.5 text-[14px] leading-relaxed">
-            {faqs[0].a}
-          </div>
-          <div className="flex flex-wrap gap-2 pt-1">
-            {chatScript.chips.slice(0, 3).map(c => (
-              <span key={c.key} className="text-[12px] font-medium border border-rc-teal text-rc-teal rounded-full px-3 py-1">{c.label}</span>
-            ))}
-          </div>
-        </div>
-      </button>
-    </section>
-  );
-}
-
 /* 8. 見学・応募の流れ（抜粋） */
 function FlowDigest() {
   return (
     <section className="bg-white border-y border-rc-sand">
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20">
-        <Eyebrow en="PROCESS" ja="入職まで、最短2週間。" />
+        <Eyebrow en="応募の流れ" ja="入職まで、最短2週間。" />
         <ol className="grid md:grid-cols-4 gap-4 mt-8">
           {flowSteps.map((s, i) => (
             <Reveal key={s.step} delay={i * 110} as="li" className={`rounded-xl p-5 border ${s.chat ? 'bg-rc-teal-soft border-rc-teal/40' : 'bg-rc-ivory border-rc-sand'}`}>
@@ -396,7 +346,7 @@ function Faq() {
   const { openChat } = useRecruitChat();
   return (
     <section id="faq" className="max-w-3xl mx-auto px-4 md:px-6 py-14 md:py-20 scroll-mt-20">
-      <Eyebrow en="FAQ" ja="よくある質問" />
+      <Eyebrow en="よくある質問" ja="気になることには、先に答えます。" />
       <div className="mt-6 divide-y divide-rc-sand border-y border-rc-sand">
         {faqs.map(f => (
           <details key={f.q} className="group py-1">
@@ -460,7 +410,6 @@ export default function RecruitTop() {
       <Gallery />
       <Voices />
       <Support />
-      <ChatSection />
       <FlowDigest />
       <Faq />
       <Closing />
