@@ -78,10 +78,12 @@ export default function EntryPage() {
   return (
     <RecruitLayout title={pageTitle} description="入力は4項目・1分で完了。履歴書は不要です。">
       <section className="max-w-xl mx-auto px-4 md:px-6 pt-10 md:pt-16 pb-16">
-        <nav className="text-[13px] text-rc-ink-soft mb-6" aria-label="パンくず">
-          <Link href="/recruit" className="hover:text-rc-teal">採用トップ</Link>
-          <span className="mx-2">/</span>
-          <span>{pageTitle}</span>
+        <nav className="mb-6" aria-label="パンくず">
+          <Link href="/recruit" className="inline-flex items-center gap-1.5 text-[14px] font-bold text-rc-teal hover:text-rc-teal-dark transition-colors">
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M19 12H5M11 6l-6 6 6 6" /></svg>
+            採用トップへ戻る
+          </Link>
+          <span className="text-[13px] text-rc-ink-soft ml-3">／ {pageTitle}</span>
         </nav>
         <h1 className="rc-mincho text-3xl font-semibold">{pageTitle}</h1>
         <p className="text-[15px] text-rc-ink-soft mt-3">入力は4項目・1分で完了します。履歴書はまだ不要です。</p>

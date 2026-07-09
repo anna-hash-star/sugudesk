@@ -75,10 +75,12 @@ export default function JobPage({ slug }) {
       </Head>
       {/* 職種ヒーロー */}
       <section className="max-w-6xl mx-auto px-4 md:px-6 pt-10 md:pt-16 pb-10">
-        <nav className="text-[13px] text-rc-ink-soft mb-6" aria-label="パンくず">
-          <Link href="/recruit" className="hover:text-rc-teal">採用トップ</Link>
-          <span className="mx-2">/</span>
-          <span>{job.title}</span>
+        <nav className="mb-6" aria-label="パンくず">
+          <Link href="/recruit" className="inline-flex items-center gap-1.5 text-[14px] font-bold text-rc-teal hover:text-rc-teal-dark transition-colors">
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M19 12H5M11 6l-6 6 6 6" /></svg>
+            採用トップへ戻る
+          </Link>
+          <span className="text-[13px] text-rc-ink-soft ml-3">／ {job.title}</span>
         </nav>
         <div className="grid md:grid-cols-[1.2fr_1fr] gap-8 items-center">
           <div>
@@ -179,6 +181,12 @@ export default function JobPage({ slug }) {
         </p>
         <div className="flex justify-center">
           <JobCta job={job} />
+        </div>
+        <div className="mt-10">
+          <Link href="/recruit" className="inline-flex items-center gap-1.5 text-[15px] font-bold text-rc-teal border-2 border-rc-teal rounded-full px-6 py-2.5 hover:bg-rc-teal-soft transition-colors">
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M19 12H5M11 6l-6 6 6 6" /></svg>
+            採用トップへ戻る
+          </Link>
         </div>
       </section>
     </RecruitLayout>

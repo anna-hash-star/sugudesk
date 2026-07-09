@@ -9,10 +9,12 @@ export default function FlowPage() {
   return (
     <RecruitLayout title={pageTitle} description="入職まで最短2週間。応募は1分・履歴書不要でご案内します。">
       <section className="max-w-3xl mx-auto px-4 md:px-6 pt-10 md:pt-16 pb-12">
-        <nav className="text-[13px] text-rc-ink-soft mb-6" aria-label="パンくず">
-          <Link href="/recruit" className="hover:text-rc-teal">採用トップ</Link>
-          <span className="mx-2">/</span>
-          <span>{pageTitle}</span>
+        <nav className="mb-6" aria-label="パンくず">
+          <Link href="/recruit" className="inline-flex items-center gap-1.5 text-[14px] font-bold text-rc-teal hover:text-rc-teal-dark transition-colors">
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M19 12H5M11 6l-6 6 6 6" /></svg>
+            採用トップへ戻る
+          </Link>
+          <span className="text-[13px] text-rc-ink-soft ml-3">／ {pageTitle}</span>
         </nav>
         <h1 className="rc-mincho text-3xl md:text-4xl font-semibold">{pageTitle}</h1>
         <p className="text-[16px] leading-8 text-rc-ink-soft mt-4">
