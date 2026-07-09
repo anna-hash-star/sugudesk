@@ -52,7 +52,7 @@ function Hero() {
             {jobs.map(j => (
               <Link key={j.slug} href={`/recruit/jobs/${j.slug}`}
                 className="text-[14px] font-bold text-rc-teal bg-rc-teal-soft rounded-full px-3.5 py-1.5 hover:bg-rc-teal hover:text-white transition-colors">
-                {j.title} 募集中
+                {j.pending ? `${j.title}（求人準備中）` : `${j.title} 募集中`}
               </Link>
             ))}
           </div>
@@ -262,7 +262,7 @@ function Voices() {
       <div className="grid md:grid-cols-3 gap-5 mt-8">
         {voices.map((v, i) => (
           <Reveal key={v.id} delay={i * 110} as="article" className="rounded-2xl bg-white border border-rc-sand overflow-hidden flex flex-col">
-            <Photo label={v.photoLabel} scene={v.scene} ratio="aspect-[16/10]" className="!rounded-none" />
+            <Photo label={v.photoLabel} scene={v.scene} src={v.photo} ratio="aspect-[16/10]" className="!rounded-none" />
             <div className="p-6 flex-1 flex flex-col">
               <div className="text-[14px] text-rc-ink-soft">{v.role}・{v.years}</div>
               <h3 className="rc-mincho text-[17px] text-rc-teal-dark leading-relaxed mt-2">「{v.reason.slice(0, 42)}…」</h3>

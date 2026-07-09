@@ -42,8 +42,8 @@ PAGES = {
     "r-top": ".next/server/pages/recruit.html",
     "r-flow": ".next/server/pages/recruit/flow.html",
     "r-entry": ".next/server/pages/recruit/entry.html",
-    "r-nurse": ".next/server/pages/recruit/jobs/nurse.html",
-    "r-assistant": ".next/server/pages/recruit/jobs/assistant.html",
+    "r-reception": ".next/server/pages/recruit/jobs/reception.html",
+    "r-doctor": ".next/server/pages/recruit/jobs/doctor.html",
 }
 sections = "".join(
     f'<div class="route{" active" if rid == "r-top" else ""}" id="{rid}">{extract(p)}</div>'
@@ -52,26 +52,26 @@ sections = "".join(
 
 # チャットのナレッジ（lib/recruit/clinics/adeb.js の faqs/chatScript と同期させること）
 FAQS = [
-    '看護助手は未経験歓迎・学歴不問で、医療資格は不要です。看護師も美容未経験で大丈夫——マニュアルが整っており、レーザー施術は基礎から研修します。',
-    '個人ノルマはありません（求人票にも明記しています）。看護助手のインセンティブも個人ノルマと紐づくものではありません。「必要以上の美容治療は行わない」が当院のポリシーだからです。',
-    '看護師は残業なしです（9:00〜18:00・実働8時間）。看護助手（正社員）は固定残業代5時間分の範囲が基本で、超過した場合は別途支給します。',
-    'フォーム（1分）・チャット・お電話（050-8882-5880・採用担当：安田）のいずれでも応募できます。書類選考のうえ面接日程をご連絡し、面接で給与・シフト・研修内容をすべて明示します。',
-    'あります。美容施術を社員価格で受けられます。自社開発のスキンケア「FLALU COSME」を扱っているので、治療からホームケアまでの提案も学べる環境です。',
+    '受付は未経験歓迎です。医療の知識は入職後にマニュアルと研修で身につけられます。接客業からの転職も歓迎です。',
+    '個人ノルマはありません。「必要以上の美容治療は行わない」が当院のポリシーとして明文化されており、患者さまに不要なものを勧める仕事はそもそも存在しません。',
+    'フォーム（1分）・チャット・お電話（050-8882-5880・採用担当：安田）のいずれでも応募できます。選考のうえ面接日程をご連絡し、面接で給与・シフト・研修内容をすべて明示します。',
+    'はい、医師を募集予定です。募集要項は現在準備中のため、勤務形態（常勤・非常勤）や条件はお問い合わせに応じて個別にご案内します。チャット・お電話・フォームからお気軽にどうぞ。',
+    'あります。美容施術を社員価格で受けられます。自社開発のスキンケア「FLALU COSME」を扱っているので、美容の知識も自然と身につく環境です。',
 ]
 CHAT = {
     "greeting": "こんにちは！AdeBクリニック採用相談です。匿名のままで大丈夫ですよ。気になることを選ぶか、自由に入力してください。",
     "chips": [
         {"label": "未経験でも大丈夫？", "i": 0},
         {"label": "ノルマはある？", "i": 1},
-        {"label": "応募の流れは？", "i": 3},
-        {"label": "社員割引はある？", "i": 4},
+        {"label": "応募の流れは？", "i": 2},
+        {"label": "医師の求人は？", "i": 3},
     ],
     "faqs": FAQS,
     "keywords": [
-        [["未経験", "病棟", "美容経験", "資格", "初めて", "はじめて"], 0],
+        [["未経験", "資格", "初めて", "はじめて", "接客"], 0],
         [["ノルマ", "営業", "売上", "インセンティブ", "歩合"], 1],
-        [["残業", "定時", "夜勤"], 2],
-        [["流れ", "応募方法", "入職", "面接", "見学", "選考", "電話"], 3],
+        [["流れ", "応募方法", "入職", "面接", "見学", "選考", "電話"], 2],
+        [["医師", "ドクター", "先生", "皮膚科医", "常勤", "非常勤"], 3],
         [["割引", "社割", "化粧品", "FLALU", "フラル"], 4],
     ],
     "bridge": "応募はフォーム1分（履歴書不要）。お電話（050-8882-5880・採用担当：安田）でも受け付けています。",
@@ -111,7 +111,7 @@ body.chat-open button[aria-label="採用相談チャットを開く"] {{ display
 
 <script>
 var CHAT = {json.dumps(CHAT, ensure_ascii=False)};
-var ROUTES = {{'/recruit':'r-top','/recruit/flow':'r-flow','/recruit/entry':'r-entry','/recruit/jobs/nurse':'r-nurse','/recruit/jobs/assistant':'r-assistant'}};
+var ROUTES = {{'/recruit':'r-top','/recruit/flow':'r-flow','/recruit/entry':'r-entry','/recruit/jobs/reception':'r-reception','/recruit/jobs/doctor':'r-doctor'}};
 function go(path, hash) {{
   var id = ROUTES[path] || 'r-top';
   document.querySelectorAll('.route').forEach(function(r) {{ r.classList.toggle('active', r.id === id); }});

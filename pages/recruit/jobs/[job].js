@@ -48,7 +48,7 @@ function JobCta({ job }) {
     <div className="flex flex-wrap items-center gap-3">
       <Link href={`/recruit/entry?job=${job.slug}`}
         className="bg-rc-teal text-white font-bold text-[17px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
-        {job.title}に応募する
+        {job.pending ? `${job.title}の求人について問い合わせる` : `${job.title}に応募する`}
       </Link>
       {/* 職種コンテキストを引き継いでチャット起動 */}
       <button onClick={() => openChat(job.title)}
@@ -68,10 +68,12 @@ export default function JobPage({ slug }) {
   return (
     <RecruitLayout title={`${job.title} 募集要項`} description={job.summary}>
       <Head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(buildJobPostingJsonLd(job)) }}
-        />
+        {job.employmentTypes.length > 0 && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(buildJobPostingJsonLd(job)) }}
+          />
+        )}
       </Head>
       {/* 職種ヒーロー */}
       <section className="max-w-6xl mx-auto px-4 md:px-6 pt-10 md:pt-16 pb-10">
@@ -87,9 +89,13 @@ export default function JobPage({ slug }) {
             <div className="flex items-center gap-2">
               <h1 className="rc-mincho text-3xl md:text-4xl font-semibold">{job.title}</h1>
               <div className="flex gap-1.5">
-                {job.employmentTypes.map(e => (
-                  <span key={e.type} className="text-[13px] font-bold text-rc-teal bg-rc-teal-soft rounded px-2 py-1">{e.type}</span>
-                ))}
+                {job.pending ? (
+                  <span className="text-[13px] font-bold text-rc-ink-soft bg-rc-sand rounded px-2 py-1">求人準備中</span>
+                ) : (
+                  job.employmentTypes.map(e => (
+                    <span key={e.type} className="text-[13px] font-bold text-rc-teal bg-rc-teal-soft rounded px-2 py-1">{e.type}</span>
+                  ))
+                )}
               </div>
             </div>
             <p className="rc-mincho text-xl md:text-[22px] text-rc-teal-dark mt-4 leading-relaxed">{job.catch}</p>
@@ -125,7 +131,7 @@ export default function JobPage({ slug }) {
         <section className="max-w-3xl mx-auto px-4 md:px-6 py-12 md:py-16">
           <h2 className="rc-mincho text-2xl font-semibold mb-6">この職種の先輩</h2>
           <div className="rounded-2xl bg-white border border-rc-sand p-6 md:p-8 grid md:grid-cols-[160px_1fr] gap-6">
-            <Photo label={voice.photoLabel} scene={voice.scene} ratio="aspect-square" />
+            <Photo label={voice.photoLabel} scene={voice.scene} src={voice.photo} ratio="aspect-square" />
             <div>
               <div className="text-[14px] text-rc-ink-soft">{voice.role}・{voice.years}</div>
               <p className="text-[16px] leading-7 mt-3">{voice.reason}</p>
@@ -158,19 +164,33 @@ export default function JobPage({ slug }) {
               </div>
             )}
           </div>
-          <table className="w-full text-[16px]">
-            <tbody>
-              {Object.entries(employment.requirements).map(([k, v]) => (
-                <tr key={k} className="border-b border-rc-sand">
-                  <th className="text-left align-top py-4 pr-4 w-32 md:w-40 font-bold text-rc-teal-dark text-[15px]">{k}</th>
-                  <td className="py-4 leading-7 text-rc-ink">{v}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <p className="text-[13px] text-rc-ink-soft mt-4">
-            ※ 記載の労働条件は職業安定法に基づく明示事項です。面接時に書面でも交付します。
-          </p>
+          {employment ? (
+            <>
+              <table className="w-full text-[16px]">
+                <tbody>
+                  {Object.entries(employment.requirements).map(([k, v]) => (
+                    <tr key={k} className="border-b border-rc-sand">
+                      <th className="text-left align-top py-4 pr-4 w-32 md:w-40 font-bold text-rc-teal-dark text-[15px]">{k}</th>
+                      <td className="py-4 leading-7 text-rc-ink">{v}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <p className="text-[13px] text-rc-ink-soft mt-4">
+                ※ 記載の労働条件は職業安定法に基づく明示事項です。面接時に書面でも交付します。
+              </p>
+            </>
+          ) : (
+            <div className="rounded-xl bg-rc-teal-soft border border-rc-teal/30 p-6">
+              <p className="text-[17px] font-bold text-rc-teal">募集要項は現在準備中です</p>
+              <p className="text-[16px] leading-7 mt-2">{job.pendingNote}</p>
+              {clinic.phone && (
+                <p className="text-[16px] mt-3">
+                  お問い合わせ：<a href={`tel:${clinic.phone}`} className="font-bold text-rc-teal" style={{ fontVariantNumeric: 'tabular-nums' }}>{clinic.phone}</a>（{clinic.recruitContact}）／チャット・フォームでも受け付けています。
+                </p>
+              )}
+            </div>
+          )}
         </div>
       </section>
 

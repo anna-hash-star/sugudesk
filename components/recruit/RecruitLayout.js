@@ -78,13 +78,20 @@ function HeaderNav() {
   return (
     <header className="sticky top-0 z-30 bg-rc-ivory/90 backdrop-blur border-b border-rc-sand">
       <div className="max-w-6xl mx-auto flex items-center gap-4 px-4 md:px-6 h-[4.5rem]">
-        <Link href="/recruit" className="flex items-center gap-2.5 shrink-0">
+        <Link href="/recruit" className="flex items-center gap-3 shrink-0">
           {clinic.logoMark === 'adeb' ? (
-            <AdeBLogo />
+            <>
+              <AdeBLogo />
+              <span className="rc-mincho text-[19px] md:text-[22px] leading-none text-rc-ink">
+                {clinic.shortName}<span className="text-rc-teal">採用サイト</span>
+              </span>
+            </>
           ) : (
-            <span className="rc-mincho text-lg font-semibold text-rc-teal-dark tracking-wide">{clinic.shortName}</span>
+            <>
+              <span className="rc-mincho text-lg font-semibold text-rc-teal-dark tracking-wide">{clinic.shortName}</span>
+              <span className="text-[13px] tracking-[0.12em] text-rc-ink-soft font-medium mt-1">採用サイト</span>
+            </>
           )}
-          <span className="text-[13px] tracking-[0.12em] text-rc-ink-soft font-medium mt-1">採用サイト</span>
         </Link>
         <nav className="hidden md:flex items-center gap-5 ml-auto" aria-label="メイン">
           {nav.map(n => (
