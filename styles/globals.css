@@ -24,9 +24,9 @@
 /* AdeB：ブランドピンク（ロゴ色をテキスト用に深めたトーン）×純白。
    テキストは G-Mark 準拠の 84%黒相当・56%黒相当でコントラストを確保 */
 .theme-adeb {
-  --color-rc-teal: #D6335A;      /* AdeBピンク（CTA・アクセント） */
-  --color-rc-teal-dark: #A81F43; /* ホバー・ダーク面 */
-  --color-rc-teal-soft: #FBE7EC; /* ピンクの薄面 */
+  --color-rc-teal: #D82454;      /* AdeBピンク（正式ロゴ #E72459 の色相を、白文字が4.5:1で読める濃さに調整） */
+  --color-rc-teal-dark: #A31B40; /* ホバー・ダーク面 */
+  --color-rc-teal-soft: #FCE4EC; /* ピンクの薄面 */
   --color-rc-ivory: #FFFFFF;     /* ページ背景（純白） */
   --color-rc-sand: #EEE7E4;      /* 罫線・クリーム面 */
   --color-rc-ink: #292526;       /* 本文 ≈ rgba(0,0,0,0.84) */

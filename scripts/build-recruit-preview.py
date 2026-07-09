@@ -13,7 +13,7 @@ import re
 
 css = open(glob.glob(".next/static/chunks/*.css")[0]).read()
 
-MIME = {".webp": "image/webp", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png"}
+MIME = {".webp": "image/webp", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png", ".svg": "image/svg+xml"}
 
 
 def inline_photo(match):
