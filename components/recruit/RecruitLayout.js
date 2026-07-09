@@ -61,7 +61,7 @@ function AdeBLogo() {
       src="/recruit-photos/adeb-logo.svg"
       alt="AdeB Clinic"
       onError={() => setLogoOk(false)}
-      className="h-12 w-auto"
+      className="h-9 md:h-12 w-auto"
     />
   );
 }
@@ -78,11 +78,11 @@ function HeaderNav() {
   return (
     <header className="sticky top-0 z-30 bg-rc-ivory/90 backdrop-blur border-b border-rc-sand">
       <div className="max-w-6xl mx-auto flex items-center gap-4 px-4 md:px-6 h-[4.5rem]">
-        <Link href="/recruit" className="flex items-center gap-3 shrink-0">
+        <Link href="/recruit" className="flex items-center gap-2 md:gap-3 shrink-0 min-w-0">
           {clinic.logoMark === 'adeb' ? (
             <>
               <AdeBLogo />
-              <span className="rc-mincho text-[19px] md:text-[22px] leading-none text-rc-ink">
+              <span className="rc-mincho text-[15px] md:text-[22px] leading-none text-rc-ink whitespace-nowrap">
                 {clinic.shortName}<span className="text-rc-teal">採用サイト</span>
               </span>
             </>
@@ -114,7 +114,7 @@ function HeaderNav() {
         </nav>
         <Link
           href="/recruit/entry"
-          className="md:hidden ml-auto text-[15px] font-bold bg-rc-teal text-white rounded-full px-4 py-2"
+          className="md:hidden ml-auto shrink-0 text-[14px] font-bold bg-rc-teal text-white rounded-full px-3.5 py-2 whitespace-nowrap"
         >
           応募する
         </Link>

@@ -4,11 +4,23 @@ import { useRecruitChat, ChatIcon } from '../../components/recruit/ChatWidget';
 import { Reveal, CountUp } from '../../components/recruit/Reveal';
 import { clinic, stats, director, jobs, voices, support, flowSteps, faqs, policies, signature } from '../../lib/recruit/site-data';
 
+// 「、」を含む見出しはスマホでは読点の直後で改行する（中途半端な折り返しを防ぐ）
+function breakAtComma(text) {
+  const parts = String(text).split('、');
+  if (parts.length === 1) return text;
+  return parts.map((part, i) => (
+    <span key={i}>
+      {part}
+      {i < parts.length - 1 && <>、<br className="md:hidden" /></>}
+    </span>
+  ));
+}
+
 function Eyebrow({ en, ja }) {
   return (
     <div className="mb-4">
       <div className="text-[14px] tracking-[0.16em] text-rc-teal font-bold">{en}</div>
-      <h2 className="rc-mincho text-[26px] md:text-[36px] font-semibold text-rc-ink mt-1.5 leading-snug">{ja}</h2>
+      <h2 className="rc-mincho text-[22px] md:text-[32px] font-semibold text-rc-ink mt-1.5 leading-snug">{breakAtComma(ja)}</h2>
     </div>
   );
 }
@@ -30,7 +42,7 @@ function Hero() {
             return (
               <h1
                 className={`rc-hero-in rc-mincho font-semibold leading-[1.4] mt-4 text-rc-ink ${
-                  lines.length > 1 ? 'text-[26px] md:text-[39px]' : 'text-[34px] md:text-5xl'
+                  lines.length > 1 ? 'text-[21px] md:text-[38px]' : 'text-[34px] md:text-5xl'
                 }`}
                 style={{ textWrap: lines.length > 1 ? undefined : 'balance', '--rc-delay': '120ms' }}
               >
@@ -146,8 +158,8 @@ function Policies() {
         <Reveal>
           <div className="text-center max-w-2xl mx-auto">
             <div className="text-[14px] tracking-[0.16em] text-rc-teal font-bold">当院のポリシー</div>
-            <p className="rc-mincho text-[26px] md:text-[36px] font-semibold text-rc-ink mt-2 leading-snug" style={{ textWrap: 'balance' }}>
-              「{policies.slogan}」
+            <p className="rc-mincho text-[22px] md:text-[32px] font-semibold text-rc-ink mt-2 leading-snug">
+              「{breakAtComma(policies.slogan)}」
             </p>
             <p className="text-[16px] text-rc-ink-soft mt-4 leading-7">{policies.intro}</p>
           </div>
@@ -192,7 +204,7 @@ function JobsIndex() {
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20">
         <div className="mb-8">
           <div className="text-[14px] tracking-[0.16em] text-rc-teal-soft font-bold">募集職種</div>
-          <h2 className="rc-mincho text-[26px] md:text-[36px] font-semibold text-white mt-1.5">
+          <h2 className="rc-mincho text-[22px] md:text-[32px] font-semibold text-white mt-1.5">
             {jobs.length === 1 ? `${jobs[0].title}を募集しています` : `現在、${jobs.length}職種を募集しています`}
           </h2>
         </div>
@@ -375,8 +387,8 @@ function Closing() {
   return (
     <section className="bg-rc-teal">
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-16 md:py-20 text-center">
-        <h2 className="rc-mincho text-[26px] md:text-[36px] font-semibold text-white leading-snug" style={{ textWrap: 'balance' }}>
-          {hasTour ? 'まずは30分、見学だけでも。' : '迷ったら、まず聞くだけでも。'}
+        <h2 className="rc-mincho text-[22px] md:text-[32px] font-semibold text-white leading-snug" style={{ textWrap: 'balance' }}>
+          {breakAtComma(hasTour ? 'まずは30分、見学だけでも。' : '迷ったら、まず聞くだけでも。')}
         </h2>
         <p className="text-white/80 text-[16px] mt-3">
           {hasTour
