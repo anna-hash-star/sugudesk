@@ -6,13 +6,15 @@ import { clinic, faqs, chatScript } from '../../lib/recruit/site-data';
 const ChatContext = createContext({ openChat: () => {} });
 export const useRecruitChat = () => useContext(ChatContext);
 
-function BotIcon() {
+// 吹き出しアイコン（絵文字の代わりに全ページで使う共有SVG）
+export function ChatIcon({ className = 'w-5 h-5' }) {
   return (
-    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
       <path strokeLinecap="round" strokeLinejoin="round" d="M8 10.5h.01M12 10.5h.01M16 10.5h.01M21 12c0 4.418-4.03 8-9 8a9.86 9.86 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
     </svg>
   );
 }
+const BotIcon = ChatIcon;
 
 export function ChatProvider({ children }) {
   const [open, setOpen] = useState(false);

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import RecruitLayout, { hasTour } from '../../components/recruit/RecruitLayout';
-import { useRecruitChat } from '../../components/recruit/ChatWidget';
+import { useRecruitChat, ChatIcon } from '../../components/recruit/ChatWidget';
 import { clinic, jobs } from '../../lib/recruit/site-data';
 
 // エントリーフォーム：必須4項目のみ・履歴書添付なし（スマホでの離脱防止）。
@@ -139,7 +139,7 @@ export default function EntryPage() {
             <select id="job" value={form.job} onChange={set('job')} className={inputClass('job')}>
               <option value="">選択してください</option>
               {jobs.map(j => <option key={j.slug} value={j.slug}>{j.title}</option>)}
-              <option value="undecided">迷っている（見学で相談したい）</option>
+              <option value="undecided">迷っている（相談したい）</option>
             </select>
             {errors.job && <p className="text-[13px] text-rc-apricot mt-1.5" role="alert">{errors.job}</p>}
           </div>
@@ -187,8 +187,8 @@ export default function EntryPage() {
 
         <div className="mt-10 rounded-xl bg-rc-teal-soft border border-rc-teal/30 p-5 text-center">
           <p className="text-[14px] text-rc-ink">フォームより先に聞きたいことがある方は</p>
-          <button onClick={() => openChat()} className="mt-2 text-[15px] font-bold text-rc-teal underline underline-offset-4 decoration-rc-teal/40 hover:decoration-rc-teal">
-            💬 匿名チャットで相談する
+          <button onClick={() => openChat()} className="mt-2 inline-flex items-center gap-1.5 text-[15px] font-bold text-rc-teal underline underline-offset-4 decoration-rc-teal/40 hover:decoration-rc-teal">
+            <ChatIcon className="w-4 h-4" /> 匿名チャットで相談する
           </button>
         </div>
       </section>

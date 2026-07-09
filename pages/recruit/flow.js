@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import RecruitLayout, { Photo, hasTour } from '../../components/recruit/RecruitLayout';
-import { useRecruitChat } from '../../components/recruit/ChatWidget';
+import { useRecruitChat, ChatIcon } from '../../components/recruit/ChatWidget';
 import { flowSteps, tourDetail } from '../../lib/recruit/site-data';
 
 export default function FlowPage() {
@@ -31,8 +31,8 @@ export default function FlowPage() {
               <p className="text-[15px] text-rc-ink-soft leading-7 mt-2">{s.text}</p>
               {s.chat && (
                 <button onClick={() => openChat()}
-                  className="mt-3 text-[14px] font-bold text-rc-teal underline underline-offset-4 decoration-rc-teal/40 hover:decoration-rc-teal">
-                  💬 いまチャットで相談する
+                  className="mt-3 inline-flex items-center gap-1.5 text-[14px] font-bold text-rc-teal underline underline-offset-4 decoration-rc-teal/40 hover:decoration-rc-teal">
+                  <ChatIcon className="w-4 h-4" /> いまチャットで相談する
                 </button>
               )}
             </li>
@@ -72,8 +72,9 @@ export default function FlowPage() {
             {hasTour ? '見学を予約する' : '応募する（1分）'}
           </Link>
           <button onClick={() => openChat()}
-            className="border-2 border-rc-teal text-rc-teal font-bold text-[15px] rounded-full px-6 py-3 hover:bg-rc-teal-soft transition-colors">
-            {hasTour ? '💬 日程をチャットで相談' : '💬 まずチャットで相談'}
+            className="inline-flex items-center gap-2 border-2 border-rc-teal text-rc-teal font-bold text-[15px] rounded-full px-6 py-3 hover:bg-rc-teal-soft transition-colors">
+            <ChatIcon className="w-4 h-4" />
+            {hasTour ? '日程をチャットで相談' : 'まずチャットで相談'}
           </button>
         </div>
       </section>

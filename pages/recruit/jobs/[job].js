@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import RecruitLayout, { Photo, hasTour } from '../../../components/recruit/RecruitLayout';
-import { useRecruitChat } from '../../../components/recruit/ChatWidget';
+import { useRecruitChat, ChatIcon } from '../../../components/recruit/ChatWidget';
 import { Reveal } from '../../../components/recruit/Reveal';
 import { clinic, jobs, voices } from '../../../lib/recruit/site-data';
 
@@ -52,8 +52,8 @@ function JobCta({ job }) {
       </Link>
       {/* 職種コンテキストを引き継いでチャット起動 */}
       <button onClick={() => openChat(job.title)}
-        className="border-2 border-rc-teal text-rc-teal font-bold text-[15px] rounded-full px-6 py-3 hover:bg-rc-teal-soft transition-colors">
-        💬 この職種について質問する
+        className="inline-flex items-center gap-2 border-2 border-rc-teal text-rc-teal font-bold text-[15px] rounded-full px-6 py-3 hover:bg-rc-teal-soft transition-colors">
+        <ChatIcon className="w-4 h-4" /> この職種について質問する
       </button>
     </div>
   );
@@ -97,7 +97,7 @@ export default function JobPage({ slug }) {
             </div>
           </div>
           <Reveal delay={150}>
-            <Photo label={`${job.title}の働く姿`} scene={job.scene} ratio="aspect-[4/3]" className="shadow-lg shadow-rc-teal/10" />
+            <Photo label={`${job.title}の職場`} scene={job.scene} src={job.photo} ratio="aspect-[4/3]" className="shadow-lg shadow-rc-teal/10" />
           </Reveal>
         </div>
       </section>

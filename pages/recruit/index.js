@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import RecruitLayout, { Photo, hasTour } from '../../components/recruit/RecruitLayout';
-import { useRecruitChat } from '../../components/recruit/ChatWidget';
+import { useRecruitChat, ChatIcon } from '../../components/recruit/ChatWidget';
 import { Reveal, CountUp } from '../../components/recruit/Reveal';
 import { clinic, stats, director, jobs, voices, support, flowSteps, faqs, chatScript, policies, signature } from '../../lib/recruit/site-data';
 
@@ -69,8 +69,8 @@ function Hero() {
               </Link>
             )}
             <button onClick={() => openChat()}
-              className="text-[15px] font-bold text-rc-teal underline underline-offset-4 decoration-rc-teal/40 hover:decoration-rc-teal transition-colors">
-              💬 匿名で相談する
+              className="inline-flex items-center gap-1.5 text-[15px] font-bold text-rc-teal underline underline-offset-4 decoration-rc-teal/40 hover:decoration-rc-teal transition-colors">
+              <ChatIcon className="w-4 h-4" /> 匿名で相談する
             </button>
           </div>
         </div>
@@ -228,6 +228,32 @@ function JobsIndex() {
   );
 }
 
+/* 4.5 院内ギャラリー（clinic.gallery がある場合のみ表示） */
+function Gallery() {
+  if (!clinic.gallery?.length) return null;
+  return (
+    <section className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20">
+      <Eyebrow en="GALLERY" ja="院内の様子" />
+      <div className="grid md:grid-cols-2 gap-5 mt-8">
+        {clinic.gallery.map((g, i) => (
+          <Reveal key={g.src} delay={i * 110}>
+            <figure>
+              <div className="group/g relative overflow-hidden rounded-xl aspect-[16/10] bg-rc-sand">
+                <img
+                  src={g.src}
+                  alt={g.caption}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover/g:scale-[1.04]"
+                />
+              </div>
+              <figcaption className="text-[14px] text-rc-ink-soft mt-2.5">{g.caption}</figcaption>
+            </figure>
+          </Reveal>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 /* 5. スタッフの声 */
 function Voices() {
   return (
@@ -310,15 +336,15 @@ function ChatSection() {
           ))}
         </ul>
         <button onClick={() => openChat()}
-          className="mt-7 bg-rc-teal text-white font-bold text-[16px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
-          💬 チャットで相談してみる
+          className="mt-7 inline-flex items-center gap-2 bg-rc-teal text-white font-bold text-[16px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
+          <ChatIcon className="w-5 h-5" /> チャットで相談してみる
         </button>
       </div>
 
       {/* 会話プレビュー（クリックで実チャットが開く） */}
       <button onClick={() => openChat()} className="text-left rounded-2xl bg-white border border-rc-sand p-5 shadow-sm hover:shadow-md transition-shadow cursor-pointer w-full"
         aria-label="チャットのプレビュー。クリックで相談を開始">
-        <div className="text-[12px] font-bold text-rc-teal border-b border-rc-sand pb-3 mb-4">💬 採用相談チャット — 匿名OK</div>
+        <div className="flex items-center gap-1.5 text-[12px] font-bold text-rc-teal border-b border-rc-sand pb-3 mb-4"><ChatIcon className="w-4 h-4" /> 採用相談チャット — 匿名OK</div>
         <div className="space-y-3">
           <div className="max-w-[85%] rounded-2xl rounded-bl-sm bg-rc-ivory border border-rc-sand px-4 py-2.5 text-[14px] leading-relaxed">
             {chatScript.greeting}
@@ -413,8 +439,8 @@ function Closing() {
             {hasTour ? '応募・見学を予約する' : '応募する'}
           </Link>
           <button onClick={() => openChat()}
-            className="border-2 border-white/70 text-white font-bold text-[16px] rounded-full px-7 py-3 hover:bg-white/10 transition-colors">
-            💬 その前に相談する
+            className="inline-flex items-center gap-2 border-2 border-white/70 text-white font-bold text-[16px] rounded-full px-7 py-3 hover:bg-white/10 transition-colors">
+            <ChatIcon className="w-5 h-5" /> その前に相談する
           </button>
         </div>
       </div>
@@ -431,6 +457,7 @@ export default function RecruitTop() {
       <Policies />
       <Signature />
       <JobsIndex />
+      <Gallery />
       <Voices />
       <Support />
       <ChatSection />

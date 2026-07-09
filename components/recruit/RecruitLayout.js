@@ -46,6 +46,23 @@ export function Photo({ label, scene, src, ratio = 'aspect-[4/3]', className = '
   );
 }
 
+// AdeBロゴの再現版（Aマーク＋ハート＋ワードマーク）。
+// 正式なロゴ画像を入手したら public/recruit-photos/adeb-logo.png を置き、ここを <img> に差し替える。
+function AdeBLogo() {
+  return (
+    <span className="flex items-center gap-2">
+      <svg viewBox="0 0 40 36" className="w-8 h-7" aria-hidden="true">
+        <path d="M20 7 L33 28 L7 28 Z" fill="#E9486B" stroke="#E9486B" strokeWidth="8" strokeLinejoin="round" />
+        <path d="M20 24.2 c-1.5 -1.9 -4.3 -1.3 -4.3 0.9 0 1.6 2.2 2.9 4.3 4.3 2.1 -1.4 4.3 -2.7 4.3 -4.3 0 -2.2 -2.8 -2.8 -4.3 -0.9 z" fill="#FFFFFF" />
+      </svg>
+      <span className="leading-none" style={{ fontFamily: 'Helvetica, Arial, sans-serif' }}>
+        <span className="block text-[21px] font-bold tracking-tight" style={{ color: '#E9486B' }}>AdeB</span>
+        <span className="block text-[11px] font-semibold tracking-wide" style={{ color: '#F096AC' }}>Clinic</span>
+      </span>
+    </span>
+  );
+}
+
 function HeaderNav() {
   const { openChat } = useRecruitChat();
   const nav = [
@@ -58,9 +75,13 @@ function HeaderNav() {
   return (
     <header className="sticky top-0 z-30 bg-rc-ivory/90 backdrop-blur border-b border-rc-sand">
       <div className="max-w-6xl mx-auto flex items-center gap-4 px-4 md:px-6 h-16">
-        <Link href="/recruit" className="flex items-baseline gap-2 shrink-0">
-          <span className="rc-mincho text-lg font-semibold text-rc-teal-dark tracking-wide">{clinic.shortName}</span>
-          <span className="text-[11px] tracking-[0.2em] text-rc-ink-soft font-medium">RECRUIT</span>
+        <Link href="/recruit" className="flex items-center gap-2.5 shrink-0">
+          {clinic.logoMark === 'adeb' ? (
+            <AdeBLogo />
+          ) : (
+            <span className="rc-mincho text-lg font-semibold text-rc-teal-dark tracking-wide">{clinic.shortName}</span>
+          )}
+          <span className="text-[11px] tracking-[0.2em] text-rc-ink-soft font-medium mt-1">RECRUIT</span>
         </Link>
         <nav className="hidden md:flex items-center gap-5 ml-auto" aria-label="メイン">
           {nav.map(n => (
