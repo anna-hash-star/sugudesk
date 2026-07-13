@@ -169,6 +169,10 @@
 
 <script>
 (function(){
+  // ▼▼ ここにGoogleスプレッドシート連携のURLを貼るとスプレッドシート送信になります ▼▼
+  //    （空のままだと「送信」はメール作成(mailto)方式で動きます）
+  var ENDPOINT = ''; // 例: 'https://script.google.com/macros/s/xxxxx/exec'
+  // ▲▲ 設定方法は docs の adeb-hearing-gsheet.gs / README を参照 ▲▲
   var KEY = 'adeb-hearing-v1';
   var rows = [];
   // 各質問行から「カテゴリ / 質問文 / textarea」を収集
@@ -240,21 +244,43 @@
     document.body.removeChild(a); showToast('テキストを保存しました');
   });
 
-  // 送信：宛先固定でメールを起動（本文が長い場合の保険として同時にクリップボードへコピー）
   var MAILTO = 'anna.negoro@exmore.jp';
-  document.getElementById('send').addEventListener('click', function(){
+  var sendBtn = document.getElementById('send');
+
+  function sendByMail(){
     var text = buildText();
-    // 保険：本文をコピーしておく（メール本文が途中で切れても貼り付けられる）
     if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).catch(function(){}); }
     var subject = '【AdeB採用サイト】ヒアリング回答';
     var href = 'mailto:' + MAILTO + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(text);
-    // mailtoの長さ制限対策：極端に長い場合は末尾に案内
     if (href.length > 1900) {
-      var shortBody = text.slice(0, 1500) + '\n\n（※回答が長いため一部のみ表示されています。クリップボードに全文をコピー済みです。このメール本文を消して貼り付けてください）';
+      var shortBody = text.slice(0, 1500) + '\n\n（※回答が長いため一部のみ表示。全文はクリップボードにコピー済みです。この本文を消して貼り付けてください）';
       href = 'mailto:' + MAILTO + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(shortBody);
     }
     window.location.href = href;
     showToast('メールを作成しました（宛先：' + MAILTO + '）。内容を確認して送信してください');
-  });
+  }
+
+  function sendToSheet(){
+    var payload = { answers: rows.map(function(r){ return { cat:r.cat, q:r.q, a:r.ta.value.trim() }; }) };
+    sendBtn.disabled = true; sendBtn.textContent = '送信中…';
+    // Apps Script Web App へ送信（CORSプリフライトを避けるため text/plain・no-cors）
+    fetch(ENDPOINT, {
+      method:'POST', mode:'no-cors',
+      headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    }).then(function(){
+      sendBtn.disabled = false; sendBtn.textContent = '送信済み ✓';
+      showToast('送信しました。ご記入ありがとうございました');
+      try { localStorage.setItem(KEY + '-sent', '1'); } catch(e){}
+      setTimeout(function(){ sendBtn.textContent = '送信（スプレッドシート）'; }, 4000);
+    }).catch(function(){
+      sendBtn.disabled = false; sendBtn.textContent = '送信（スプレッドシート）';
+      showToast('送信に失敗しました。メール作成に切り替えます');
+      sendByMail();
+    });
+  }
+
+  sendBtn.textContent = ENDPOINT ? '送信（スプレッドシート）' : '送信（メール作成）';
+  sendBtn.addEventListener('click', function(){ ENDPOINT ? sendToSheet() : sendByMail(); });
 })();
 </script>
