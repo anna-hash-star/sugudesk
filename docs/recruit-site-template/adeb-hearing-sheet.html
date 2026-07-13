@@ -34,6 +34,9 @@
   .r-both { background:var(--sand); color:var(--ink-soft); }
   .r-recep { background:var(--pink-soft); color:var(--pink); }
   .r-doc { background:color-mix(in srgb, var(--ok) 14%, var(--paper)); color:var(--ok); border:1px solid color-mix(in srgb, var(--ok) 35%, transparent); }
+  .block { margin:52px 0 6px; padding:12px 18px; border-radius:10px; background:var(--ink); color:var(--paper); font-weight:800; font-size:15.5px; }
+  .block.first { margin-top:28px; }
+  .block + h2 { margin-top:18px; }
 
   h2 { font-size:19px; font-weight:800; margin:40px 0 4px; display:flex; align-items:baseline; gap:10px; }
   h2 .n { font-family:ui-monospace,Menlo,monospace; font-size:13px; color:var(--pink); }
@@ -85,93 +88,92 @@
     <span><i class="pri p-want">○任意</i> あるとより良い（後追いでも可）</span>
     <span><i class="known">既知</i> 既にいただいた情報。相違がないかご確認ください</span>
   </div>
-  <div class="legend">
-    <span><i class="role r-both">共通</i> 両職種に共通</span>
-    <span><i class="role r-recep">受付</i> 受付（パート）のみ</span>
-    <span><i class="role r-doc">医師</i> 医師（定期非常勤）のみ</span>
-  </div>
 
   <form id="sheet">
-  <h2><span class="n">A</span>施設・掲載の基本情報</h2>
-  <p class="why">サイトを公開するために確定が必要な、答えやすい基本項目からお願いします。</p>
+
+  <div class="block first">【共通】両職種（受付・医師）に共通の項目</div>
+
+  <h2><span class="n">A</span>クリニック・施設の基本</h2>
+  <p class="why">サイト公開に必要な、答えやすい基本項目からお願いします。</p>
   <table><thead><tr><th class="c-pri">優先</th><th>確認事項</th><th class="c-ans">ご回答（クリックして入力）</th></tr></thead><tbody>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-both">共通</span>「数字で見る」に載せる<b>スタッフ総数</b>の実数<span class="note">現在「18名」で仮置き。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">「数字で見る」に載せる<b>スタッフ総数</b>の実数<span class="note">現在「18名」で仮置き。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q"><b>1日の来院数の目安</b><span class="note">「数字で見る」やクリニック紹介に使用します。※医師募集では「60名程度」と伺っています。</span></td><td><textarea class="ans"></textarea></td></tr>
   </tbody></table>
 
-  <h2><span class="n">B</span>業務・設備の詳細</h2>
+  <h2><span class="n">B</span>通勤・見学・応募の流れ</h2>
   <table><thead><tr><th class="c-pri">優先</th><th>確認事項</th><th class="c-ans">ご回答</th></tr></thead><tbody>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-recep">受付</span>受付の1日の来院数の目安</td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-recep">受付</span>受付がひとり立ちするまでの研修期間の目安<span class="note">例：3ヶ月。未経験者の応募を後押しします。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-must">◎</span></td><td class="q"><b>車通勤は可能ですか？駐車場はありますか？</b><span class="note">面接・見学時に車で来てよいかも含めて。地方の求職者の争点です。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-must">◎</span></td><td class="q"><b>応募前の見学は受け付けますか？</b><span class="note">受ける場合、面接と別日でも可能ですか？→可能ならチャットに「見学予約」を追加します。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-must">◎</span></td><td class="q"><b>応募から入職までの流れ</b>（選考ステップ・所要日数・必要書類）<span class="note">例）応募→◯営業日以内にご連絡→面接→採用連絡→入職。※応募時に<b>履歴書は必要ですか？</b>——現在サイトに「フォーム4項目・履歴書不要」と記載していますが、これは制作側で置いた仮の想定です。事実かご確認ください。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">面接の持ち物・所要時間の目安</td><td><textarea class="ans"></textarea></td></tr>
   </tbody></table>
 
-  <h2><span class="n">C</span>通勤・見学・選考フロー</h2>
+  <h2><span class="n">C</span>給与・待遇・休み（共通）</h2>
   <table><thead><tr><th class="c-pri">優先</th><th>確認事項</th><th class="c-ans">ご回答</th></tr></thead><tbody>
-    <tr><td><span class="pri p-must">◎</span></td><td class="q"><span class="role r-both">共通</span><b>車通勤は可能ですか？駐車場はありますか？</b><span class="note">面接・見学時に車で来てよいかも含めて。地方の求職者の争点です。</span></td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-must">◎</span></td><td class="q"><span class="role r-both">共通</span><b>応募前の見学は受け付けますか？</b><span class="note">受ける場合、面接と別日でも可能ですか？→可能ならチャットに「見学予約」を追加します。</span></td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-must">◎</span></td><td class="q"><span class="role r-both">共通</span><b>応募〜結果連絡までの日数の目安</b><span class="note">「◯営業日以内にご連絡」と明示できると応募率が上がります。</span></td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-both">共通</span>面接の持ち物・所要時間の目安</td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">交通費支給の上限額（規定内の具体額）</td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q"><b>加入保険・福利厚生</b>（各職種）<span class="note">雇用保険・労災保険・健康保険・厚生年金の加入状況／制服貸与・研修・社員割引など。求人サイト（ジョブメドレー等）の「待遇・福利厚生」欄に載る項目です。パートは勤務時間により社会保険の加入有無が変わるため、実態を教えてください。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-must">◎</span></td><td class="q"><b>有給休暇は実際に取りやすいですか？取得率の数字はありますか？</b><span class="note">数字が無ければ「相談ベースで取りやすい」等でも可。※現在サイトに「有休消化率100%」を仮置き中——事実と相違ないかご確認ください。</span></td><td><textarea class="ans"></textarea></td></tr>
   </tbody></table>
 
-  <h2><span class="n">D</span>勤務・休み・有給の実態</h2>
-  <p class="why">求人票の条件を"実態"で補強し、働き方のミスマッチを防ぎます。</p>
-  <table><thead><tr><th class="c-pri">優先</th><th>確認事項</th><th class="c-ans">ご回答</th></tr></thead><tbody>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-recep">受付</span>試用期間はありますか？<span class="note">あれば期間と、その間の時給などの条件差も。応募者が気にする点です。</span></td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-recep">受付</span>受付は長く働けますか？（期間の定めのない雇用／更新ありの有期契約）<span class="note">腰を据えて働けるかを気にする方向けに。</span></td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-must">◎</span></td><td class="q"><span class="role r-both">共通</span><b>有給休暇は実際に取りやすいですか？取得率の数字はありますか？</b><span class="note">数字が無ければ「相談ベースで取りやすい」等でも可。※現在サイトに「有休消化率100%」を仮置き中——事実と相違ないかご確認ください。</span></td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-recep">受付</span>シフトは固定制ですか、希望制ですか？希望休は月にどのくらい出せますか？</td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-recep">受付</span>受付の休憩時間（分）／繁忙期でも残業は発生しませんか？<span class="note">求人票は「残業なし」。実態の裏づけとして。</span></td><td><textarea class="ans"></textarea></td></tr>
-  </tbody></table>
-
-  <h2><span class="n">E</span>給与・待遇（受付）</h2>
-  <p class="why">給与・待遇の曖昧さを減らすほど、応募が増えます。</p>
-  <table><thead><tr><th class="c-pri">優先</th><th>確認事項</th><th class="c-ans">ご回答</th></tr></thead><tbody>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-recep">受付</span>受付の賞与の有無・昇給の有無の実績</td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-both">共通</span>交通費支給の上限額（規定内の具体額）</td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-both">共通</span><b>加入保険・福利厚生</b>（各職種）<span class="note">雇用保険・労災保険・健康保険・厚生年金の加入状況／制服貸与・研修・社員割引など。求人サイト（ジョブメドレー等）の「待遇・福利厚生」欄に載る項目です。パートは勤務時間により社会保険の加入有無が変わるため、実態を教えてください。</span></td><td><textarea class="ans"></textarea></td></tr>
-  </tbody></table>
-
-  <h2><span class="n">F</span>医師求人（定期非常勤）について</h2>
-  <p class="why">美容皮膚科の医師が転職時に最も気にするのは「施術に集中できる体制か」「未経験でも指導が受けられるか」です。求人・チャットで示せると、専門不問での応募が集まりやすくなります。</p>
-  <table><thead><tr><th class="c-pri">優先</th><th>確認事項</th><th class="c-ans">ご回答</th></tr></thead><tbody>
-    <tr><td><span class="pri p-must">◎</span></td><td class="q"><span class="role r-doc">医師</span><b>医師の診療をサポートする体制</b>（1診あたり看護師・受付が何名つくか／カウンセリングは誰が担当するか）<span class="note">美容医師が最重視。「診療に集中できる」と示せると応募が増えます。</span></td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-must">◎</span></td><td class="q"><span class="role r-doc">医師</span><b>医師が担当する主な施術・導入している美容機器</b>（レーザー等の機種）<span class="note">未経験歓迎の場合、「何を覚えるのか」が具体的だと安心材料になります。</span></td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-must">◎</span></td><td class="q"><span class="role r-doc">医師</span><b>技術指導の具体</b>（指導医はどなたか・院内／外部・頻度・ひとり立ちまでの目安）<span class="note">「技術指導医による指導」を裏づける情報。※院長は施術に入らないと伺っています。</span></td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-doc">医師</span>報酬の提示方法（サイトは非公開でOK・面接で提示するレンジ／皮膚科専門医の優遇）<span class="note">既知：皮膚科専門医は11,000円〜応相談。非公開なら「経験・資格により優遇」と表記します。</span></td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-doc">医師</span>勤務日の相談余地（土曜固定以外の可否・将来的な常勤化の道はあるか）<span class="note">既知：毎週土曜9:30〜17:30・隔週も検討可。</span></td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-doc">医師</span>今回の医師募集の背景（増員／欠員／新規開設 など）<span class="note">他院の医師求人にも「募集背景」欄があります。増員なら成長中の印象に。</span></td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-doc">医師</span>現在の医師体制（常勤◯名・非常勤◯名／年代・男女比）<span class="note">他院求人の「医師の人員体制」欄に相当。何人の医師がいる職場かは応募者が気にします。</span></td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-doc">医師</span>副業・他院との兼務は可能ですか？<span class="note">他院求人の待遇欄に「副業OK」の記載あり。定期非常勤の先生は掛け持ちが多いため確認したい点です。</span></td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-doc">医師</span>医師賠償責任保険（医賠責）の扱い<span class="note">貼っていただいた小児科求人の待遇欄に「医師自賠責保険全額支給」と明記あり。医院加入／各自加入のどちらかを教えてください。</span></td><td><textarea class="ans"></textarea></td></tr>
-  </tbody></table>
-
-  <h2><span class="n">G</span>職場の雰囲気・スタッフ構成</h2>
+  <h2><span class="n">D</span>職場の雰囲気・スタッフ構成</h2>
   <p class="why">職場の雰囲気やスタッフの声は、求職者が採用ページでよく見る情報です。ここを開示できると他院との差別化になります。</p>
   <table><thead><tr><th class="c-pri">優先</th><th>確認事項</th><th class="c-ans">ご回答</th></tr></thead><tbody>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-both">共通</span>職種ごとのおおよそのスタッフ人数<span class="note">例：受付◯名／看護師◯名／医師◯名。ざっくりでOK。</span></td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-both">共通</span>スタッフの年齢層・男女比<span class="note">例：20〜40代中心・女性が多い など。</span></td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-must">◎</span></td><td class="q"><span class="role r-both">共通</span><b>「職場の雰囲気」を院長・スタッフの言葉で1〜2文で</b><span class="note">サイトとチャットにそのまま掲載します。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">職種ごとのおおよそのスタッフ人数<span class="note">例：受付◯名／看護師◯名／医師◯名。ざっくりでOK。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">スタッフの年齢層・男女比<span class="note">例：20〜40代中心・女性が多い など。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-must">◎</span></td><td class="q"><b>「職場の雰囲気」を院長・スタッフの言葉で1〜2文で</b><span class="note">サイトとチャットにそのまま掲載します。</span></td><td><textarea class="ans"></textarea></td></tr>
   </tbody></table>
 
-  <h2><span class="n">H</span>働きやすさ・両立支援</h2>
+  <h2><span class="n">E</span>働きやすさ・両立支援</h2>
   <p class="why">面接では聞きにくく、チャットで事前に分かると応募が増える項目です。差し支えない範囲でお願いします。</p>
   <table><thead><tr><th class="c-pri">優先</th><th>確認事項</th><th class="c-ans">ご回答</th></tr></thead><tbody>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-both">共通</span>子育て中のスタッフは在籍していますか？<span class="note">おおよその人数で構いません（例：数名）。</span></td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-both">共通</span>お子さまの体調不良などでの当日の欠勤・早退には対応できますか？<span class="note">スタッフ間でカバーし合う体制があれば、あわせて。</span></td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-both">共通</span>学校行事や家庭都合でのお休みを取ることは可能ですか？</td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-both">共通</span>託児所・保育支援はありますか？<span class="note">他院求人の事業所情報にも「託児所」欄があります（有無だけでOK）。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">子育て中のスタッフは在籍していますか？<span class="note">おおよその人数で構いません（例：数名）。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">お子さまの体調不良などでの当日の欠勤・早退には対応できますか？<span class="note">スタッフ間でカバーし合う体制があれば、あわせて。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">学校行事や家庭都合でのお休みを取ることは可能ですか？</td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">託児所・保育支援はありますか？<span class="note">他院求人の事業所情報にも「託児所」欄があります（有無だけでOK）。</span></td><td><textarea class="ans"></textarea></td></tr>
   </tbody></table>
 
-  <h2><span class="n">I</span>「先輩の声」づくり（掲載用インタビュー）</h2>
+  <h2><span class="n">F</span>「先輩の声」づくり（掲載用インタビュー）</h2>
   <p class="why">サイトの「スタッフの声」を実際の内容で作るためのヒアリングです。掲載にご協力いただけるスタッフの方に、可能な範囲でお答えいただければ、こちらで読みやすい記事に整えます。<b>まずは1名分でOK</b>（複数名ご協力いただける場合は担当までお知らせください）。</p>
   <table><thead><tr><th class="c-pri">優先</th><th>質問（スタッフご本人へ）</th><th class="c-ans">ご回答</th></tr></thead><tbody>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-both">共通</span>職種・雇用形態<span class="note">例：受付・パート／看護師・常勤</span></td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-both">共通</span>入職して何年目ですか？</td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-both">共通</span>お名前の掲載方法<span class="note">イニシャル／ニックネーム／実名 のいずれか（例：R.S）</span></td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-both">共通</span>前職や経歴をひとことで<span class="note">例：アパレル販売から転職／病棟勤務を経て</span></td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-both">共通</span><b>入職を決めた理由</b>は何でしたか？</td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-both">共通</span>働いてみて「想像と違った」または「良かった」と感じたこと</td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-both">共通</span>職場の雰囲気・人間関係について感じること</td><td><textarea class="ans"></textarea></td></tr>
-    <tr><td><span class="pri p-want">○</span></td><td class="q"><span class="role r-both">共通</span><b>応募を考えている方へのメッセージ</b></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">職種・雇用形態<span class="note">例：受付・パート／看護師・常勤</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">入職して何年目ですか？</td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">お名前の掲載方法<span class="note">イニシャル／ニックネーム／実名 のいずれか（例：R.S）</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">前職や経歴をひとことで<span class="note">例：アパレル販売から転職／病棟勤務を経て</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q"><b>入職を決めた理由</b>は何でしたか？</td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">働いてみて「想像と違った」または「良かった」と感じたこと</td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">職場の雰囲気・人間関係について感じること</td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q"><b>応募を考えている方へのメッセージ</b></td><td><textarea class="ans"></textarea></td></tr>
+  </tbody></table>
+
+  <div class="block">【受付（パート）】受付の求人・チャット用</div>
+
+  <h2><span class="n">G</span>受付（パート）について</h2>
+  <p class="why">受付パートの求人・チャットに使う、受付ならではの項目です。</p>
+  <table><thead><tr><th class="c-pri">優先</th><th>確認事項</th><th class="c-ans">ご回答</th></tr></thead><tbody>
+    <tr><td><span class="pri p-want">○</span></td><td class="q"><b>受付の1日の流れ</b>（出勤〜退勤のタイムスケジュール）<span class="note">サイトに「1日の流れ」として掲載します。例）9:00 開院準備／9:30 受付開始／12:00 交代で休憩／…／18:00 片付け・退勤。ざっくりでOK。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">受付がひとり立ちするまでの研修期間の目安<span class="note">例：3ヶ月。未経験者の応募を後押しします。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">試用期間はありますか？<span class="note">あれば期間と、その間の時給などの条件差も。応募者が気にする点です。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">受付は長く働けますか？（期間の定めのない雇用／更新ありの有期契約）<span class="note">腰を据えて働けるかを気にする方向けに。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">シフトは固定制ですか、希望制ですか？希望休は月にどのくらい出せますか？</td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">受付の休憩時間（分）／繁忙期でも残業は発生しませんか？<span class="note">求人票は「残業なし」。実態の裏づけとして。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">受付の賞与の有無・昇給の有無の実績</td><td><textarea class="ans"></textarea></td></tr>
+  </tbody></table>
+
+  <div class="block">【医師（定期非常勤）】医師の求人・チャット用</div>
+
+  <h2><span class="n">H</span>医師（定期非常勤）について</h2>
+  <p class="why">美容皮膚科の医師が転職時に最も気にする「施術に集中できる体制か」「未経験でも指導が受けられるか」を示すための項目です。</p>
+  <table><thead><tr><th class="c-pri">優先</th><th>確認事項</th><th class="c-ans">ご回答</th></tr></thead><tbody>
+    <tr><td><span class="pri p-want">○</span></td><td class="q"><b>医師の勤務日の流れ</b>（1日のタイムスケジュール）<span class="note">土曜の勤務日の流れをサイトに掲載します。例）9:30 カウンセリング開始／…／12:30 休憩／…／17:30 終了。ざっくりでOK。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-must">◎</span></td><td class="q"><b>医師の診療をサポートする体制</b>（1診あたり看護師・受付が何名つくか／カウンセリングは誰が担当するか）<span class="note">美容医師が最重視。「診療に集中できる」と示せると応募が増えます。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-must">◎</span></td><td class="q"><b>医師が担当する主な施術・導入している美容機器</b>（レーザー等の機種）<span class="note">未経験歓迎の場合、「何を覚えるのか」が具体的だと安心材料になります。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-must">◎</span></td><td class="q"><b>技術指導の具体</b>（指導医はどなたか・院内／外部・頻度・ひとり立ちまでの目安）<span class="note">「技術指導医による指導」を裏づける情報。※院長は施術に入らないと伺っています。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">報酬の提示方法（サイトは非公開でOK・面接で提示するレンジ／皮膚科専門医の優遇）<span class="note">既知：皮膚科専門医は11,000円〜応相談。非公開なら「経験・資格により優遇」と表記します。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">勤務日の相談余地（土曜固定以外の可否・将来的な常勤化の道はあるか）<span class="note">既知：毎週土曜9:30〜17:30・隔週も検討可。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">今回の医師募集の背景（増員／欠員／新規開設 など）<span class="note">他院の医師求人にも「募集背景」欄があります。増員なら成長中の印象に。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">現在の医師体制（常勤◯名・非常勤◯名／年代・男女比）<span class="note">他院求人の「医師の人員体制」欄に相当。何人の医師がいる職場かは応募者が気にします。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">副業・他院との兼務は可能ですか？<span class="note">他院求人の待遇欄に「副業OK」の記載あり。定期非常勤の先生は掛け持ちが多いため確認したい点です。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">医師賠償責任保険（医賠責）の扱い<span class="note">貼っていただいた小児科求人の待遇欄に「医師自賠責保険全額支給」と明記あり。医院加入／各自加入のどちらかを教えてください。</span></td><td><textarea class="ans"></textarea></td></tr>
   </tbody></table>
   </form>
 
@@ -197,8 +199,13 @@
   var KEY = 'adeb-hearing-v1';
   var rows = [];
   // 各質問行から「カテゴリ / 質問文 / textarea」を収集
-  var curCat = '';
-  document.querySelectorAll('#sheet h2, #sheet tbody tr').forEach(function(el){
+  var curCat = '', curRole = '';
+  document.querySelectorAll('#sheet .block, #sheet h2, #sheet tbody tr').forEach(function(el){
+    if (el.classList && el.classList.contains('block')) {
+      var b = el.textContent;
+      curRole = b.indexOf('受付') !== -1 ? '受付' : (b.indexOf('医師') !== -1 ? '医師' : '共通');
+      return;
+    }
     if (el.tagName === 'H2') { curCat = el.textContent.trim().replace(/\s+/g,' ').replace(/^([A-Z])/, '$1. '); return; }
     var qcell = el.querySelector('.q');
     var ta = el.querySelector('textarea.ans');
@@ -206,8 +213,7 @@
     // 質問文（.noteの補足は除いて主文だけ）
     var clone = qcell.cloneNode(true);
     var note = clone.querySelector('.note'); if (note) note.remove();
-    var role = clone.querySelector('.role'); var roleTxt = role ? role.textContent.trim() : ''; if (role) role.remove();
-    var q = (roleTxt ? '［' + roleTxt + '］' : '') + clone.textContent.trim().replace(/\s+/g,' ');
+    var q = (curRole ? '［' + curRole + '］' : '') + clone.textContent.trim().replace(/\s+/g,' ');
     rows.push({ cat: curCat, q: q, ta: ta });
   });
 
