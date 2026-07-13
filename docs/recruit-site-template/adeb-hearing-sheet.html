@@ -80,10 +80,10 @@
     <b>入力のしかた</b>（このページに直接入力できます）
     <ol>
       <li>各項目の入力欄に、そのままご記入ください（入力内容はこの端末に自動保存されます）。</li>
-      <li>記入し終えたら、下の <b>「回答をコピー」</b> ボタンを押す → メール／チャットに貼り付けて制作担当へご返信ください。</li>
-      <li>ファイルで残したい場合は <b>「テキストで保存」</b>（.txt がダウンロードされます）。</li>
+      <li>記入し終えたら、下の <b>「送信（メール作成）」</b> ボタンを押してください。宛先・件名・回答本文が入ったメールが立ち上がるので、そのまま送信いただけます。</li>
+      <li>メールが立ち上がらない環境では <b>「回答をコピー」</b>（本文をコピー→メールに貼り付け）／<b>「テキストで保存」</b>（.txt）をご利用ください。</li>
     </ol>
-    ※ Excelで記入したい場合は、担当が別途Excel版もお渡しできます。
+    ※ 送信先：<b>anna.negoro@exmore.jp</b>（制作担当）。Excelで記入したい場合は別途Excel版もお渡しできます。
   </div>
   <div class="legend">
     <span><i class="pri p-must">◎必須</i> 応募に直結・離脱を防ぐ最重要項目</span>
@@ -162,7 +162,8 @@
 <div class="bar"><div class="bar-in">
   <div class="prog">記入済み <b><span id="done">0</span>/<span id="total">0</span></b></div>
   <button type="button" class="btn btn-sub" id="save">テキストで保存</button>
-  <button type="button" class="btn btn-main" id="copy">回答をコピー</button>
+  <button type="button" class="btn btn-sub" id="copy">回答をコピー</button>
+  <button type="button" class="btn btn-main" id="send">送信（メール作成）</button>
 </div></div>
 <div class="toast" id="toast"></div>
 
@@ -237,6 +238,23 @@
     var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
     a.download = 'AdeB_ヒアリング回答.txt'; document.body.appendChild(a); a.click();
     document.body.removeChild(a); showToast('テキストを保存しました');
+  });
+
+  // 送信：宛先固定でメールを起動（本文が長い場合の保険として同時にクリップボードへコピー）
+  var MAILTO = 'anna.negoro@exmore.jp';
+  document.getElementById('send').addEventListener('click', function(){
+    var text = buildText();
+    // 保険：本文をコピーしておく（メール本文が途中で切れても貼り付けられる）
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).catch(function(){}); }
+    var subject = '【AdeB採用サイト】ヒアリング回答';
+    var href = 'mailto:' + MAILTO + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(text);
+    // mailtoの長さ制限対策：極端に長い場合は末尾に案内
+    if (href.length > 1900) {
+      var shortBody = text.slice(0, 1500) + '\n\n（※回答が長いため一部のみ表示されています。クリップボードに全文をコピー済みです。このメール本文を消して貼り付けてください）';
+      href = 'mailto:' + MAILTO + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(shortBody);
+    }
+    window.location.href = href;
+    showToast('メールを作成しました（宛先：' + MAILTO + '）。内容を確認して送信してください');
   });
 })();
 </script>
