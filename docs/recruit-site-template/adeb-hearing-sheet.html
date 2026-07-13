@@ -303,8 +303,8 @@
       setTimeout(function(){ sendBtn.textContent = '送信（スプレッドシート）'; }, 4000);
     }).catch(function(){
       sendBtn.disabled = false; sendBtn.textContent = '送信（スプレッドシート）';
-      showToast('送信に失敗しました。メール作成に切り替えます');
-      sendByMail();
+      showToast('この画面からは直接送信できませんでした。「回答をコピー」または「テキストで保存」でご返信ください（メール作成も試みます）');
+      try { sendByMail(); } catch (e) {}
     });
   }
 
