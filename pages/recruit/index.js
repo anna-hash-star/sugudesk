@@ -118,7 +118,7 @@ function Stats() {
                   <span className="text-base ml-0.5">{s.unit}</span>
                 </div>
                 <div className="text-[15px] font-bold mt-2">{s.label}</div>
-                <div className="text-[13px] text-rc-ink-soft mt-1">{s.note}</div>
+                {s.note && <div className="text-[13px] text-rc-ink-soft mt-1">{s.note}</div>}
               </div>
             </Reveal>
           ))}
