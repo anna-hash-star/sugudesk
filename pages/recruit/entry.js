@@ -76,7 +76,7 @@ export default function EntryPage() {
 
   const pageTitle = hasTour ? '応募・見学予約' : '応募フォーム';
   return (
-    <RecruitLayout title={pageTitle} description="入力は4項目・1分で完了。履歴書は不要です。">
+    <RecruitLayout title={pageTitle} description="入力は4項目・1分で完了。選考には履歴書・職務経歴書が必要です。">
       <section className="max-w-xl mx-auto px-4 md:px-6 pt-10 md:pt-16 pb-16">
         <nav className="mb-6" aria-label="パンくず">
           <Link href="/recruit" className="inline-flex items-center gap-1.5 text-[15px] font-bold text-rc-teal hover:text-rc-teal-dark transition-colors">
@@ -86,7 +86,7 @@ export default function EntryPage() {
           <span className="text-[14px] text-rc-ink-soft ml-3">／ {pageTitle}</span>
         </nav>
         <h1 className="rc-mincho text-3xl font-semibold">{pageTitle}</h1>
-        <p className="text-[16px] text-rc-ink-soft mt-3">入力は4項目・1分で完了します。履歴書はまだ不要です。</p>
+        <p className="text-[16px] text-rc-ink-soft mt-3">入力は4項目・1分で完了します。（選考には履歴書・職務経歴書をご用意ください）</p>
         {clinic.phone && (
           <p className="mt-4 rounded-xl bg-white border border-rc-sand px-4 py-3 text-[15px]">
             お電話でも応募できます：

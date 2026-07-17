@@ -7,7 +7,7 @@ export default function FlowPage() {
   const { openChat } = useRecruitChat();
   const pageTitle = hasTour ? '見学・応募の流れ' : '応募の流れ';
   return (
-    <RecruitLayout title={pageTitle} description="入職まで最短2週間。応募は1分・履歴書不要でご案内します。">
+    <RecruitLayout title={pageTitle} description="応募前の見学もOK。応募〜面接〜入職の流れをご案内します。">
       <section className="max-w-3xl mx-auto px-4 md:px-6 pt-10 md:pt-16 pb-12">
         <nav className="mb-6" aria-label="パンくず">
           <Link href="/recruit" className="inline-flex items-center gap-1.5 text-[15px] font-bold text-rc-teal hover:text-rc-teal-dark transition-colors">
@@ -45,8 +45,8 @@ export default function FlowPage() {
       {hasTour && (
         <section className="bg-white border-y border-rc-sand">
           <div className="max-w-3xl mx-auto px-4 md:px-6 py-12 md:py-16">
-            <h2 className="rc-mincho text-2xl font-semibold">見学当日の30分</h2>
-            <p className="text-[15px] text-rc-ink-soft mt-2">私服OK・履歴書不要・手ぶらでどうぞ。</p>
+            <h2 className="rc-mincho text-2xl font-semibold">見学当日の流れ</h2>
+            <p className="text-[15px] text-rc-ink-soft mt-2">私服OK・手ぶらでどうぞ（見学は選考ではありません）。</p>
             <div className="grid md:grid-cols-[1fr_240px] gap-8 mt-8 items-start">
               <ol className="relative border-l-2 border-rc-teal-soft ml-3 space-y-6">
                 {tourDetail.map(d => (
