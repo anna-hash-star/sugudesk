@@ -85,7 +85,7 @@ export default function JobPage({ slug }) {
           </Link>
           <span className="text-[14px] text-rc-ink-soft ml-3">／ {job.title}</span>
         </nav>
-        <div className="grid md:grid-cols-[1.2fr_1fr] gap-8 items-center">
+        <div className={`grid gap-8 items-center ${job.photo ? 'md:grid-cols-[1.2fr_1fr]' : ''}`}>
           <div>
             <div className="flex items-center gap-2">
               <h1 className="rc-mincho text-3xl md:text-4xl font-semibold">{job.title}</h1>
@@ -105,9 +105,11 @@ export default function JobPage({ slug }) {
               <JobCta job={job} />
             </div>
           </div>
-          <Reveal delay={150}>
-            <Photo label={`${job.title}の職場`} scene={job.scene} src={job.photo} ratio="aspect-[4/3]" className="shadow-lg shadow-rc-teal/10" />
-          </Reveal>
+          {job.photo && (
+            <Reveal delay={150}>
+              <Photo label={`${job.title}の職場`} scene={job.scene} src={job.photo} ratio="aspect-[4/3]" className="shadow-lg shadow-rc-teal/10" />
+            </Reveal>
+          )}
         </div>
       </section>
 
@@ -131,8 +133,8 @@ export default function JobPage({ slug }) {
       {voice && (
         <section className="max-w-3xl mx-auto px-4 md:px-6 py-12 md:py-16">
           <h2 className="rc-mincho text-2xl font-semibold mb-6">この職種の先輩</h2>
-          <div className="rounded-2xl bg-white border border-rc-sand p-6 md:p-8 grid md:grid-cols-[160px_1fr] gap-6">
-            <Photo label={voice.photoLabel} scene={voice.scene} src={voice.photo} ratio="aspect-square" />
+          <div className={`rounded-2xl bg-white border border-rc-sand p-6 md:p-8 gap-6 ${voice.photo ? 'grid md:grid-cols-[160px_1fr]' : ''}`}>
+            {voice.photo && <Photo label={voice.photoLabel} scene={voice.scene} src={voice.photo} ratio="aspect-square" />}
             <div>
               <div className="text-[14px] text-rc-ink-soft">{voice.role}・{voice.years}</div>
               <p className="text-[16px] leading-7 mt-3">{voice.reason}</p>
