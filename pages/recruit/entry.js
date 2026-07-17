@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import RecruitLayout, { hasTour } from '../../components/recruit/RecruitLayout';
 import { useRecruitChat, ChatIcon } from '../../components/recruit/ChatWidget';
+import ApplyForm from '../../components/recruit/ApplyForm';
 import { clinic, jobs } from '../../lib/recruit/site-data';
 
 // エントリーフォーム：必須4項目のみ・履歴書添付なし（スマホでの離脱防止）。
@@ -64,6 +65,31 @@ export default function EntryPage() {
           <div className="flex justify-center gap-3 mt-8">
             <Link href="/recruit" className="text-[16px] font-bold text-rc-teal hover:underline underline-offset-4">採用トップへ戻る</Link>
           </div>
+        </section>
+      </RecruitLayout>
+    );
+  }
+
+  // Googleフォームを設定している場合は、フォームを埋め込んで表示（従来の簡易フォームは使わない）
+  if (clinic.applyFormUrl) {
+    return (
+      <RecruitLayout title="応募フォーム" description="応募フォームからご応募ください。">
+        <section className="max-w-2xl mx-auto px-4 md:px-6 pt-10 md:pt-16 pb-16">
+          <nav className="mb-6" aria-label="パンくず">
+            <Link href="/recruit" className="inline-flex items-center gap-1.5 text-[15px] font-bold text-rc-teal hover:text-rc-teal-dark transition-colors">
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M19 12H5M11 6l-6 6 6 6" /></svg>
+              採用トップへ戻る
+            </Link>
+          </nav>
+          <h1 className="rc-mincho text-3xl font-semibold">応募フォーム</h1>
+          {clinic.phone && (
+            <p className="mt-4 rounded-xl bg-white border border-rc-sand px-4 py-3 text-[15px]">
+              お電話でも応募できます：
+              <a href={`tel:${clinic.phone}`} className="font-bold text-rc-teal mx-1" style={{ fontVariantNumeric: 'tabular-nums' }}>{clinic.phone}</a>
+              （{clinic.recruitContact}）
+            </p>
+          )}
+          <div className="mt-6"><ApplyForm height={1600} /></div>
         </section>
       </RecruitLayout>
     );

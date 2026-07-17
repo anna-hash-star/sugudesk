@@ -4,6 +4,7 @@ import Link from 'next/link';
 import RecruitLayout, { Photo, hasTour } from '../../../components/recruit/RecruitLayout';
 import { useRecruitChat, ChatIcon } from '../../../components/recruit/ChatWidget';
 import { Reveal } from '../../../components/recruit/Reveal';
+import ApplyForm from '../../../components/recruit/ApplyForm';
 import { clinic, jobs, voices } from '../../../lib/recruit/site-data';
 
 // Google しごと検索（Google for Jobs）向けの JobPosting 構造化データ。
@@ -46,7 +47,7 @@ function JobCta({ job }) {
   const { openChat } = useRecruitChat();
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <Link href={`/recruit/entry?job=${job.slug}`}
+      <Link href={clinic.applyFormUrl && !job.pending ? '#apply' : `/recruit/entry?job=${job.slug}`}
         className="bg-rc-teal text-white font-bold text-[17px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
         {job.pending ? `${job.title}の求人について問い合わせる` : `${job.title}に応募する`}
       </Link>
@@ -193,6 +194,15 @@ export default function JobPage({ slug }) {
           )}
         </div>
       </section>
+
+      {/* 応募フォーム（Googleフォームを設定している場合のみ、この職種ページに直接埋め込む） */}
+      {clinic.applyFormUrl && !job.pending && (
+        <section id="apply" className="max-w-2xl mx-auto px-4 md:px-6 py-12 md:py-16 scroll-mt-20">
+          <h2 className="rc-mincho text-2xl font-semibold text-center">{job.title}に応募する</h2>
+          <p className="text-[15px] text-rc-ink-soft text-center mt-2">下のフォームからご応募ください。</p>
+          <div className="mt-6"><ApplyForm height={1500} /></div>
+        </section>
+      )}
 
       {/* クロージング */}
       <section className="max-w-3xl mx-auto px-4 md:px-6 py-12 md:py-16 text-center">

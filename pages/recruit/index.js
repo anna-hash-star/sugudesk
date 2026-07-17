@@ -277,7 +277,7 @@ function Voices() {
             <Photo label={v.photoLabel} scene={v.scene} src={v.photo} ratio="aspect-[4/3] sm:aspect-auto sm:h-full sm:min-h-[280px]" className="!rounded-none" />
             <div className="p-6 md:p-7 flex flex-col">
               <div className="text-[14px] text-rc-ink-soft">{v.role}・{v.years}</div>
-              <h3 className="rc-mincho text-[18px] text-rc-teal-dark leading-relaxed mt-2">「{v.reason.slice(0, 34)}…」</h3>
+              <h3 className="rc-mincho text-[18px] text-rc-teal-dark leading-relaxed mt-2">「{v.headline || v.reason.slice(0, 34) + '…'}」</h3>
               <dl className="mt-4 space-y-3 text-[15px] leading-relaxed">
                 <div>
                   <dt className="font-bold text-rc-teal">入職の決め手</dt>
