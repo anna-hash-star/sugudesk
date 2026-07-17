@@ -19,8 +19,8 @@ export function Photo({ label, scene, src, ratio = 'aspect-[4/3]', className = '
       role="img"
       aria-label={label}
     >
-      {/* イラストは常に下層に敷く（実写が読めないときのフォールバック） */}
-      {scene && (
+      {/* イラストは実写が無い/読めないときだけ表示（実写が読めるときは重ねない＝ちらつき防止） */}
+      {scene && !imgOk && (
         <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover/photo:scale-[1.04]">
           <Illust scene={scene} />
         </div>
