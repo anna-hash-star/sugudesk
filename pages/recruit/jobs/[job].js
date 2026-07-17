@@ -200,7 +200,7 @@ export default function JobPage({ slug }) {
         <section id="apply" className="max-w-2xl mx-auto px-4 md:px-6 py-12 md:py-16 scroll-mt-20">
           <h2 className="rc-mincho text-2xl font-semibold text-center">{job.title}に応募する</h2>
           <p className="text-[15px] text-rc-ink-soft text-center mt-2">下のフォームからご応募ください。</p>
-          <div className="mt-6"><ApplyForm height={1500} /></div>
+          <div className="mt-6"><ApplyForm /></div>
         </section>
       )}
 

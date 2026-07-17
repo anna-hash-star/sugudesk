@@ -89,7 +89,7 @@ export default function EntryPage() {
               （{clinic.recruitContact}）
             </p>
           )}
-          <div className="mt-6"><ApplyForm height={1600} /></div>
+          <div className="mt-6"><ApplyForm /></div>
         </section>
       </RecruitLayout>
     );
