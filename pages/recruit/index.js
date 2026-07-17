@@ -271,20 +271,20 @@ function Voices() {
   return (
     <section id="voice" className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20 scroll-mt-20">
       <Eyebrow en="スタッフの声" ja="先に働いている人の、正直な話。" />
-      <div className="grid md:grid-cols-3 gap-5 mt-8">
+      <div className="mt-8 max-w-3xl mx-auto space-y-6">
         {voices.map((v, i) => (
-          <Reveal key={v.id} delay={i * 110} as="article" className="rounded-2xl bg-white border border-rc-sand overflow-hidden flex flex-col">
-            <Photo label={v.photoLabel} scene={v.scene} src={v.photo} ratio="aspect-[16/10]" className="!rounded-none" />
-            <div className="p-6 flex-1 flex flex-col">
+          <Reveal key={v.id} delay={i * 110} as="article" className="rounded-2xl bg-white border border-rc-sand overflow-hidden grid sm:grid-cols-[240px_1fr]">
+            <Photo label={v.photoLabel} scene={v.scene} src={v.photo} ratio="aspect-[4/3] sm:aspect-auto sm:h-full sm:min-h-[280px]" className="!rounded-none" />
+            <div className="p-6 md:p-7 flex flex-col">
               <div className="text-[14px] text-rc-ink-soft">{v.role}・{v.years}</div>
-              <h3 className="rc-mincho text-[17px] text-rc-teal-dark leading-relaxed mt-2">「{v.reason.slice(0, 42)}…」</h3>
-              <dl className="mt-4 space-y-3 text-[15px] leading-relaxed flex-1">
+              <h3 className="rc-mincho text-[18px] text-rc-teal-dark leading-relaxed mt-2">「{v.reason.slice(0, 34)}…」</h3>
+              <dl className="mt-4 space-y-3 text-[15px] leading-relaxed">
                 <div>
                   <dt className="font-bold text-rc-teal">入職の決め手</dt>
                   <dd className="text-rc-ink-soft mt-0.5">{v.reason}</dd>
                 </div>
                 <div>
-                  <dt className="font-bold text-rc-teal">前職との違い</dt>
+                  <dt className="font-bold text-rc-teal">働いてみて</dt>
                   <dd className="text-rc-ink-soft mt-0.5">{v.gap}</dd>
                 </div>
               </dl>
