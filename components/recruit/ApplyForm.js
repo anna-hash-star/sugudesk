@@ -1,23 +1,16 @@
-import { useEffect } from 'react';
 import { clinic } from '../../lib/recruit/site-data';
 
-// 応募フォーム（Googleフォーム / formrun / その他）の表示。
+// 応募フォームの表示。
 // - clinic.applyFormUrl が無ければ何も出さない（従来の簡易フォームにフォールバック）。
-// - form.run：iframe直埋めは拒否されるため、公式SDK（JS埋め込み）で表示（高さ自動調整）。
-// - clinic.applyFormInline === true：iframeでインライン表示（アップロード質問の無いGoogle/Tally等向け）。
-// - 既定：別タブで開く「応募フォームを開く」ボタン。
+// - clinic.applyFormInline === true：iframeでページ内に埋め込む（iframe埋め込みを許可し、
+//   ファイルアップロード質問の無いフォーム向け＝Googleフォーム/Tally等）。
+// - 既定：別タブで開く「応募フォームを開く」ボタン。formrun のように iframe直埋めを拒否する
+//   フォームや、ファイル添付でログインを挟むフォームでも確実に動く。
 export default function ApplyForm({ height = 1400 }) {
   const url = clinic.applyFormUrl;
   if (!url) return null;
 
-  // form.run は URL からフォームID（@xxxx）を取り出し、公式SDKで描画する
-  const formrun = /form\.run\/(?:embed\/)?(@[A-Za-z0-9_-]+)/.exec(url);
-  if (formrun) {
-    return <FormrunEmbed formId={formrun[1]} fallbackUrl={`https://form.run/${formrun[1]}`} />;
-  }
-
   if (clinic.applyFormInline) {
-    // Googleフォームだけは埋め込みに embedded=true が必要。その他はURLをそのまま使う。
     const isGoogle = /docs\.google\.com\/forms/i.test(url);
     const src = (isGoogle && !url.includes('embedded=true'))
       ? url + (url.includes('?') ? '&' : '?') + 'embedded=true'
@@ -61,32 +54,7 @@ export default function ApplyForm({ height = 1400 }) {
           <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
         </svg>
       </a>
-    </div>
-  );
-}
-
-// formrun 公式SDK埋め込み。<script> を読み込み直して .formrun-embed を再スキャンさせる
-// （Next のクライアント遷移でも確実に描画されるように、マウントごとにスクリプトを入れ直す）。
-function FormrunEmbed({ formId, fallbackUrl }) {
-  useEffect(() => {
-    const SRC = 'https://sdk.form.run/js/v2/embed.js';
-    const prev = document.querySelector('script[data-formrun-sdk="1"]');
-    if (prev) prev.remove();
-    const script = document.createElement('script');
-    script.src = SRC;
-    script.async = true;
-    script.setAttribute('data-formrun-sdk', '1');
-    document.body.appendChild(script);
-  }, [formId]);
-
-  return (
-    <div>
-      <div className="formrun-embed" data-formrun-form={formId} data-formrun-redirect="true" />
-      <p className="text-[13px] text-rc-ink-soft mt-3 text-center">
-        フォームが表示されない場合は
-        <a href={fallbackUrl} target="_blank" rel="noopener noreferrer" className="font-bold text-rc-teal underline underline-offset-2">別タブで開く</a>
-        こともできます。
-      </p>
+      <p className="text-[13px] text-rc-ink-soft mt-3">別タブで応募フォームが開きます（ログイン不要・履歴書などの添付もできます）。</p>
     </div>
   );
 }
