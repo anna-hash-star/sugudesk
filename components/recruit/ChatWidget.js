@@ -78,8 +78,8 @@ export function ChatProvider({ children }) {
     <ChatContext.Provider value={{ openChat }}>
       {children}
 
-      {/* フローティング起動ボタン（全ページ常駐） */}
-      {!open && (
+      {/* フローティング起動ボタン（全ページ常駐）。SuguDeskウィジェット導入時は二重表示を避けて隠す */}
+      {!open && !clinic.chatWidget && (
         <button
           onClick={() => openChat()}
           className="rc-pulse fixed bottom-20 right-4 md:bottom-6 md:right-6 z-40 flex items-center gap-2 rounded-full bg-rc-teal text-white pl-4 pr-5 py-3 shadow-lg shadow-rc-teal/30 hover:bg-rc-teal-dark transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-rc-teal focus-visible:ring-offset-2"

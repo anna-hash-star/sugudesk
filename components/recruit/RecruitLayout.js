@@ -6,6 +6,7 @@ import { clinic, tourDetail } from '../../lib/recruit/site-data';
 // 見学を実施しないクリニック（tourDetail が null）では見学系の導線・文言を出さない
 export const hasTour = Boolean(tourDetail);
 import { ChatProvider, useRecruitChat } from './ChatWidget';
+import ChatWidgetLoader from './ChatWidgetLoader';
 import Illust from './Illust';
 
 // ビジュアル枠。src（実写パス）があれば写真を表示し、
@@ -176,6 +177,7 @@ export default function RecruitLayout({ children, title, description }) {
           <Footer />
           <StickyBar />
         </div>
+        <ChatWidgetLoader />
       </ChatProvider>
     </div>
   );
