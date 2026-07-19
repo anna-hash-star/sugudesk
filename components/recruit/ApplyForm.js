@@ -5,14 +5,16 @@ import { clinic } from '../../lib/recruit/site-data';
 // - clinic.applyFormInline === true：フォームをその場に埋め込み表示（＝ファイルアップロード質問が
 //   「無い」フォーム向け。アップロードがあるとGoogle仕様で折りたたみ＋ログインになり全問表示できない）。
 // - 既定（アップロードあり想定）：埋め込まず、別タブで開く「応募フォームを開く」ボタンを表示。
-export default function ApplyForm({ height = 1200 }) {
+export default function ApplyForm({ height = 1400 }) {
   const url = clinic.applyFormUrl;
   if (!url) return null;
 
   if (clinic.applyFormInline) {
-    const src = url.includes('embedded=true')
-      ? url
-      : url + (url.includes('?') ? '&' : '?') + 'embedded=true';
+    // Googleフォームだけは埋め込みに embedded=true が必要。formrun 等はURLをそのまま使う。
+    const isGoogle = /docs\.google\.com\/forms/i.test(url);
+    const src = (isGoogle && !url.includes('embedded=true'))
+      ? url + (url.includes('?') ? '&' : '?') + 'embedded=true'
+      : url;
     return (
       <div>
         <div className="rounded-2xl border border-rc-sand bg-white overflow-hidden">
