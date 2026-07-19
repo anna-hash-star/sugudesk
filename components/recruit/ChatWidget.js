@@ -16,6 +16,36 @@ export function ChatIcon({ className = 'w-5 h-5' }) {
 }
 const BotIcon = ChatIcon;
 
+// SuguDeskウィジェットをベストエフォートで開く。
+// 正式な開くAPIが分かれば clinic.chatWidget.openGlobal（例:"sugudesk.open"）や
+// launcherSelector（ランチャー要素のCSSセレクタ）を設定すれば確実に開けます。
+// 開けなかった場合は false を返し、呼び出し側は従来のパネルにフォールバックします。
+function tryOpenSuguDesk() {
+  if (typeof window === 'undefined') return false;
+  const cfg = clinic.chatWidget || {};
+  // 1) 設定されたグローバル関数パス（例: "sugudesk.open"）
+  if (cfg.openGlobal) {
+    let obj = window;
+    for (const p of cfg.openGlobal.split('.')) obj = obj && obj[p];
+    if (typeof obj === 'function') { try { obj(); return true; } catch (e) {} }
+  }
+  // 2) よくあるグローバル（open関数 or それ自体が関数）
+  for (const n of ['sugudesk', 'SuguDesk', 'Sugudesk', 'SUGUDESK', '__sugudesk__', '$sugudesk']) {
+    const g = window[n];
+    if (g && typeof g.open === 'function') { try { g.open(); return true; } catch (e) {} }
+    if (typeof g === 'function') { try { g('open'); return true; } catch (e) {} }
+  }
+  // 3) ランチャー要素を探してクリック（設定 or 一般的な手がかり）
+  const selectors = [cfg.launcherSelector, '[data-sugudesk-launcher]',
+    '[id*="sugudesk" i] button', 'button[class*="sugudesk" i]', '[class*="sugudesk" i] [role="button"]'].filter(Boolean);
+  for (const sel of selectors) {
+    let el = null;
+    try { el = document.querySelector(sel); } catch (e) {}
+    if (el) { el.click(); return true; }
+  }
+  return false;
+}
+
 export function ChatProvider({ children }) {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([]); // { from: 'bot'|'user', text, chips?, bridge? }
@@ -23,6 +53,8 @@ export function ChatProvider({ children }) {
   const logRef = useRef(null);
 
   const openChat = (contextLabel) => {
+    // SuguDeskウィジェット導入時はそちらを開く（開ければ内蔵パネルは使わない）
+    if (clinic.chatWidget && tryOpenSuguDesk()) return;
     setOpen(true);
     setMessages(prev => {
       if (prev.length > 0) return prev;
