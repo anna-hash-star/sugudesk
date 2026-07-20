@@ -78,7 +78,40 @@ function tryOpenSuguDeskOnce() {
     '[id*="sugudesk" i] [role="button"]'].filter(Boolean);
   const el = deepQuery(selectors);
   if (el) { fireClick(el); return true; }
+  // 4) 名前で見つからないとき：画面隅に固定表示された小さなランチャーバブルを推定してクリック。
+  //    本番ではSuguDeskのバブルが唯一の隅固定要素になるので、セレクタ未設定でも当たりやすい。
+  const corner = findCornerLauncher();
+  if (corner) { fireClick(corner); return true; }
   return false;
+}
+
+// 画面の下隅に固定表示された、丸に近い小さな要素（＝チャットのランチャーバブル）を推定する。
+// 右下→左下の順に優先。自前ウィジェット要素は除外。曖昧回避のため候補が複数でも最も隅の1つを返す。
+function findCornerLauncher() {
+  if (typeof document === 'undefined') return null;
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const cands = [];
+  document.querySelectorAll('div,button,a,[role="button"]').forEach(el => {
+    if (el.closest('[data-rc-widget]')) return; // 自前のチャットUIは対象外
+    let s;
+    try { s = getComputedStyle(el); } catch (e) { return; }
+    if (s.position !== 'fixed' && s.position !== 'sticky') return;
+    if (s.display === 'none' || s.visibility === 'hidden' || parseFloat(s.opacity) === 0) return;
+    const r = el.getBoundingClientRect();
+    if (r.width < 40 || r.width > 100 || r.height < 40 || r.height > 100) return; // バブルらしい小ささ
+    if (Math.abs(r.width - r.height) > 24) return; // 概ね正方形/円
+    const nearBottom = r.bottom > vh - 150 && r.top > vh * 0.55;
+    const nearLeft = r.left < 48, nearRight = r.right > vw - 48;
+    if (!nearBottom || !(nearLeft || nearRight)) return;
+    cands.push({ el, right: nearRight, dist: Math.min(nearRight ? vw - r.right : r.left, vh - r.bottom), z: parseInt(s.zIndex, 10) || 0 });
+  });
+  if (!cands.length) return null;
+  // 末端要素のみ（親コンテナを除外）
+  const leaves = cands.filter(c => !cands.some(o => o.el !== c.el && c.el.contains(o.el)));
+  const pool = leaves.length ? leaves : cands;
+  // 右下を優先、その中で最も隅（distが小さい）・zの高いもの
+  pool.sort((a, b) => (b.right - a.right) || (a.dist - b.dist) || (b.z - a.z));
+  return pool[0].el;
 }
 
 // ウィジェットのマウントを待ちつつ最大 timeout ミリ秒まで開くのを試みる。
@@ -111,10 +144,10 @@ export function ChatProvider({ children }) {
   };
 
   const openChat = (contextLabel) => {
-    // SuguDeskウィジェット導入時はそちらを開く（マウント待ちで最大数秒リトライ）。
-    // どうしても開けないときだけ内蔵パネルにフォールバックする。
+    // SuguDeskウィジェット導入時はそのバブルだけを開く（マウント待ちで最大数秒リトライ）。
+    // 見つからない場合でも、旧・内蔵の静的チャットは出さない（常設のSuguDeskバブルで対応するため）。
     if (clinic.chatWidget) {
-      tryOpenSuguDeskWithRetry(() => {}, () => openPanel(contextLabel));
+      tryOpenSuguDeskWithRetry(() => {}, () => {});
       return;
     }
     openPanel(contextLabel);
@@ -176,8 +209,8 @@ export function ChatProvider({ children }) {
         </button>
       )}
 
-      {/* チャットパネル */}
-      {open && (
+      {/* チャットパネル（旧・内蔵の静的チャット）。SuguDeskウィジェット導入時は一切表示しない */}
+      {open && !clinic.chatWidget && (
         <div
           className="fixed z-50 inset-x-0 bottom-0 md:inset-auto md:bottom-6 md:right-6 md:w-[380px] flex flex-col bg-white md:rounded-2xl shadow-2xl border border-rc-sand max-h-[85dvh] md:max-h-[600px]"
           role="dialog"
