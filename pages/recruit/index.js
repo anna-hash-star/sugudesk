@@ -80,10 +80,12 @@ function Hero() {
                 まず見学する
               </Link>
             )}
-            <button onClick={() => openChat()}
-              className="inline-flex items-center gap-1.5 text-[16px] font-bold text-rc-teal underline underline-offset-4 decoration-rc-teal/40 hover:decoration-rc-teal transition-colors">
-              <ChatIcon className="w-4 h-4" /> 匿名で相談する
-            </button>
+            {!clinic.chatWidget && (
+              <button onClick={() => openChat()}
+                className="inline-flex items-center gap-1.5 text-[16px] font-bold text-rc-teal underline underline-offset-4 decoration-rc-teal/40 hover:decoration-rc-teal transition-colors">
+                <ChatIcon className="w-4 h-4" /> 匿名で相談する
+              </button>
+            )}
           </div>
         </div>
         <div className="rc-hero-in max-w-md ml-auto w-full" style={{ '--rc-delay': '260ms' }}>
@@ -371,12 +373,14 @@ function Faq() {
           </details>
         ))}
       </div>
-      <p className="mt-6 text-[16px] text-rc-ink-soft">
-        解決しませんでしたか？
-        <button onClick={() => openChat()} className="ml-2 font-bold text-rc-teal underline underline-offset-4 decoration-rc-teal/40 hover:decoration-rc-teal">
-          チャットで質問する（匿名OK）
-        </button>
-      </p>
+      {!clinic.chatWidget && (
+        <p className="mt-6 text-[16px] text-rc-ink-soft">
+          解決しませんでしたか？
+          <button onClick={() => openChat()} className="ml-2 font-bold text-rc-teal underline underline-offset-4 decoration-rc-teal/40 hover:decoration-rc-teal">
+            チャットで質問する（匿名OK）
+          </button>
+        </p>
+      )}
     </section>
   );
 }
@@ -400,10 +404,12 @@ function Closing() {
             className="bg-white text-rc-teal font-bold text-[17px] rounded-full px-8 py-3.5 hover:bg-rc-ivory transition-colors">
             {hasTour ? '応募・見学を予約する' : '応募する'}
           </Link>
-          <button onClick={() => openChat()}
-            className="inline-flex items-center gap-2 border-2 border-white/70 text-white font-bold text-[17px] rounded-full px-7 py-3 hover:bg-white/10 transition-colors">
-            <ChatIcon className="w-5 h-5" /> その前に相談する
-          </button>
+          {!clinic.chatWidget && (
+            <button onClick={() => openChat()}
+              className="inline-flex items-center gap-2 border-2 border-white/70 text-white font-bold text-[17px] rounded-full px-7 py-3 hover:bg-white/10 transition-colors">
+              <ChatIcon className="w-5 h-5" /> その前に相談する
+            </button>
+          )}
         </div>
       </div>
     </section>

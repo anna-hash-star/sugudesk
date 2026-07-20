@@ -100,12 +100,14 @@ function HeaderNav() {
               {n.label}
             </Link>
           ))}
-          <button
-            onClick={() => openChat()}
-            className="text-[15px] font-bold text-rc-teal border border-rc-teal rounded-full px-4 py-1.5 hover:bg-rc-teal-soft transition-colors"
-          >
-            チャットで相談
-          </button>
+          {!clinic.chatWidget && (
+            <button
+              onClick={() => openChat()}
+              className="text-[15px] font-bold text-rc-teal border border-rc-teal rounded-full px-4 py-1.5 hover:bg-rc-teal-soft transition-colors"
+            >
+              チャットで相談
+            </button>
+          )}
           <Link
             href="/recruit/entry"
             className="text-[15px] font-bold bg-rc-teal text-white rounded-full px-5 py-2 hover:bg-rc-teal-dark transition-colors shadow-sm"
@@ -127,13 +129,15 @@ function HeaderNav() {
 function StickyBar() {
   const { openChat } = useRecruitChat();
   return (
-    <div className="md:hidden fixed bottom-0 inset-x-0 z-30 grid grid-cols-2 gap-px bg-rc-sand border-t border-rc-sand" role="navigation" aria-label="応募・相談">
+    <div className={`md:hidden fixed bottom-0 inset-x-0 z-30 grid gap-px bg-rc-sand border-t border-rc-sand ${clinic.chatWidget ? 'grid-cols-1' : 'grid-cols-2'}`} role="navigation" aria-label="応募・相談">
       <Link href="/recruit/entry" className="bg-rc-teal text-white text-center text-[16px] font-bold py-4 active:bg-rc-teal-dark">
         応募する
       </Link>
-      <button onClick={() => openChat()} className="bg-white text-rc-teal text-center text-[16px] font-bold py-4 active:bg-rc-teal-soft">
-        チャットで相談
-      </button>
+      {!clinic.chatWidget && (
+        <button onClick={() => openChat()} className="bg-white text-rc-teal text-center text-[16px] font-bold py-4 active:bg-rc-teal-soft">
+          チャットで相談
+        </button>
+      )}
     </div>
   );
 }

@@ -213,12 +213,14 @@ export default function EntryPage() {
           </p>
         </form>
 
-        <div className="mt-10 rounded-xl bg-rc-teal-soft border border-rc-teal/30 p-5 text-center">
-          <p className="text-[15px] text-rc-ink">フォームより先に聞きたいことがある方は</p>
-          <button onClick={() => openChat()} className="mt-2 inline-flex items-center gap-1.5 text-[16px] font-bold text-rc-teal underline underline-offset-4 decoration-rc-teal/40 hover:decoration-rc-teal">
-            <ChatIcon className="w-4 h-4" /> 匿名チャットで相談する
-          </button>
-        </div>
+        {!clinic.chatWidget && (
+          <div className="mt-10 rounded-xl bg-rc-teal-soft border border-rc-teal/30 p-5 text-center">
+            <p className="text-[15px] text-rc-ink">フォームより先に聞きたいことがある方は</p>
+            <button onClick={() => openChat()} className="mt-2 inline-flex items-center gap-1.5 text-[16px] font-bold text-rc-teal underline underline-offset-4 decoration-rc-teal/40 hover:decoration-rc-teal">
+              <ChatIcon className="w-4 h-4" /> 匿名チャットで相談する
+            </button>
+          </div>
+        )}
       </section>
     </RecruitLayout>
   );

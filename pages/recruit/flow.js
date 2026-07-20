@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import RecruitLayout, { Photo, hasTour } from '../../components/recruit/RecruitLayout';
 import { useRecruitChat, ChatIcon } from '../../components/recruit/ChatWidget';
-import { flowSteps, tourDetail } from '../../lib/recruit/site-data';
+import { clinic, flowSteps, tourDetail } from '../../lib/recruit/site-data';
 
 export default function FlowPage() {
   const { openChat } = useRecruitChat();
@@ -31,7 +31,7 @@ export default function FlowPage() {
                 <h2 className="font-bold text-[17px]">{s.title}</h2>
               </div>
               <p className="text-[16px] text-rc-ink-soft leading-7 mt-2">{s.text}</p>
-              {s.chat && (
+              {s.chat && !clinic.chatWidget && (
                 <button onClick={() => openChat()}
                   className="mt-3 inline-flex items-center gap-1.5 text-[15px] font-bold text-rc-teal underline underline-offset-4 decoration-rc-teal/40 hover:decoration-rc-teal">
                   <ChatIcon className="w-4 h-4" /> いまチャットで相談する
@@ -73,11 +73,13 @@ export default function FlowPage() {
             className="bg-rc-teal text-white font-bold text-[17px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
             {hasTour ? '見学を予約する' : '応募する（1分）'}
           </Link>
-          <button onClick={() => openChat()}
-            className="inline-flex items-center gap-2 border-2 border-rc-teal text-rc-teal font-bold text-[16px] rounded-full px-6 py-3 hover:bg-rc-teal-soft transition-colors">
-            <ChatIcon className="w-4 h-4" />
-            {hasTour ? '日程をチャットで相談' : 'まずチャットで相談'}
-          </button>
+          {!clinic.chatWidget && (
+            <button onClick={() => openChat()}
+              className="inline-flex items-center gap-2 border-2 border-rc-teal text-rc-teal font-bold text-[16px] rounded-full px-6 py-3 hover:bg-rc-teal-soft transition-colors">
+              <ChatIcon className="w-4 h-4" />
+              {hasTour ? '日程をチャットで相談' : 'まずチャットで相談'}
+            </button>
+          )}
         </div>
       </section>
     </RecruitLayout>

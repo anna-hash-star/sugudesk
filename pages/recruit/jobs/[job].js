@@ -51,11 +51,13 @@ function JobCta({ job }) {
         className="bg-rc-teal text-white font-bold text-[17px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
         {job.pending ? `${job.title}の求人について問い合わせる` : `${job.title}に応募する`}
       </Link>
-      {/* 職種コンテキストを引き継いでチャット起動 */}
-      <button onClick={() => openChat(job.title)}
-        className="inline-flex items-center gap-2 border-2 border-rc-teal text-rc-teal font-bold text-[16px] rounded-full px-6 py-3 hover:bg-rc-teal-soft transition-colors">
-        <ChatIcon className="w-4 h-4" /> この職種について質問する
-      </button>
+      {/* 職種コンテキストを引き継いでチャット起動（SuguDeskウィジェット導入時は常設バブルに集約） */}
+      {!clinic.chatWidget && (
+        <button onClick={() => openChat(job.title)}
+          className="inline-flex items-center gap-2 border-2 border-rc-teal text-rc-teal font-bold text-[16px] rounded-full px-6 py-3 hover:bg-rc-teal-soft transition-colors">
+          <ChatIcon className="w-4 h-4" /> この職種について質問する
+        </button>
+      )}
     </div>
   );
 }
