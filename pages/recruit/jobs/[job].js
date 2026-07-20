@@ -191,7 +191,7 @@ export default function JobPage({ slug }) {
               <p className="text-[16px] leading-7 mt-2">{job.pendingNote}</p>
               {clinic.phone && (
                 <p className="text-[16px] mt-3">
-                  お問い合わせ：<a href={`tel:${clinic.phone}`} className="font-bold text-rc-teal" style={{ fontVariantNumeric: 'tabular-nums' }}>{clinic.phone}</a>（{clinic.recruitContact}）／チャット・フォームでも受け付けています。
+                  お問い合わせ：<a href={`tel:${clinic.phone}`} className="font-bold text-rc-teal" style={{ fontVariantNumeric: 'tabular-nums' }}>{clinic.phone}</a>（{clinic.recruitContact}）／フォームでも受け付けています。
                 </p>
               )}
             </div>
@@ -211,7 +211,7 @@ export default function JobPage({ slug }) {
       {/* クロージング */}
       <section className="max-w-3xl mx-auto px-4 md:px-6 py-12 md:py-16 text-center">
         <p className="rc-mincho text-xl text-rc-teal-dark mb-6">
-          {hasTour ? '迷っているなら、見学からで大丈夫です。' : '迷っているなら、チャットで聞くだけでも大丈夫です。'}
+          {hasTour ? '迷っているなら、見学からで大丈夫です。' : '迷っているなら、お電話で聞くだけでも大丈夫です。'}
         </p>
         <div className="flex justify-center">
           <JobCta job={job} />

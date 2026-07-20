@@ -397,7 +397,7 @@ function Closing() {
         <p className="text-white/80 text-[16px] mt-3">
           {hasTour
             ? '私服OK。職場の空気を見てから決めてください。'
-            : '匿名チャットOK・フォームは1分・お電話でもOK。'}
+            : 'フォームは1分・お電話でもOK。応募前のご相談も歓迎です。'}
         </p>
         <div className="flex flex-wrap justify-center items-center gap-3 mt-8">
           <Link href="/recruit/entry"
