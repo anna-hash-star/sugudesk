@@ -17,10 +17,43 @@ export function ChatIcon({ className = 'w-5 h-5' }) {
 const BotIcon = ChatIcon;
 
 // SuguDeskウィジェットをベストエフォートで開く。
-// 正式な開くAPIが分かれば clinic.chatWidget.openGlobal（例:"sugudesk.open"）や
-// launcherSelector（ランチャー要素のCSSセレクタ）を設定すれば確実に開けます。
-// 開けなかった場合は false を返し、呼び出し側は従来のパネルにフォールバックします。
-function tryOpenSuguDesk() {
+// ウィジェットは loader.iife.js を読み込んでから非同期にマウントされるため、
+// クリック直後だと要素/グローバルがまだ無いことがある。そこで tryOpenSuguDeskWithRetry で
+// 短時間ポーリングしながら開くのを試みる。正式な開くAPIが分かれば
+// clinic.chatWidget.openGlobal（例:"sugudesk.open"）や launcherSelector を設定すると確実。
+// どうしても開けない場合は false を返し、呼び出し側は従来の内蔵パネルにフォールバックします。
+
+// document配下＋各要素の shadowRoot も再帰的に querySelector する（ウィジェットが
+// Shadow DOM 内にランチャーを描画するケースに対応）。
+function deepQuery(selectors, root = document) {
+  for (const sel of selectors) {
+    let el = null;
+    try { el = root.querySelector(sel); } catch (e) {}
+    if (el) return el;
+  }
+  const hosts = root.querySelectorAll ? root.querySelectorAll('*') : [];
+  for (const h of hosts) {
+    if (h.shadowRoot) {
+      const found = deepQuery(selectors, h.shadowRoot);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
+// 実際のポインタ操作に近いイベントを送る（.click() だけでは反応しないウィジェット対策）
+function fireClick(el) {
+  try {
+    ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'click'].forEach(type => {
+      const Ctor = type.startsWith('pointer') && typeof PointerEvent === 'function' ? PointerEvent : MouseEvent;
+      el.dispatchEvent(new Ctor(type, { bubbles: true, cancelable: true, view: window }));
+    });
+  } catch (e) {
+    try { el.click(); } catch (e2) {}
+  }
+}
+
+function tryOpenSuguDeskOnce() {
   if (typeof window === 'undefined') return false;
   const cfg = clinic.chatWidget || {};
   // 1) 設定されたグローバル関数パス（例: "sugudesk.open"）
@@ -29,21 +62,34 @@ function tryOpenSuguDesk() {
     for (const p of cfg.openGlobal.split('.')) obj = obj && obj[p];
     if (typeof obj === 'function') { try { obj(); return true; } catch (e) {} }
   }
-  // 2) よくあるグローバル（open関数 or それ自体が関数）
-  for (const n of ['sugudesk', 'SuguDesk', 'Sugudesk', 'SUGUDESK', '__sugudesk__', '$sugudesk']) {
+  // 2) よくあるグローバル（open/show/toggle/expand 関数 or それ自体が関数）
+  for (const n of ['sugudesk', 'SuguDesk', 'Sugudesk', 'SUGUDESK', '__sugudesk__', '$sugudesk', 'SugudeskWidget', 'sugudeskWidget']) {
     const g = window[n];
-    if (g && typeof g.open === 'function') { try { g.open(); return true; } catch (e) {} }
+    if (!g) continue;
+    for (const m of ['open', 'show', 'toggle', 'expand', 'maximize']) {
+      if (typeof g[m] === 'function') { try { g[m](); return true; } catch (e) {} }
+    }
     if (typeof g === 'function') { try { g('open'); return true; } catch (e) {} }
   }
-  // 3) ランチャー要素を探してクリック（設定 or 一般的な手がかり）
-  const selectors = [cfg.launcherSelector, '[data-sugudesk-launcher]',
-    '[id*="sugudesk" i] button', 'button[class*="sugudesk" i]', '[class*="sugudesk" i] [role="button"]'].filter(Boolean);
-  for (const sel of selectors) {
-    let el = null;
-    try { el = document.querySelector(sel); } catch (e) {}
-    if (el) { el.click(); return true; }
-  }
+  // 3) ランチャー要素を探してクリック（設定 or 一般的な手がかり／Shadow DOMも探索）
+  const selectors = [cfg.launcherSelector, '[data-sugudesk-launcher]', '[data-widget-key] button',
+    '[id*="sugudesk" i] button', 'button[id*="sugudesk" i]', 'button[class*="sugudesk" i]',
+    '[class*="sugudesk" i] button', '[class*="sugudesk" i] [role="button"]',
+    '[id*="sugudesk" i] [role="button"]'].filter(Boolean);
+  const el = deepQuery(selectors);
+  if (el) { fireClick(el); return true; }
   return false;
+}
+
+// ウィジェットのマウントを待ちつつ最大 timeout ミリ秒まで開くのを試みる。
+// 開けたら onOpened() を呼ぶ。開けなければ onFail() を呼ぶ（内蔵パネルへフォールバック）。
+function tryOpenSuguDeskWithRetry(onOpened, onFail, timeout = 3500) {
+  if (tryOpenSuguDeskOnce()) { onOpened && onOpened(); return; }
+  const start = Date.now();
+  const iv = setInterval(() => {
+    if (tryOpenSuguDeskOnce()) { clearInterval(iv); onOpened && onOpened(); return; }
+    if (Date.now() - start > timeout) { clearInterval(iv); onFail && onFail(); }
+  }, 250);
 }
 
 export function ChatProvider({ children }) {
@@ -52,9 +98,7 @@ export function ChatProvider({ children }) {
   const [input, setInput] = useState('');
   const logRef = useRef(null);
 
-  const openChat = (contextLabel) => {
-    // SuguDeskウィジェット導入時はそちらを開く（開ければ内蔵パネルは使わない）
-    if (clinic.chatWidget && tryOpenSuguDesk()) return;
+  const openPanel = (contextLabel) => {
     setOpen(true);
     setMessages(prev => {
       if (prev.length > 0) return prev;
@@ -64,6 +108,16 @@ export function ChatProvider({ children }) {
       }
       return first;
     });
+  };
+
+  const openChat = (contextLabel) => {
+    // SuguDeskウィジェット導入時はそちらを開く（マウント待ちで最大数秒リトライ）。
+    // どうしても開けないときだけ内蔵パネルにフォールバックする。
+    if (clinic.chatWidget) {
+      tryOpenSuguDeskWithRetry(() => {}, () => openPanel(contextLabel));
+      return;
+    }
+    openPanel(contextLabel);
   };
 
   useEffect(() => {

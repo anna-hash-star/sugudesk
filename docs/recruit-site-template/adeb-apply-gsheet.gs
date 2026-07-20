@@ -19,6 +19,11 @@
  * 5. そのURLを lib/recruit/clinics/adeb.js の applyForm.endpoint に貼る（または制作担当へ）
  * 6. 初回送信時、Googleの承認ダイアログが出たら許可（ドライブ操作・メール送信）
  *
+ * 【フォーム項目を増やした場合の再デプロイ】
+ * - フォームの項目（メール・電話・住所・勤務開始可能日・連絡時間帯など）を変更・追加したときは、
+ *   このコードを貼り替えたうえで「デプロイ」→「デプロイを管理」→ 既存デプロイの鉛筆✏️→
+ *   バージョン「新バージョン」→「デプロイ」で更新してください（URLは変わりません）。
+ *
  * 【個人情報の取り扱い】
  * - 履歴書・職務経歴書は個人情報です。保存先の「応募書類フォルダ」は
  *   このGoogleアカウント内の非公開フォルダです。共有設定を安易に「リンクを知る全員」にしないでください。
@@ -29,6 +34,10 @@ var NOTIFY_TO   = 'anna.negoro@exmore.jp';   // 通知メールの宛先
 var SHEET_NAME  = '応募';
 var FOLDER_NAME = 'AdeB採用 応募書類';         // Driveに自動作成されるフォルダ名
 var TZ          = 'Asia/Tokyo';
+
+// スプレッドシートの見出し（順番＝記録される列）
+var HEADERS = ['受信日時', 'お名前', 'メールアドレス', '電話番号', 'ご住所',
+               '希望職種', '勤務開始可能日', '連絡のつきやすい時間帯', '志望動機・ご質問', '添付ファイル'];
 
 function doPost(e) {
   var lock = LockService.getScriptLock();
@@ -56,14 +65,18 @@ function doPost(e) {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var sh = ss.getSheetByName(SHEET_NAME) || ss.insertSheet(SHEET_NAME);
     if (sh.getLastRow() === 0) {
-      sh.appendRow(['受信日時', 'お名前', '連絡先', '希望職種', '志望動機・備考', '添付ファイル']);
+      sh.appendRow(HEADERS);
       sh.setFrozenRows(1);
     }
     sh.appendRow([
       now,
       payload.name || '',
-      payload.contact || '',
+      payload.email || '',
+      payload.phone || '',
+      payload.address || '',
       payload.job || '',
+      payload.start || '',
+      payload.times || '',
       payload.note || '',
       fileLinks.map(function (l) { return l.label + '：' + l.url; }).join('\n')
     ]);
@@ -71,9 +84,13 @@ function doPost(e) {
     // 4) 通知メール
     var body = '【' + (payload.clinic || 'AdeBクリニック') + ' 採用サイト】新しい応募が届きました。\n\n'
       + 'お名前：' + (payload.name || '') + '\n'
-      + '連絡先：' + (payload.contact || '') + '\n'
+      + 'メールアドレス：' + (payload.email || '') + '\n'
+      + '電話番号：' + (payload.phone || '') + '\n'
+      + 'ご住所：' + (payload.address || '') + '\n'
       + '希望職種：' + (payload.job || '') + '\n'
-      + '志望動機・備考：\n' + (payload.note || '（なし）') + '\n\n'
+      + '勤務開始可能日：' + (payload.start || '') + '\n'
+      + '連絡のつきやすい時間帯：' + (payload.times || '') + '\n'
+      + '志望動機・ご質問：\n' + (payload.note || '（なし）') + '\n\n'
       + '添付ファイル：\n'
       + (fileLinks.length
           ? fileLinks.map(function (l) { return '・' + l.label + '：' + l.url; }).join('\n')
@@ -105,8 +122,10 @@ function sanitize(s) {
 // 動作確認用（エディタから実行してメール・シート・フォルダをテスト）
 function testSend() {
   doPost({ postData: { contents: JSON.stringify({
-    clinic: 'AdeBクリニック', name: 'テスト太郎', contact: '090-0000-0000',
-    job: 'カウンセラー（受付補助）', note: 'テスト送信です。',
+    clinic: 'AdeBクリニック', name: 'テスト太郎',
+    email: 'test@example.com', phone: '090-0000-0000', address: '秋田県秋田市中通1-1-1',
+    job: 'カウンセラー（受付補助）', start: '1ヶ月以内', times: '午前（9-12時）、午後（13-17時）',
+    note: 'テスト送信です。',
     files: [{ label: '履歴書', filename: 'test.txt', mimeType: 'text/plain',
       dataBase64: Utilities.base64Encode(Utilities.newBlob('これはテストです').getBytes()) }]
   }) } });
