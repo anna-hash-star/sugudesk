@@ -83,6 +83,7 @@ export default function RecruitApplyForm() {
     if (!form.email.trim()) er.email = 'メールアドレスをご入力ください';
     if (!form.phone.trim()) er.phone = '電話番号をご入力ください';
     if (!form.address.trim()) er.address = 'ご住所をご入力ください';
+    if (jobOptions.length > 0 && !form.job) er.job = '希望職種をお選びください';
     if (!form.start) er.start = '勤務開始可能日をお選びください';
     if (!form.times.length) er.times = '連絡のつきやすい時間帯をお選びください';
     if (!resume) er.resume = '履歴書を添付してください';
@@ -172,12 +173,13 @@ export default function RecruitApplyForm() {
 
       {jobOptions.length > 0 && (
         <div>
-          <Label htmlFor="af-job">希望職種<Opt /></Label>
+          <Label htmlFor="af-job">希望職種<Req /></Label>
           <select id="af-job" value={form.job} onChange={set('job')} className={inputClass('job')}>
             <option value="">選択してください</option>
             {jobOptions.map(t => <option key={t} value={t}>{t}</option>)}
             <option value="その他・まだ決めていない">その他・まだ決めていない</option>
           </select>
+          <Err k="job" />
         </div>
       )}
 
