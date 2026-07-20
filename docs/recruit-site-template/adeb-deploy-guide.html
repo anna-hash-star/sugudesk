@@ -63,7 +63,7 @@
   </div>
 
   <h2><span class="n">2</span>公開のしくみ（かんたんに）</h2>
-  <p>新しい採用サイトは、<b>「表示用のファイル一式」</b>（ホームページを表示するためのデータのまとまり）としてお渡しします。それを adeb.com のサーバーの <span class="url">/recruit</span> という置き場所にアップロードするだけで公開できます。<b>WordPress本体には触れません。</b></p>
+  <p>新しい採用サイトを、adeb.com のサーバー側で <span class="url">/recruit</span> に割り当てます。方法は2通り（サーバー環境に合わせて選びます）：<b>①当方のサイトに転送する（リバースプロキシ）</b>、または <b>②表示用ファイル一式を <span class="url">/recruit</span> に置く</b>。いずれも <b>WordPress本体には触れません</b>（このサイトはNginxなので、①の転送方式とも相性が良いです）。</p>
   <p class="why">💡 <b>「WordPressの中に直接入れられないの？」について：</b>新しい採用サイトは、WordPressとは別の技術で作られています（動く仕組みが違います）。そのため、WordPressの記事・固定ページとして"貼り付ける"ことはできません。その代わりに、<b>同じサーバー・同じドメインに"並べて置く"</b>ことで、<span class="url">adeb.com/recruit</span> として一体に見せます。表示側・SEO側の見え方は、同じドメイン内で完結します。</p>
 
   <h2><span class="n">3</span>作業の流れ（役割分担）</h2>
@@ -78,22 +78,22 @@
     <div class="col card">
       <h3><span class="tag tag-them">サーバ側</span> 御院（Web担当者様）</h3>
       <ol class="steps">
-        <li>いまの <span class="url">/recruit</span> の中身を退避（WordPressの固定ページなら非公開に）</li>
-        <li>お渡しするファイル一式を <span class="url">/recruit</span> フォルダへアップロード（FTP等）</li>
-        <li>設定ファイル（<b>.htaccess</b>）を1つ設置 ＝「<span class="url">/recruit</span> はWordPressを通さず、そのまま表示する」指定</li>
+        <li>いまの <span class="url">/recruit</span> の固定ページを退避（差し替え可なら非公開に）</li>
+        <li>サーバー設定（<b>Nginx</b>）で <span class="url">/recruit</span> を別扱いに ＝「当方サイトに転送」または「静的ファイルを表示」</li>
+        <li>（静的ファイル方式の場合）お渡しするファイル一式を <span class="url">/recruit</span> へアップロード</li>
         <li><span class="url">https://www.adeb.com/recruit/</span> を開いて<b>表示確認</b></li>
       </ol>
     </div>
   </div>
-  <p class="note">※サーバ側の作業（②〜⑤）は、サーバーを操作できる方（Web担当者様・現在のサイト制作会社様）にお願いする形になります。手順書をお渡しするので、その通りに進めていただけます。</p>
+  <p class="note">※このサイトのサーバーは <b>Nginx</b> です。<span class="url">/recruit</span> をWordPressと別扱いにする設定は、<b>サーバー設定（Nginx）を触れる方＝Web担当者様／現在のサイト制作会社様</b>の作業になります（WordPressの管理画面だけでは完結しません）。手順書はお渡しします。</p>
 
   <h2><span class="n">4</span>事前に教えていただきたいこと</h2>
   <div class="confirm">
     <h3>この3点が分かると、最適な方法を確定できます</h3>
     <ul>
-      <li><b>いまの <span class="url">adeb.com/recruit/</span> は何ですか？</b>（WordPressで作った採用ページ／仮ページ／古い情報 など）</li>
-      <li><b>サーバー（ホスティング）はどこですか？</b>（例：エックスサーバー／さくら／ロリポップ／ConoHa／WordPress.com など）</li>
-      <li><b>FTP等でファイルをアップロードできますか？</b>（サーバーにファイルを置ける権限があるか）</li>
+      <li><b>いまの <span class="url">adeb.com/recruit/</span> の固定ページは何に使っていますか？</b>（差し替えてよいか）</li>
+      <li><b>サーバー設定（Nginx）を触れるのはどなたですか？</b>（自社／制作会社）— <span class="url">adeb.com/recruit</span> 実現の鍵です</li>
+      <li><b>ホスティング会社はどこですか？／FTP等でファイルを置けますか？</b>（静的ファイル方式を採る場合に必要）</li>
     </ul>
   </div>
 
