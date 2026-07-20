@@ -149,7 +149,6 @@ function Footer() {
           <Link href="/recruit/entry" className="hover:text-white">エントリー</Link>
           <a href={clinic.patientSiteUrl} className="hover:text-white">患者さま向けサイト</a>
         </div>
-        <p className="text-[13px] text-white/40 mt-8">{clinic.corporation}（採用に関する情報は本サイトに集約しています）</p>
       </div>
     </footer>
   );
