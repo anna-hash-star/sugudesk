@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { ClinicProvider, useClinic } from '../../lib/recruit/clinic-context';
+import { asset } from '../../lib/recruit/asset';
 import { ChatProvider, useRecruitChat } from './ChatWidget';
 import ChatWidgetLoader from './ChatWidgetLoader';
 import Illust from './Illust';
@@ -25,7 +27,7 @@ export function Photo({ label, scene, src, ratio = 'aspect-[4/3]', className = '
       )}
       {src && imgOk && (
         <img
-          src={src}
+          src={asset(src)}
           alt=""
           onError={() => setImgOk(false)}
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover/photo:scale-[1.04]"
@@ -56,7 +58,7 @@ function AdeBLogo() {
   }
   return (
     <img
-      src="/recruit-photos/adeb-logo.svg"
+      src={asset('/recruit-photos/adeb-logo.svg')}
       alt="AdeB Clinic"
       onError={() => setLogoOk(false)}
       className="h-9 md:h-12 w-auto"
@@ -163,7 +165,14 @@ function Footer() {
 
 function RecruitLayoutInner({ children, title, description }) {
   const { clinic } = useClinic();
+  const router = useRouter();
   const pageTitle = title ? `${title}｜${clinic.shortName} 採用サイト` : `${clinic.shortName} 採用サイト｜${clinic.tagline}`;
+  const favicon = asset(clinic.favicon || '/recruit-photos/adeb-favicon.png');
+  // canonical：本番の公開URL（例 https://www.sugudesk.com/recruit/adeb/...）を正規URLに固定する。
+  // NEXT_PUBLIC_SITE_URL を採用デプロイに設定すると、素の *.vercel.app が別途クロールされても
+  // 評価が本体ドメインに集約される（マルチゾーンのSEO衛生）。
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
+  const canonical = siteUrl ? siteUrl + (router.asPath || '/').split('#')[0].split('?')[0] : null;
   return (
     <div className={clinic.themeClass || undefined}>
       <ChatProvider>
@@ -171,16 +180,18 @@ function RecruitLayoutInner({ children, title, description }) {
           <title>{pageTitle}</title>
           <meta name="description" content={description || clinic.lead} />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
+          {canonical && <link rel="canonical" href={canonical} />}
           {/* 採用サイト専用ファビコン（クライアント提供のAdeB正式ロゴ・透過PNG）。
               SuguDesk本体の favicon.png を同じ key で上書きする。
               clinic.favicon を設定すればクリニックごとに差し替え可能。 */}
-          <link rel="icon" type="image/png" href={clinic.favicon || '/recruit-photos/adeb-favicon.png'} key="favicon" />
-          <link rel="apple-touch-icon" href={clinic.favicon || '/recruit-photos/adeb-favicon.png'} />
+          <link rel="icon" type="image/png" href={favicon} key="favicon" />
+          <link rel="apple-touch-icon" href={favicon} />
           {/* OGP：求人媒体・SNS・LINEでシェアされたときの見え方（og:imageは実写撮影後に追加） */}
           <meta property="og:title" content={pageTitle} />
           <meta property="og:description" content={description || clinic.lead} />
           <meta property="og:type" content="website" />
           <meta property="og:site_name" content={`${clinic.shortName} 採用サイト`} />
+          {canonical && <meta property="og:url" content={canonical} />}
           <meta name="twitter:card" content="summary" />
         </Head>
         <div className="min-h-screen bg-rc-ivory text-rc-ink antialiased">

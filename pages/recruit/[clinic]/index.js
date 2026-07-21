@@ -3,6 +3,7 @@ import RecruitLayout, { Photo } from '../../../components/recruit/RecruitLayout'
 import { useRecruitChat, ChatIcon } from '../../../components/recruit/ChatWidget';
 import { Reveal, CountUp } from '../../../components/recruit/Reveal';
 import { useClinic } from '../../../lib/recruit/clinic-context';
+import { asset } from '../../../lib/recruit/asset';
 import { CLINIC_SLUGS, getClinicBundle } from '../../../lib/recruit/clinics';
 
 // 「、」を含む見出しはスマホでは読点の直後で改行する（中途半端な折り返しを防ぐ）
@@ -199,7 +200,7 @@ function Signature() {
       </Reveal>
       <Reveal delay={150}>
         <figure className="rounded-xl overflow-hidden bg-white border border-rc-sand shadow-lg shadow-rc-teal/10">
-          <img src={signature.image} alt={signature.imageAlt} className="w-full h-auto" />
+          <img src={asset(signature.image)} alt={signature.imageAlt} className="w-full h-auto" />
         </figure>
       </Reveal>
     </section>
@@ -264,7 +265,7 @@ function Gallery() {
             <figure>
               <div className="group/g relative overflow-hidden rounded-xl aspect-[16/10] bg-rc-sand">
                 <img
-                  src={g.src}
+                  src={asset(g.src)}
                   alt={g.caption}
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover/g:scale-[1.04]"
                 />
