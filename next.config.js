@@ -9,7 +9,18 @@
 const RECRUIT_DEPLOY = process.env.RECRUIT_DEPLOY === '1';
 
 const nextConfig = RECRUIT_DEPLOY
-  ? { assetPrefix: '/recruit' }
+  ? {
+      assetPrefix: '/recruit',
+      // public 配下（画像・favicon）は assetPrefix の対象外でルート（/recruit-photos/…）で
+      // 配信されるため、/recruit/recruit-photos/* を実ファイルへ内部転送する。
+      // これで画像・ファビコンも /recruit 配下で解決でき、LP側の /recruit/:path* リライト
+      // 1本だけで全部まかなえる。
+      async rewrites() {
+        return [
+          { source: '/recruit/recruit-photos/:path*', destination: '/recruit-photos/:path*' },
+        ];
+      },
+    }
   : {};
 
 module.exports = nextConfig;
