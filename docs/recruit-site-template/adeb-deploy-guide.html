@@ -1,0 +1,122 @@
+<title>AdeB様 採用サイト 公開方法のご案内</title>
+<style>
+  :root{
+    --rose:#D82454; --rose-dark:#A31B40; --rose-soft:#FCE4EC;
+    --ink:#2B2427; --ink-soft:#6E636A; --paper:#FFFFFF; --panel:#FBF6F8;
+    --line:#EBDDE2; --sand:#F3ECEF; --ok:#1F8A5B; --ok-soft:#E7F4EC; --warn:#B4741B; --warn-soft:#FBF0DF;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --rose:#F2789A; --rose-dark:#F2A9BF; --rose-soft:#3A2730; --ink:#F0E9EC; --ink-soft:#B4A6AD;
+      --paper:#161215; --panel:#1E1820; --line:#3A2C33; --sand:#241C22;
+      --ok:#63C795; --ok-soft:#18271F; --warn:#E0A94E; --warn-soft:#2A2113;
+    }
+  }
+  :root[data-theme="light"]{--rose:#D82454;--rose-dark:#A31B40;--rose-soft:#FCE4EC;--ink:#2B2427;--ink-soft:#6E636A;--paper:#FFFFFF;--panel:#FBF6F8;--line:#EBDDE2;--sand:#F3ECEF;--ok:#1F8A5B;--ok-soft:#E7F4EC;--warn:#B4741B;--warn-soft:#FBF0DF;}
+  :root[data-theme="dark"]{--rose:#F2789A;--rose-dark:#F2A9BF;--rose-soft:#3A2730;--ink:#F0E9EC;--ink-soft:#B4A6AD;--paper:#161215;--panel:#1E1820;--line:#3A2C33;--sand:#241C22;--ok:#63C795;--ok-soft:#18271F;--warn:#E0A94E;--warn-soft:#2A2113;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic","Noto Sans JP",sans-serif;
+    line-height:1.85;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:48px 22px 100px;}
+  .kicker{font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.16em;color:var(--rose);font-weight:700;margin:0 0 12px;}
+  h1{font-size:clamp(23px,4.4vw,32px);font-weight:800;line-height:1.35;margin:0 0 14px;text-wrap:balance;}
+  .lead{font-size:15.5px;color:var(--ink-soft);margin:0;max-width:64ch;}
+  h2{font-size:19px;font-weight:800;margin:46px 0 6px;display:flex;align-items:baseline;gap:11px;}
+  h2 .n{font-family:ui-monospace,Menlo,monospace;font-size:14px;color:var(--rose);font-weight:700;}
+  .why{color:var(--ink-soft);font-size:14px;margin:0 0 16px;}
+  p{font-size:15px;}
+  .url{font-family:ui-monospace,Menlo,monospace;font-size:.94em;background:var(--rose-soft);color:var(--rose-dark);border-radius:5px;padding:1px 7px;}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:14px 0;}
+  .split{display:grid;gap:14px;grid-template-columns:1fr;margin-top:8px;}
+  @media(min-width:640px){.split{grid-template-columns:1fr 1fr;}}
+  .col h3{margin:0 0 4px;font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px;}
+  .tag{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:2px 10px;}
+  .tag-you{background:var(--rose-soft);color:var(--rose-dark);}
+  .tag-them{background:var(--ok-soft);color:var(--ok);}
+  ol.steps{margin:8px 0 0;padding-left:0;list-style:none;counter-reset:s;}
+  ol.steps li{counter-increment:s;position:relative;padding:6px 0 6px 34px;font-size:14.5px;border-bottom:1px solid var(--line);}
+  ol.steps li:last-child{border-bottom:0;}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:6px;width:22px;height:22px;border-radius:7px;background:var(--rose);color:#fff;font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;display:grid;place-items:center;}
+  .confirm{background:var(--warn-soft);border:1px solid color-mix(in srgb,var(--warn) 40%,transparent);border-radius:14px;padding:18px 22px;margin:16px 0;}
+  .confirm h3{margin:0 0 8px;font-size:15.5px;font-weight:800;color:var(--warn);}
+  .confirm ul{margin:0;padding-left:20px;font-size:14.5px;}
+  .confirm li{margin:5px 0;}
+  ul.plain{margin:6px 0 0;padding-left:20px;font-size:14.5px;}
+  ul.plain li{margin:5px 0;}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:10px;}
+  th,td{text-align:left;border-bottom:1px solid var(--line);padding:9px 10px;vertical-align:top;}
+  th{font-size:12.5px;color:var(--ink-soft);background:var(--panel);font-weight:700;}
+  .foot{margin-top:52px;border-top:2px solid var(--ink);padding-top:16px;font-size:12.5px;color:var(--ink-soft);}
+  .note{font-size:13px;color:var(--ink-soft);}
+</style>
+
+<div class="wrap">
+  <p class="kicker">AdeB CLINIC — 採用サイト 公開のご案内</p>
+  <h1>採用サイトを <span class="url">adeb.com/recruit</span> に公開する方法</h1>
+  <p class="lead">新しい採用サイトを、御院のドメイン内（<span class="url">https://www.adeb.com/recruit/</span>）で公開するための進め方をまとめました。WordPressはそのまま運用を続けながら、同じURLの中身を新しい採用サイトに置き換えます。</p>
+
+  <h2><span class="n">1</span>実現したいこと</h2>
+  <div class="card">
+    <p style="margin:0"><b>いまある <span class="url">adeb.com/recruit/</span> を、新しい採用サイトに置き換えます。</b><br>
+    URL（住所）はそのまま。中身だけを新しくします。御院のドメイン内に置くので、これまでadeb.comが積み上げてきた検索評価（SEO）を活かせます。</p>
+  </div>
+
+  <h2><span class="n">2</span>公開のしくみ（かんたんに）</h2>
+  <p>新しい採用サイトを、adeb.com のサーバー側で <span class="url">/recruit</span> に割り当てます。方法は2通り（サーバー環境に合わせて選びます）：<b>①当方のサイトに転送する（リバースプロキシ）</b>、または <b>②表示用ファイル一式を <span class="url">/recruit</span> に置く</b>。いずれも <b>WordPress本体には触れません</b>（このサイトはNginxなので、①の転送方式とも相性が良いです）。</p>
+  <p class="why">💡 <b>「WordPressの中に直接入れられないの？」について：</b>新しい採用サイトは、WordPressとは別の技術で作られています（動く仕組みが違います）。そのため、WordPressの記事・固定ページとして"貼り付ける"ことはできません。その代わりに、<b>同じサーバー・同じドメインに"並べて置く"</b>ことで、<span class="url">adeb.com/recruit</span> として一体に見せます。表示側・SEO側の見え方は、同じドメイン内で完結します。</p>
+
+  <h2><span class="n">3</span>作業の流れ（役割分担）</h2>
+  <div class="split">
+    <div class="col card">
+      <h3><span class="tag tag-you">制作側</span> 当方</h3>
+      <ol class="steps">
+        <li>採用サイトを、adeb.com/recruit に置ける<b>ファイル一式に書き出し</b></li>
+        <li>そのファイル一式と、<b>設置手順書</b>（下記④〜のやり方）をお渡し</li>
+      </ol>
+    </div>
+    <div class="col card">
+      <h3><span class="tag tag-them">サーバ側</span> 御院（Web担当者様）</h3>
+      <ol class="steps">
+        <li>いまの <span class="url">/recruit</span> の固定ページを退避（差し替え可なら非公開に）</li>
+        <li>サーバー設定（<b>Nginx</b>）で <span class="url">/recruit</span> を別扱いに ＝「当方サイトに転送」または「静的ファイルを表示」</li>
+        <li>（静的ファイル方式の場合）お渡しするファイル一式を <span class="url">/recruit</span> へアップロード</li>
+        <li><span class="url">https://www.adeb.com/recruit/</span> を開いて<b>表示確認</b></li>
+      </ol>
+    </div>
+  </div>
+  <p class="note">※このサイトのサーバーは <b>Nginx</b> です。<span class="url">/recruit</span> をWordPressと別扱いにする設定は、<b>サーバー設定（Nginx）を触れる方＝Web担当者様／現在のサイト制作会社様</b>の作業になります（WordPressの管理画面だけでは完結しません）。手順書はお渡しします。</p>
+
+  <h2><span class="n">4</span>事前に教えていただきたいこと</h2>
+  <div class="confirm">
+    <h3>この3点が分かると、最適な方法を確定できます</h3>
+    <ul>
+      <li><b>いまの <span class="url">adeb.com/recruit/</span> の固定ページは何に使っていますか？</b>（差し替えてよいか）</li>
+      <li><b>サーバー設定（Nginx）を触れるのはどなたですか？</b>（自社／制作会社）— <span class="url">adeb.com/recruit</span> 実現の鍵です</li>
+      <li><b>ホスティング会社はどこですか？／FTP等でファイルを置けますか？</b>（静的ファイル方式を採る場合に必要）</li>
+    </ul>
+  </div>
+
+  <h2><span class="n">5</span>この方式のメリット</h2>
+  <ul class="plain">
+    <li>URLは <span class="url">adeb.com/recruit</span> のまま ＝ <b>SEOはadeb.com本体の評価に乗る</b></li>
+    <li>WordPressは<b>そのまま運用継続</b>（作り替え不要）</li>
+    <li>応募フォーム（formrun）・採用チャットも<b>そのまま動きます</b></li>
+    <li><b>追加のサーバー契約・月額費用は不要</b></li>
+  </ul>
+
+  <h2><span class="n">6</span>もし上記が難しい場合（代替案）</h2>
+  <table>
+    <thead><tr><th>方法</th><th>URL</th><th>特徴</th></tr></thead>
+    <tbody>
+      <tr><td><b>A. サブドメイン</b></td><td class="url">recruit.adeb.com</td><td>DNS設定だけで最速。御院ドメイン内で、WordPressにも触れない。SEOはサブディレクトリよりわずかに不利だが実用上は十分。</td></tr>
+      <tr><td><b>B. 振り分け設定<br>（リバースプロキシ）</b></td><td class="url">adeb.com/recruit</td><td>サーバーの前段で /recruit だけ別扱いにする。サーバー構成しだいで可否が変わる。</td></tr>
+      <tr><td><b>C. WordPressで<br>作り直し</b></td><td class="url">adeb.com/recruit</td><td>デザインをWordPress上で作り直す。工数が大きく、いまの作り込み（求人の構造化データ等）は作り直しになる。</td></tr>
+    </tbody>
+  </table>
+  <p class="note" style="margin-top:12px">おすすめは、本文の「ファイル一式を /recruit に置く」方式です（SEO・費用・WordPress維持のバランスが最も良いため）。サーバー環境しだいでAが最短の選択肢になります。</p>
+
+  <div class="foot">
+    ご不明点は制作担当までお気軽にお問い合わせください。まずは「4. 事前に教えていただきたいこと」の3点をいただければ、御院の環境に合わせた具体的な設置手順書をご用意します。
+  </div>
+</div>

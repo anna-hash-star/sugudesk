@@ -1,0 +1,167 @@
+<title>AdeB採用チャット 質問＆回答（ウィジェット用）</title>
+<style>
+  :root{
+    --rose:#D82454; --rose-dark:#A31B40; --rose-soft:#FCE4EC;
+    --ink:#2B2427; --ink-soft:#6E636A; --paper:#FFFFFF; --panel:#FBF6F8;
+    --line:#EBDDE2; --sand:#F3ECEF; --chip:#1F8A5B; --chip-soft:#E4F3EB;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --rose:#F2789A; --rose-dark:#F2A9BF; --rose-soft:#3A2730;
+      --ink:#F0E9EC; --ink-soft:#B4A6AD; --paper:#171315; --panel:#1E1820;
+      --line:#3A2C33; --sand:#241C22; --chip:#63C795; --chip-soft:#1E2E26;
+    }
+  }
+  :root[data-theme="light"]{
+    --rose:#D82454; --rose-dark:#A31B40; --rose-soft:#FCE4EC; --ink:#2B2427; --ink-soft:#6E636A;
+    --paper:#FFFFFF; --panel:#FBF6F8; --line:#EBDDE2; --sand:#F3ECEF; --chip:#1F8A5B; --chip-soft:#E4F3EB;
+  }
+  :root[data-theme="dark"]{
+    --rose:#F2789A; --rose-dark:#F2A9BF; --rose-soft:#3A2730; --ink:#F0E9EC; --ink-soft:#B4A6AD;
+    --paper:#171315; --panel:#1E1820; --line:#3A2C33; --sand:#241C22; --chip:#63C795; --chip-soft:#1E2E26;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic","Noto Sans JP",sans-serif;
+    line-height:1.75;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:860px;margin:0 auto;padding:44px 22px 96px;}
+  .kicker{font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.18em;color:var(--rose);
+    font-weight:700;margin:0 0 12px;text-transform:uppercase;}
+  h1{font-size:clamp(24px,4.5vw,34px);font-weight:800;line-height:1.3;margin:0 0 14px;text-wrap:balance;letter-spacing:.01em;}
+  .lead{font-size:15px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .legend{display:flex;flex-wrap:wrap;gap:10px 18px;margin:20px 0 0;font-size:13px;color:var(--ink-soft);}
+  .legend b{color:var(--ink);}
+  .tag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;border-radius:999px;
+    padding:2px 9px;background:var(--chip-soft);color:var(--chip);letter-spacing:.02em;}
+
+  .cat{margin:52px 0 0;}
+  .cat-h{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding-bottom:12px;border-bottom:2px solid var(--rose);margin-bottom:20px;}
+  .cat-h h2{font-size:19px;font-weight:800;margin:0;}
+  .cat-h .n{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--ink-soft);font-weight:700;}
+  .cards{display:flex;flex-direction:column;gap:12px;}
+  .qa{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;}
+  .qa .chip{position:absolute;top:14px;right:14px;}
+  .q{display:flex;gap:11px;align-items:flex-start;font-weight:700;font-size:16.5px;line-height:1.55;padding-right:52px;}
+  .a{display:flex;gap:11px;align-items:flex-start;font-size:14.5px;color:var(--ink-soft);margin-top:9px;}
+  .mark{flex:0 0 auto;width:23px;height:23px;border-radius:7px;display:grid;place-items:center;
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:13px;margin-top:1px;}
+  .q .mark{background:var(--rose);color:#fff;}
+  .a .mark{background:var(--sand);color:var(--rose);}
+  .a b{color:var(--ink);font-weight:700;}
+
+  .foot{margin-top:56px;border-top:1px solid var(--line);padding-top:18px;font-size:12.5px;color:var(--ink-soft);}
+  .foot b{color:var(--ink);}
+</style>
+
+<div class="wrap">
+  <p class="kicker">AdeB Clinic · Recruit Chat</p>
+  <h1>採用チャット 質問＆回答（ウィジェット用）</h1>
+  <p class="lead">応募を検討している方からよく出る質問を、これまでのヒアリング内容にもとづいて「質問＋回答」のセットで整理しました。チャットウィジェットにそのまま登録できます。</p>
+  <div class="legend">
+    <span><span class="tag">チップ</span> 最初に出す<b>クイックボタン候補</b>（よく聞かれる／応募のハードルに直結）</span>
+  </div>
+  <div id="root"></div>
+  <div class="foot">
+    <b>出典：</b>クリニックへのヒアリング回答・求人内容にもとづく想定回答です。数値や条件が変わった場合はこの表を更新してください。金額・休日・人数などは掲載前に最終確認を推奨します。
+  </div>
+</div>
+
+<script>
+const DATA = [
+  { cat:"はじめての方・未経験", items:[
+    { chip:true,  q:"未経験でも応募できますか？", a:"はい、未経験歓迎です。当院のカウンセラーは異業種から入職される方がほとんど。先輩社員がしっかりサポートするので、安心してご応募ください。" },
+    { q:"資格は必要ですか？", a:"特別な資格は必要ありません。「美容が好き」「人と話すのが好き」という方を歓迎しています。" },
+    { chip:true,  q:"研修やサポートはありますか？", a:"先輩社員がマンツーマンでサポートし、先輩のカウンセリングに同席しながら少しずつ覚えていけます。美容やコスメの知識も日々の業務で自然と身につきます。" },
+    { q:"ブランクがあっても大丈夫ですか？", a:"大丈夫です。ブランクのある方も歓迎しています。ご自身のペースでひとり立ちを目指せます。" },
+  ]},
+  { cat:"仕事内容・ノルマ", items:[
+    { chip:true, q:"カウンセラーの仕事内容は？", a:"メインは美容カウンセリングです。患者さまのお悩みをうかがい、治療内容・料金・化粧品をご提案します。あわせて受付・会計・ご案内などの受付補助も担当します（カウンセリングは1日1〜2件、土曜は4件ほど）。" },
+    { chip:true, q:"ノルマや売り込みはありますか？", a:"個人ノルマはありません。「必要以上の美容治療は行わない」が院の方針なので、無理に売り込む仕事はそもそもありません。" },
+    { q:"1日の流れは？", a:"8:45に出勤して朝会、受付やご案内・カウンセリング、交代で休憩、18:00ごろ退勤という流れです（残業はほぼありません）。" },
+  ]},
+  { cat:"給与・待遇", items:[
+    { chip:true, q:"給与はどのくらいですか？", a:"月給168,000〜176,000円に、皆勤手当5,000円＋地域手当10,000円（試用期間終了後）が付きます。さらに土日祝手当もあります。" },
+    { q:"賞与（ボーナス）はありますか？", a:"業績連動の賞与があります。これまで支給しなかった実績はありません。" },
+    { chip:true, q:"社員割引はありますか？", a:"あります。美容施術を社員価格で受けられます。自社開発のスキンケア「FLALU COSME」もあり、美容の知識が自然と身につく環境です。" },
+    { q:"交通費は支給されますか？", a:"正社員は月一律15,000円を支給します。" },
+    { q:"社会保険や福利厚生は？", a:"社会保険完備（対象者）、制服貸与、社員割引などがあります。" },
+  ]},
+  { cat:"勤務時間・休み・有給", items:[
+    { chip:true, q:"勤務時間は？残業はありますか？", a:"9:00〜18:00（実働8時間）です。残業はほぼなく、定時で退勤できています。" },
+    { q:"休みはどれくらいですか？", a:"週休2日（毎週木曜定休＋希望休 月3日）です。土日祝に勤務できる方を歓迎しています。" },
+    { chip:true, q:"有給は取りやすいですか？", a:"取りやすい環境です。取得率はほぼ100%です。" },
+    { q:"試用期間はありますか？", a:"あります。期間や条件は面接時にご案内します（地域手当は試用期間終了後に付きます）。" },
+  ]},
+  { cat:"子育て・両立", items:[
+    { chip:true, q:"子育てと両立できますか？", a:"できます。子育て中のスタッフが4名在籍し、無理なく働いています。" },
+    { q:"子どもの急な発熱で休めますか？", a:"対応しています。事前の調整もしやすく、お互いさまでカバーし合う雰囲気です。" },
+    { q:"学校行事などで休めますか？", a:"可能です。スタッフ間でカバーし合えるので、ご家庭の都合も相談しやすい環境です。" },
+    { q:"託児所はありますか？", a:"院内託児所はありません。" },
+  ]},
+  { cat:"通勤・アクセス・見学", items:[
+    { chip:true, q:"車通勤はできますか？駐車場は？", a:"車通勤は可能です。専用駐車場はなく、近隣のコインパーキングを利用しているスタッフもいます。" },
+    { q:"場所・アクセスは？", a:"秋田駅から徒歩約7分、エリアなかいち1Fです。" },
+    { q:"応募前に見学できますか？", a:"ご希望の方は院内見学も可能です（受付・院内エリア。スタッフのみのバックヤードは除きます）。チャットやお電話でご相談ください。" },
+  ]},
+  { cat:"応募・選考の流れ", items:[
+    { chip:true, q:"応募の流れを教えてください。", a:"応募 → 書類選考 → 面接 → 採用 → 入職、の流れです。書類選考のうえ2営業日以内に面接日程をご連絡します。" },
+    { q:"応募に必要な書類は？", a:"履歴書・職務経歴書が必要です。" },
+    { q:"面接の所要時間・持ち物は？", a:"面接は約30分、持ち物は特にありません。給与・シフト・研修内容などもこの場でご説明します。" },
+    { q:"応募方法は？", a:"サイトの応募フォーム、チャット、またはお電話（050-8882-5880・採用担当：安田）から応募できます。" },
+  ]},
+  { cat:"職場の雰囲気・スタッフ", items:[
+    { chip:true, q:"職場の雰囲気は？", a:"20〜30代を中心に、女性スタッフが多い職場です。みんな優しく同世代が多いので、働きやすい環境です。" },
+    { q:"スタッフは何人くらいですか？", a:"受付5名・看護師5名・看護助手3名・医師3名が在籍しています。" },
+  ]},
+  { cat:"医師の募集", items:[
+    { chip:true, q:"医師の募集はありますか？", a:"定期非常勤（土日勤務可能）の医師を募集しています。1診体制・対応数30〜50名程度で、専門不問・美容未経験の先生も歓迎です。" },
+    { q:"未経験でも施術できますか？", a:"施術ができるようになるまで技術指導医が指導します。担当施術はシミ・いぼ・AGA・ボトックスなど、当院の施術メニュー全般です。" },
+    { q:"勤務日は土日だけですか？", a:"毎週土曜が基本で、隔週も相談可能です。平日（火曜午後など）の勤務もご相談いただけます。" },
+    { q:"医師の給与は？", a:"経験・資格に応じて優遇します。詳細は面接時にご案内しますので、お気軽にお問い合わせください。" },
+  ]},
+  { cat:"クリニックについて", items:[
+    { q:"どんなクリニックですか？", a:"秋田駅前・エリアなかいちの美容皮膚科です。「さあ、キレイを楽しもう！」を合言葉に、保険診療から美容医療まで幅広く対応。自社コスメ「FLALU COSME」も開発しています。" },
+    { q:"どんな治療方針ですか？", a:"「必要以上の美容治療は行わない」「マイナスを0にする」を大切にしています。だからスタッフに売上ノルマもありません。" },
+  ]},
+];
+
+const root = document.getElementById('root');
+let total = 0, chips = 0;
+DATA.forEach(group => {
+  total += group.items.length;
+  const sec = document.createElement('section');
+  sec.className = 'cat';
+  const chipCount = group.items.filter(i => i.chip).length;
+  chips += chipCount;
+  const head = document.createElement('div');
+  head.className = 'cat-h';
+  head.innerHTML = '<h2></h2><span class="n"></span>';
+  head.querySelector('h2').textContent = group.cat;
+  head.querySelector('.n').textContent = group.items.length + '問' + (chipCount ? ' ・ チップ' + chipCount : '');
+  sec.appendChild(head);
+  const cards = document.createElement('div');
+  cards.className = 'cards';
+  group.items.forEach(it => {
+    const card = document.createElement('div');
+    card.className = 'qa';
+    const q = document.createElement('div'); q.className = 'q';
+    const qm = document.createElement('span'); qm.className = 'mark'; qm.textContent = 'Q';
+    const qt = document.createElement('span'); qt.textContent = it.q;
+    q.append(qm, qt);
+    const a = document.createElement('div'); a.className = 'a';
+    const am = document.createElement('span'); am.className = 'mark'; am.textContent = 'A';
+    const at = document.createElement('span'); at.textContent = it.a;
+    a.append(am, at);
+    if (it.chip) {
+      const tag = document.createElement('span'); tag.className = 'tag chip'; tag.textContent = 'チップ';
+      card.appendChild(tag);
+    }
+    card.append(q, a);
+    cards.appendChild(card);
+  });
+  sec.appendChild(cards);
+  root.appendChild(sec);
+});
+document.querySelector('.lead').insertAdjacentHTML('afterend',
+  '<p class="lead" style="margin-top:8px">全' + total + '問（うちチップ候補 ' + chips + '問）。</p>');
+</script>

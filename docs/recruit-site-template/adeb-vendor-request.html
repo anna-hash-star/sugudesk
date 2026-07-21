@@ -1,0 +1,143 @@
+<title>【作業依頼書】AdeB採用サイトの /recruit 設置</title>
+<style>
+  :root{
+    --rose:#D82454; --rose-dark:#A31B40; --rose-soft:#FCE4EC;
+    --ink:#232024; --ink-soft:#6B626A; --paper:#FFFFFF; --panel:#FAF7F8;
+    --line:#E8DDE1; --sand:#F2ECEF; --code-bg:#2A2530; --code-ink:#F3EEF1;
+    --ok:#1F8A5B; --ok-soft:#E7F4EC; --warn:#9A6512; --warn-soft:#FBF1DE;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--rose:#F2789A;--rose-dark:#F4A6BE;--rose-soft:#39262E;--ink:#EFE8EB;--ink-soft:#B2A5AC;
+      --paper:#161215;--panel:#1E1820;--line:#382B32;--sand:#241C22;--code-bg:#0F0C11;--code-ink:#EDE6EA;
+      --ok:#62C694;--ok-soft:#17271F;--warn:#DEA954;--warn-soft:#2A2113;}
+  }
+  :root[data-theme="light"]{--rose:#D82454;--rose-dark:#A31B40;--rose-soft:#FCE4EC;--ink:#232024;--ink-soft:#6B626A;--paper:#FFFFFF;--panel:#FAF7F8;--line:#E8DDE1;--sand:#F2ECEF;--code-bg:#2A2530;--code-ink:#F3EEF1;--ok:#1F8A5B;--ok-soft:#E7F4EC;--warn:#9A6512;--warn-soft:#FBF1DE;}
+  :root[data-theme="dark"]{--rose:#F2789A;--rose-dark:#F4A6BE;--rose-soft:#39262E;--ink:#EFE8EB;--ink-soft:#B2A5AC;--paper:#161215;--panel:#1E1820;--line:#382B32;--sand:#241C22;--code-bg:#0F0C11;--code-ink:#EDE6EA;--ok:#62C694;--ok-soft:#17271F;--warn:#DEA954;--warn-soft:#2A2113;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic","Noto Sans JP",sans-serif;
+    line-height:1.85;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:800px;margin:0 auto;padding:44px 22px 96px;}
+  .doc-label{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:.15em;color:var(--rose);font-weight:700;margin:0 0 10px;}
+  h1{font-size:clamp(21px,4vw,28px);font-weight:800;line-height:1.4;margin:0 0 16px;text-wrap:balance;}
+  .summary{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--rose);border-radius:10px;padding:16px 20px;font-size:14.5px;}
+  .summary b{color:var(--rose-dark);}
+  h2{font-size:18px;font-weight:800;margin:42px 0 8px;display:flex;align-items:baseline;gap:10px;}
+  h2 .n{font-family:ui-monospace,Menlo,monospace;font-size:13px;color:var(--rose);font-weight:700;}
+  p{font-size:14.5px;}
+  .url,.mono{font-family:ui-monospace,Menlo,monospace;font-size:.92em;background:var(--rose-soft);color:var(--rose-dark);border-radius:5px;padding:1px 6px;}
+  ol.steps{margin:10px 0 0;padding-left:0;list-style:none;counter-reset:s;}
+  ol.steps>li{counter-increment:s;position:relative;padding:8px 0 12px 36px;font-size:14.5px;border-bottom:1px solid var(--line);}
+  ol.steps>li:last-child{border-bottom:0;}
+  ol.steps>li::before{content:counter(s);position:absolute;left:0;top:8px;width:24px;height:24px;border-radius:7px;background:var(--rose);color:#fff;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;font-weight:700;display:grid;place-items:center;}
+  ol.steps b{font-weight:800;}
+  pre{background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:15px 16px;overflow-x:auto;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;line-height:1.7;margin:10px 0;}
+  pre .c{color:#9aa0b0;}
+  pre .k{color:#F2A6BE;}
+  .box{border-radius:12px;padding:16px 20px;margin:14px 0;font-size:14px;}
+  .box.ok{background:var(--ok-soft);border:1px solid color-mix(in srgb,var(--ok) 40%,transparent);}
+  .box.warn{background:var(--warn-soft);border:1px solid color-mix(in srgb,var(--warn) 45%,transparent);}
+  .box h3{margin:0 0 6px;font-size:14.5px;font-weight:800;}
+  .box.ok h3{color:var(--ok);} .box.warn h3{color:var(--warn);}
+  ul.plain{margin:6px 0 0;padding-left:20px;font-size:14.5px;}
+  ul.plain li{margin:5px 0;}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:10px;}
+  th,td{text-align:left;border-bottom:1px solid var(--line);padding:9px 10px;vertical-align:top;}
+  th{font-size:12px;color:var(--ink-soft);background:var(--panel);font-weight:700;}
+  .check{list-style:none;padding:0;margin:8px 0 0;}
+  .check li{padding:7px 0 7px 30px;position:relative;border-bottom:1px solid var(--line);font-size:14px;}
+  .check li:last-child{border-bottom:0;}
+  .check li::before{content:"";position:absolute;left:2px;top:11px;width:15px;height:15px;border:2px solid var(--rose);border-radius:4px;}
+  .foot{margin-top:52px;border-top:2px solid var(--ink);padding-top:16px;font-size:12.5px;color:var(--ink-soft);}
+  .note{font-size:12.5px;color:var(--ink-soft);}
+</style>
+
+<div class="wrap">
+  <p class="doc-label">作業依頼書 / WORK REQUEST — AdeB CLINIC 採用サイト</p>
+  <h1>採用サイト（新版）を <span class="url">https://www.adeb.com/recruit/</span> に設置いただく作業のご依頼</h1>
+  <div class="summary">
+    現在 <span class="url">/recruit</span> にある採用ページ（Elementor固定ページ）を、<b>新しい採用サイト（静的サイト一式）に差し替え</b>たく存じます。<b>URLは変更せず</b>（SEO資産を維持）、対象は <span class="url">/recruit/</span> のみです。<b>WordPress本体には影響しません。</b>作業目安：<b>15〜30分</b>程度の想定です。
+  </div>
+
+  <h2><span class="n">1</span>背景・ゴール</h2>
+  <ul class="plain">
+    <li>現状の <span class="url">/recruit</span> は旧版のため、<b>新デザインの採用サイトに置き換え</b>たい。</li>
+    <li>URL <span class="url">/recruit</span> はそのまま維持（これまでのSEO評価を引き継ぐため）。</li>
+    <li>採用サイトは<b>静的ファイル（HTML/CSS/JS）一式</b>としてお渡しします（サーバー側でPHPやDBは不要）。</li>
+  </ul>
+
+  <h2><span class="n">2</span>ご依頼内容（サマリ）</h2>
+  <p>下記3点だけです。詳細は「4. 作業手順」に記載します。</p>
+  <ul class="plain">
+    <li>① お渡しする<b>ファイル一式をサーバーに配置</b></li>
+    <li>② nginx に <b><span class="url">/recruit/</span> 用の location ブロックを1つ追加</b></li>
+    <li>③ nginx を <b>reload</b> して表示確認</li>
+  </ul>
+
+  <h2><span class="n">3</span>当方からのお渡し物</h2>
+  <table>
+    <thead><tr><th>提供物</th><th>内容</th></tr></thead>
+    <tbody>
+      <tr><td>採用サイト一式（zip）</td><td>静的ファイル。<span class="mono">/recruit</span> 配下で自己完結するよう構成済み（アセットも <span class="mono">/recruit/…</span> を参照）</td></tr>
+      <tr><td>nginx 設定サンプル</td><td>本書「4-②」の内容。実ファイルに合わせて最終確認済みのものをお渡し</td></tr>
+      <tr><td>本依頼書 / 手順書</td><td>この資料</td></tr>
+    </tbody>
+  </table>
+
+  <h2><span class="n">4</span>作業手順</h2>
+  <ol class="steps">
+    <li><b>ファイルを配置</b><br>
+      お渡しするファイル一式を、サーバー上の任意の場所に展開してください。<br>
+      <span class="note">例：<span class="mono">/var/www/adeb/recruit/</span>（実際のドキュメントルート構成に合わせてください）</span>
+    </li>
+    <li><b>nginx に location を追加</b>（対象サーバーブロックへ）
+<pre><span class="c"># /recruit（末尾スラッシュ無し）→ 付きへ寄せる</span>
+location = /recruit { <span class="k">return</span> 301 /recruit/; }
+
+<span class="c"># /recruit/ 配下は静的ファイルを返す（WordPressに渡さない）</span>
+location ^~ /recruit/ {
+    <span class="k">alias</span> /var/www/adeb/recruit/;   <span class="c"># ①で配置した場所</span>
+    <span class="k">try_files</span> $uri $uri.html $uri/ /recruit/index.html;
+}</pre>
+      <span class="note">※ <span class="mono">alias</span> のパスは①の配置先に合わせてください。既存の <span class="mono">location / { … index.php … }</span> より上（または <span class="mono">^~</span> による優先）で効きます。</span>
+    </li>
+    <li><b>設定を反映</b>
+<pre>nginx -t && systemctl reload nginx</pre>
+    </li>
+    <li><b>表示確認</b><br>
+      <span class="url">https://www.adeb.com/recruit/</span> と、配下ページ（例 <span class="mono">/recruit/jobs/…</span>）が表示されることをご確認ください。
+    </li>
+    <li><b>（WP側）旧・採用固定ページを非公開に</b><br>
+      既存の <span class="mono">recruit</span> スラッグの固定ページは<b>非公開／下書き</b>にしてください（URL衝突・重複回避のため。実表示はnginxが静的側を優先します）。<span class="note">こちらはWP管理画面での操作です。</span>
+    </li>
+  </ol>
+
+  <div class="box ok">
+    <h3>WordPress本体には影響しません</h3>
+    上記の設定は <span class="mono">/recruit/</span> だけを対象にした隔離ブロックです。トップページ・施術メニュー等、他のURLはこれまで通りWordPress（PHP）が処理します。静的ファイルを返すだけなので、サーバー／PHPのバージョンにも依存しません。
+  </div>
+
+  <h2><span class="n">5</span>更新時の運用</h2>
+  <p>文言・写真・求人内容を更新する際は、<b>当方が新しいファイル一式をお渡し</b>しますので、<b>①と同じ場所に上書きアップロード</b>していただくだけです（nginxの再設定は不要）。</p>
+
+  <h2><span class="n">6</span>事前に教えていただきたいこと</h2>
+  <ul class="plain">
+    <li>ファイルの<b>配置先パス</b>（例：ドキュメントルートの位置）と、<b>アップロード方法</b>（SFTP/SSH 等）</li>
+    <li>編集する<b>nginx設定ファイルの場所</b>（例：<span class="mono">/etc/nginx/conf.d/adeb.conf</span> 等）</li>
+    <li>この方式で<b>問題がないか</b>（別案としてリバースプロキシも可能です。ご希望あればご相談ください）</li>
+  </ul>
+
+  <h2><span class="n">7</span>確認チェックリスト</h2>
+  <ul class="check">
+    <li>ファイル一式を配置した</li>
+    <li>nginx に <span class="mono">/recruit/</span> の location を追加した</li>
+    <li><span class="mono">nginx -t</span> がOK、reload 実施</li>
+    <li><span class="url">/recruit/</span> と配下ページの表示を確認</li>
+    <li>旧・採用固定ページを非公開にした</li>
+  </ul>
+
+  <div class="foot">
+    ご不明点・別方式のご相談は制作担当（当方）までお願いいたします。ファイル一式は、本方式で進める旨のご確認後にお渡しします。<br>
+    ご担当者名／連絡先：__________________
+  </div>
+</div>

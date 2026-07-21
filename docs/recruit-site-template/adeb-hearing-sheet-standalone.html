@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AdeB 採用サイト・チャット ヒアリングシート（入力用）</title>
+<style>
+  :root {
+    --pink:#D82454; --pink-dark:#A31B40; --pink-soft:#FCE4EC;
+    --ink:#292526; --ink-soft:#6D6568; --paper:#FFFFFF; --panel:#FBF7F8;
+    --line:#E7D9DD; --sand:#F1EAEC;
+    --must:#C0143C; --want:#7A6A70; --ok:#1F8A5B;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --pink:#F2789A; --pink-dark:#F2A9BF; --pink-soft:#33232A; --ink:#ECE6E8;
+      --ink-soft:#A99DA2; --paper:#171315; --panel:#1E181B; --line:#3A2C31; --sand:#241C20;
+      --must:#F27A96; --want:#A99DA2; --ok:#5FC894; }
+  }
+  :root[data-theme="light"]{--pink:#D82454;--pink-dark:#A31B40;--pink-soft:#FCE4EC;--ink:#292526;--ink-soft:#6D6568;--paper:#FFFFFF;--panel:#FBF7F8;--line:#E7D9DD;--sand:#F1EAEC;--must:#C0143C;--want:#7A6A70;--ok:#1F8A5B;}
+  :root[data-theme="dark"]{--pink:#F2789A;--pink-dark:#F2A9BF;--pink-soft:#33232A;--ink:#ECE6E8;--ink-soft:#A99DA2;--paper:#171315;--panel:#1E181B;--line:#3A2C31;--sand:#241C20;--must:#F27A96;--want:#A99DA2;--ok:#5FC894;}
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--paper); color:var(--ink);
+    font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic","Noto Sans JP",sans-serif;
+    font-size:15px; line-height:1.8; }
+  .wrap { max-width:940px; margin:0 auto; padding:40px 22px 120px; }
+  .kicker { font-family:ui-monospace,Menlo,monospace; font-size:12px; letter-spacing:.14em; color:var(--pink); font-weight:700; margin:0 0 10px; }
+  h1 { font-size:clamp(22px,4vw,30px); font-weight:800; line-height:1.35; margin:0 0 12px; }
+  .intro { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:16px 20px; font-size:14px; color:var(--ink-soft); }
+  .intro b { color:var(--ink); }
+  .howto { margin:14px 0 0; background:var(--pink-soft); border-radius:10px; padding:14px 18px; font-size:13.5px; }
+  .howto b { color:var(--pink); }
+  .howto ol { margin:6px 0 0; padding-left:20px; }
+  .legend { display:flex; flex-wrap:wrap; gap:16px; font-size:13px; margin:18px 0 0; }
+  .legend span { display:inline-flex; align-items:center; gap:7px; }
+  .pri { font-family:ui-monospace,Menlo,monospace; font-weight:700; border-radius:5px; padding:1px 8px; font-size:12px; }
+  .p-must { background:var(--pink-soft); color:var(--must); }
+  .p-want { background:var(--sand); color:var(--want); }
+  .role { display:inline-block; font-size:11px; font-weight:700; border-radius:5px; padding:1px 7px; margin-right:6px; vertical-align:1px; }
+  .r-both { background:var(--sand); color:var(--ink-soft); }
+  .r-recep { background:var(--pink-soft); color:var(--pink); }
+  .r-doc { background:color-mix(in srgb, var(--ok) 14%, var(--paper)); color:var(--ok); border:1px solid color-mix(in srgb, var(--ok) 35%, transparent); }
+  .block { margin:52px 0 6px; padding:12px 18px; border-radius:10px; background:var(--ink); color:var(--paper); font-weight:800; font-size:15.5px; }
+  .block.first { margin-top:28px; }
+  .block + h2 { margin-top:18px; }
+
+  h2 { font-size:19px; font-weight:800; margin:40px 0 4px; display:flex; align-items:baseline; gap:10px; }
+  h2 .n { font-family:ui-monospace,Menlo,monospace; font-size:13px; color:var(--pink); }
+  .why { color:var(--ink-soft); font-size:13px; margin:0 0 14px; }
+
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  thead th { text-align:left; font-size:12px; color:var(--ink-soft); background:var(--panel);
+    border-bottom:1px solid var(--line); padding:8px 12px; font-weight:700; }
+  tbody td { border-bottom:1px solid var(--line); padding:12px; vertical-align:top; }
+  .c-pri { width:48px; }
+  .c-ans { width:36%; }
+  .q b { font-weight:700; }
+  .q .note { display:block; color:var(--ink-soft); font-size:12.5px; margin-top:3px; }
+  .known { display:inline-block; font-size:11px; font-weight:700; background:var(--pink-soft); color:var(--pink);
+    border-radius:5px; padding:1px 7px; margin-left:2px; vertical-align:1px; }
+  textarea.ans { width:100%; min-height:60px; resize:vertical; border:1px solid var(--line); border-radius:8px;
+    background:var(--paper); color:var(--ink); padding:9px 11px; font:inherit; font-size:14px; line-height:1.6; }
+  textarea.ans:focus { outline:none; border-color:var(--pink); box-shadow:0 0 0 3px var(--pink-soft); }
+  textarea.ans.filled { border-color:var(--ok); background:color-mix(in srgb, var(--ok) 6%, var(--paper)); }
+
+  /* 固定アクションバー */
+  .bar { position:fixed; left:0; right:0; bottom:0; z-index:50; background:var(--paper);
+    border-top:1px solid var(--line); box-shadow:0 -4px 16px rgba(0,0,0,.06); }
+  .bar-in { max-width:940px; margin:0 auto; padding:12px 22px; display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+  .bar .prog { font-size:13px; color:var(--ink-soft); margin-right:auto; }
+  .bar .prog b { color:var(--pink); font-variant-numeric:tabular-nums; }
+  .btn { border:none; border-radius:99px; padding:11px 20px; font:inherit; font-size:14px; font-weight:700; cursor:pointer; }
+  .btn-main { background:var(--pink); color:#fff; }
+  .btn-main:hover { background:var(--pink-dark); }
+  .btn-sub { background:var(--panel); color:var(--pink); border:1.5px solid var(--pink); }
+  .btn-sub:hover { background:var(--pink-soft); }
+  .toast { position:fixed; left:50%; bottom:78px; transform:translateX(-50%); background:var(--ink); color:var(--paper);
+    padding:10px 18px; border-radius:99px; font-size:13px; opacity:0; transition:opacity .25s; pointer-events:none; z-index:60; }
+  .toast.show { opacity:1; }
+
+  .foot { margin-top:48px; border-top:2px solid var(--ink); padding-top:16px; font-size:12.5px; color:var(--ink-soft); }
+  @media print { .bar,.howto,.toast { display:none; } textarea.ans { border:1px solid #999; min-height:44px; } }
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <p class="kicker">ADEB CLINIC — HEARING SHEET（入力用）</p>
+  <h1>採用サイト・チャット制作<br>ヒアリングシート（ご記入のお願い）</h1>
+  <div class="howto">
+    採用サイト・チャットに反映するための確認項目です。<b>「非公開」「未定」も回答としてOKです。</b><br>
+    記入し終えたら、下の「送信」ボタンを押してください。
+  </div>
+  <div class="legend">
+    <span><i class="pri p-must">◎必須</i> 応募に直結・離脱を防ぐ最重要項目</span>
+    <span><i class="pri p-want">○任意</i> あるとより良い（後追いでも可）</span>
+    <span><i class="known">既知</i> 既にいただいた情報。相違がないかご確認ください</span>
+  </div>
+
+  <form id="sheet">
+
+  <div class="block first">【共通】両職種（受付・医師）に共通の項目</div>
+
+  <h2><span class="n">A</span>クリニック・施設の基本</h2>
+  <p class="why">サイト公開に必要な、答えやすい基本項目からお願いします。</p>
+  <table><thead><tr><th class="c-pri">優先</th><th>確認事項</th><th class="c-ans">ご回答（クリックして入力）</th></tr></thead><tbody>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">「数字で見る」に載せる<b>スタッフ総数</b>の実数<span class="note">現在サイトでは「18名」としています。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q"><b>1日の来院数の目安</b><span class="note">「数字で見る」やクリニック紹介に使用します。※医師募集では「60名程度」と伺っています。</span></td><td><textarea class="ans"></textarea></td></tr>
+  </tbody></table>
+
+  <h2><span class="n">B</span>通勤・見学・応募の流れ</h2>
+  <table><thead><tr><th class="c-pri">優先</th><th>確認事項</th><th class="c-ans">ご回答</th></tr></thead><tbody>
+    <tr><td><span class="pri p-must">◎</span></td><td class="q"><b>車通勤は可能ですか？駐車場はありますか？</b><span class="note">面接・見学時に車で来てよいかも含めて。地方の求職者の争点です。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-must">◎</span></td><td class="q"><b>応募前の見学は受け付けますか？</b><span class="note">受ける場合、面接と別日でも可能ですか？→可能ならチャットに「見学予約」を追加します。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-must">◎</span></td><td class="q"><b>応募から入職までの流れ</b>（選考ステップ・所要日数・必要書類）<span class="note">例）応募→◯営業日以内にご連絡→面接→採用連絡→入職。応募時に必要な書類（履歴書など）があれば、あわせて教えてください。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">面接の持ち物・所要時間の目安</td><td><textarea class="ans"></textarea></td></tr>
+  </tbody></table>
+
+  <h2><span class="n">C</span>給与・待遇・休み（共通）</h2>
+  <table><thead><tr><th class="c-pri">優先</th><th>確認事項</th><th class="c-ans">ご回答</th></tr></thead><tbody>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">交通費支給の上限額（規定内の具体額）</td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q"><b>加入保険・福利厚生</b>（各職種）<span class="note">雇用保険・労災保険・健康保険・厚生年金の加入状況／制服貸与・研修・社員割引など。パートは勤務時間により社会保険の加入有無が変わるため、実態を教えてください。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-must">◎</span></td><td class="q"><b>有給休暇は実際に取りやすいですか？取得率の数字はありますか？</b><span class="note">数字が無ければ「相談ベースで取りやすい」等でも可。</span></td><td><textarea class="ans"></textarea></td></tr>
+  </tbody></table>
+
+  <h2><span class="n">D</span>職場の雰囲気・スタッフ構成</h2>
+  <p class="why">職場の雰囲気やスタッフの声は、求職者が採用ページでよく見る情報です。ここを開示できると他院との差別化になります。</p>
+  <table><thead><tr><th class="c-pri">優先</th><th>確認事項</th><th class="c-ans">ご回答</th></tr></thead><tbody>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">職種ごとのおおよそのスタッフ人数<span class="note">例：受付◯名／看護師◯名／医師◯名。ざっくりでOK。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">スタッフの年齢層・男女比<span class="note">例：20〜40代中心・女性が多い など。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-must">◎</span></td><td class="q"><b>「職場の雰囲気」を院長・スタッフの言葉で1〜2文で</b><span class="note">サイトとチャットにそのまま掲載します。</span></td><td><textarea class="ans"></textarea></td></tr>
+  </tbody></table>
+
+  <h2><span class="n">E</span>働きやすさ・両立支援</h2>
+  <p class="why">面接では聞きにくく、チャットで事前に分かると応募が増える項目です。差し支えない範囲でお願いします。</p>
+  <table><thead><tr><th class="c-pri">優先</th><th>確認事項</th><th class="c-ans">ご回答</th></tr></thead><tbody>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">子育て中のスタッフは在籍していますか？<span class="note">おおよその人数で構いません（例：数名）。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">お子さまの体調不良などでの当日の欠勤・早退には対応できますか？<span class="note">スタッフ間でカバーし合う体制があれば、あわせて。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">学校行事や家庭都合でのお休みを取ることは可能ですか？</td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">託児所・保育支援はありますか？<span class="note">有無だけでOKです。</span></td><td><textarea class="ans"></textarea></td></tr>
+  </tbody></table>
+
+  <h2><span class="n">F</span>「先輩の声」づくり（掲載用インタビュー）</h2>
+  <p class="why">サイトの「スタッフの声」を実際の内容で作るためのヒアリングです。掲載にご協力いただけるスタッフの方に、可能な範囲でお答えいただければ、こちらで読みやすい記事に整えます。<b>まずは1名分でOK</b>（複数名ご協力いただける場合は担当までお知らせください）。</p>
+  <table><thead><tr><th class="c-pri">優先</th><th>質問（スタッフご本人へ）</th><th class="c-ans">ご回答</th></tr></thead><tbody>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">職種・雇用形態<span class="note">例：受付・パート／看護師・常勤</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">入職して何年目ですか？</td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">お名前の掲載方法<span class="note">イニシャル／ニックネーム／実名 のいずれか（例：R.S）</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">前職や経歴をひとことで<span class="note">例：アパレル販売から転職／病棟勤務を経て</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q"><b>入職を決めた理由</b>は何でしたか？</td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">働いてみて「想像と違った」または「良かった」と感じたこと</td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">職場の雰囲気・人間関係について感じること</td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q"><b>応募を考えている方へのメッセージ</b></td><td><textarea class="ans"></textarea></td></tr>
+  </tbody></table>
+
+  <div class="block">【受付（パート）】受付の求人・チャット用</div>
+
+  <h2><span class="n">G</span>受付（パート）について</h2>
+  <p class="why">受付パートの求人・チャットに使う、受付ならではの項目です。</p>
+  <table><thead><tr><th class="c-pri">優先</th><th>確認事項</th><th class="c-ans">ご回答</th></tr></thead><tbody>
+    <tr><td><span class="pri p-want">○</span></td><td class="q"><b>受付の1日の流れ</b>（出勤〜退勤のタイムスケジュール）<span class="note">サイトに「1日の流れ」として掲載します。例）9:00 開院準備／9:30 受付開始／12:00 交代で休憩／…／18:00 片付け・退勤。ざっくりでOK。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">受付がひとり立ちするまでの研修期間の目安<span class="note">例：3ヶ月。未経験者の応募を後押しします。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">試用期間はありますか？<span class="note">あれば期間と、その間の時給などの条件差も。応募者が気にする点です。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">受付は長く働けますか？（期間の定めのない雇用／更新ありの有期契約）<span class="note">腰を据えて働けるかを気にする方向けに。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">シフトは固定制ですか、希望制ですか？希望休は月にどのくらい出せますか？</td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">受付の休憩時間（分）／繁忙期でも残業は発生しませんか？<span class="note">求人票は「残業なし」。実態の裏づけとして。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">受付の賞与の有無・昇給の有無の実績</td><td><textarea class="ans"></textarea></td></tr>
+  </tbody></table>
+
+  <div class="block">【医師（定期非常勤）】医師の求人・チャット用</div>
+
+  <h2><span class="n">H</span>医師（定期非常勤）について</h2>
+  <p class="why">美容皮膚科の医師が転職時に最も気にする「施術に集中できる体制か」「未経験でも指導が受けられるか」を示すための項目です。</p>
+  <table><thead><tr><th class="c-pri">優先</th><th>確認事項</th><th class="c-ans">ご回答</th></tr></thead><tbody>
+    <tr><td><span class="pri p-want">○</span></td><td class="q"><b>医師の勤務日の流れ</b>（1日のタイムスケジュール）<span class="note">土曜の勤務日の流れをサイトに掲載します。例）9:30 カウンセリング開始／…／12:30 休憩／…／17:30 終了。ざっくりでOK。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-must">◎</span></td><td class="q"><b>医師の診療をサポートする体制</b>（1診あたり看護師・受付が何名つくか／カウンセリングは誰が担当するか）<span class="note">美容医師が最重視。「診療に集中できる」と示せると応募が増えます。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-must">◎</span></td><td class="q"><b>医師が担当する主な施術・導入している美容機器</b>（レーザー等の機種）<span class="note">未経験歓迎の場合、「何を覚えるのか」が具体的だと安心材料になります。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-must">◎</span></td><td class="q"><b>技術指導の具体</b>（指導医はどなたか・院内／外部・頻度・ひとり立ちまでの目安）<span class="note">「技術指導医による指導」を裏づける情報。※院長は施術に入らないと伺っています。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">報酬の提示方法（サイトは非公開でOK・面接で提示するレンジ／皮膚科専門医の優遇）<span class="note">既知：皮膚科専門医は11,000円〜応相談。非公開なら「経験・資格により優遇」と表記します。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">勤務日の相談余地（土曜固定以外の可否・将来的な常勤化の道はあるか）<span class="note">既知：毎週土曜9:30〜17:30・隔週も検討可。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">今回の医師募集の背景（増員／欠員／新規開設 など）<span class="note">増員なら成長中の印象になります。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">現在の医師体制（常勤◯名・非常勤◯名／年代・男女比）<span class="note">何人の医師がいる職場かは応募者が気にします。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">副業・他院との兼務は可能ですか？<span class="note">定期非常勤の先生は掛け持ちが多いため、確認したい点です。</span></td><td><textarea class="ans"></textarea></td></tr>
+    <tr><td><span class="pri p-want">○</span></td><td class="q">医師賠償責任保険（医賠責）の扱い<span class="note">医院で加入／各自で加入のどちらかを教えてください。</span></td><td><textarea class="ans"></textarea></td></tr>
+  </tbody></table>
+  </form>
+
+  <footer class="foot">
+    ご記入後、下の「回答をコピー」または「テキストで保存」で制作担当へご返信ください。「非公開」「未定」もそのまま反映できます。
+  </footer>
+</div>
+
+<div class="bar"><div class="bar-in">
+  <div class="prog">記入済み <b><span id="done">0</span>/<span id="total">0</span></b></div>
+  <button type="button" class="btn btn-sub" id="save">テキストで保存</button>
+  <button type="button" class="btn btn-sub" id="copy">回答をコピー</button>
+  <button type="button" class="btn btn-main" id="send">送信（メール作成）</button>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  // ▼▼ ここにGoogleスプレッドシート連携のURLを貼るとスプレッドシート送信になります ▼▼
+  //    （空のままだと「送信」はメール作成(mailto)方式で動きます）
+  var ENDPOINT = 'https://script.google.com/macros/s/AKfycbxtdAw7mw3QqVza214upQgFIIg9idWW0Pmj0aUhF-Hf1TlMBon6e9g305ODUt4NwsI/exec';
+  // ▲▲ 設定方法は docs の adeb-hearing-gsheet.gs / README を参照 ▲▲
+  var KEY = 'adeb-hearing-v1';
+  var rows = [];
+  // 各質問行から「カテゴリ / 質問文 / textarea」を収集
+  var curCat = '', curRole = '';
+  document.querySelectorAll('#sheet .block, #sheet h2, #sheet tbody tr').forEach(function(el){
+    if (el.classList && el.classList.contains('block')) {
+      var b = el.textContent;
+      curRole = b.indexOf('受付') !== -1 ? '受付' : (b.indexOf('医師') !== -1 ? '医師' : '共通');
+      return;
+    }
+    if (el.tagName === 'H2') { curCat = el.textContent.trim().replace(/\s+/g,' ').replace(/^([A-Z])/, '$1. '); return; }
+    var qcell = el.querySelector('.q');
+    var ta = el.querySelector('textarea.ans');
+    if (!qcell || !ta) return;
+    // 質問文（.noteの補足は除いて主文だけ）
+    var clone = qcell.cloneNode(true);
+    var note = clone.querySelector('.note'); if (note) note.remove();
+    var q = (curRole ? '［' + curRole + '］' : '') + clone.textContent.trim().replace(/\s+/g,' ');
+    rows.push({ cat: curCat, q: q, ta: ta });
+  });
+
+  document.getElementById('total').textContent = rows.length;
+  var toast = document.getElementById('toast');
+  function showToast(msg){ toast.textContent = msg; toast.classList.add('show'); setTimeout(function(){toast.classList.remove('show');},1800); }
+
+  // 復元
+  try {
+    var saved = JSON.parse(localStorage.getItem(KEY) || '{}');
+    rows.forEach(function(r,i){ if (saved[i]) r.ta.value = saved[i]; });
+  } catch(e){}
+
+  function refresh(){
+    var done = 0, obj = {};
+    rows.forEach(function(r,i){
+      var v = r.ta.value.trim();
+      if (v) { done++; obj[i] = r.ta.value; r.ta.classList.add('filled'); }
+      else r.ta.classList.remove('filled');
+    });
+    document.getElementById('done').textContent = done;
+    try { localStorage.setItem(KEY, JSON.stringify(obj)); } catch(e){}
+  }
+  rows.forEach(function(r){ r.ta.addEventListener('input', refresh); });
+  refresh();
+
+  function buildText(){
+    var out = ['■ AdeBクリニック 採用サイト・チャット ヒアリング回答', ''];
+    var cat = '';
+    rows.forEach(function(r){
+      if (r.cat !== cat) { cat = r.cat; out.push(''); out.push('【' + cat + '】'); }
+      var v = r.ta.value.trim();
+      out.push('Q. ' + r.q);
+      out.push('A. ' + (v || '（未回答）'));
+      out.push('');
+    });
+    return out.join('\n');
+  }
+
+  document.getElementById('copy').addEventListener('click', function(){
+    var text = buildText();
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function(){ showToast('回答をコピーしました。メール等に貼り付けて返信してください'); },
+        function(){ fallbackCopy(text); });
+    } else fallbackCopy(text);
+  });
+  function fallbackCopy(text){
+    var t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select();
+    try { document.execCommand('copy'); showToast('回答をコピーしました'); } catch(e){ showToast('コピーできませんでした。「テキストで保存」をお使いください'); }
+    document.body.removeChild(t);
+  }
+  document.getElementById('save').addEventListener('click', function(){
+    var blob = new Blob([buildText()], { type:'text/plain;charset=utf-8' });
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'AdeB_ヒアリング回答.txt'; document.body.appendChild(a); a.click();
+    document.body.removeChild(a); showToast('テキストを保存しました');
+  });
+
+  var MAILTO = 'anna.negoro@exmore.jp';
+  var sendBtn = document.getElementById('send');
+
+  function sendByMail(){
+    var text = buildText();
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).catch(function(){}); }
+    var subject = '【AdeB採用サイト】ヒアリング回答';
+    var href = 'mailto:' + MAILTO + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(text);
+    if (href.length > 1900) {
+      var shortBody = text.slice(0, 1500) + '\n\n（※回答が長いため一部のみ表示。全文はクリップボードにコピー済みです。この本文を消して貼り付けてください）';
+      href = 'mailto:' + MAILTO + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(shortBody);
+    }
+    window.location.href = href;
+    showToast('メールを作成しました（宛先：' + MAILTO + '）。内容を確認して送信してください');
+  }
+
+  function sendToSheet(){
+    var payload = { answers: rows.map(function(r){ return { cat:r.cat, q:r.q, a:r.ta.value.trim() }; }) };
+    sendBtn.disabled = true; sendBtn.textContent = '送信中…';
+    // Apps Script Web App へ送信（CORSプリフライトを避けるため text/plain・no-cors）
+    fetch(ENDPOINT, {
+      method:'POST', mode:'no-cors',
+      headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    }).then(function(){
+      sendBtn.disabled = false; sendBtn.textContent = '送信済み ✓';
+      showToast('送信しました。ご記入ありがとうございました');
+      try { localStorage.setItem(KEY + '-sent', '1'); } catch(e){}
+      setTimeout(function(){ sendBtn.textContent = '送信（スプレッドシート）'; }, 4000);
+    }).catch(function(){
+      sendBtn.disabled = false; sendBtn.textContent = '送信（スプレッドシート）';
+      showToast('この画面からは直接送信できませんでした。「回答をコピー」または「テキストで保存」でご返信ください（メール作成も試みます）');
+      try { sendByMail(); } catch (e) {}
+    });
+  }
+
+  sendBtn.textContent = ENDPOINT ? '送信（スプレッドシート）' : '送信（メール作成）';
+  sendBtn.addEventListener('click', function(){ ENDPOINT ? sendToSheet() : sendByMail(); });
+})();
+</script>
+
+</body>
+</html>

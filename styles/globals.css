@@ -1,1 +1,83 @@
 @import "tailwindcss";
+
+/* ===== 採用サイトテンプレート（/recruit）用テーマ ===== */
+@theme {
+  --color-rc-teal: #0F6E63;
+  --color-rc-teal-dark: #0A5049;
+  --color-rc-teal-soft: #E3F0ED;
+  --color-rc-ivory: #F8F7F2;
+  --color-rc-sand: #EFEAE0;
+  --color-rc-ink: #26332F;
+  --color-rc-ink-soft: #5E6E68;
+  --color-rc-apricot: #C96F45;
+}
+
+/* 見出し書体（クラス名は歴史的経緯で rc-mincho のまま）。
+   G-Mark DESIGN.md に倣い、太いゴシック＋プラス字間で視認性を最優先する */
+.rc-mincho {
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* クリニック別テーマ：clinic.themeClass でルートに付与すると rc-* トークンが差し替わる */
+/* AdeB：ブランドピンク（ロゴ色をテキスト用に深めたトーン）×純白。
+   テキストは G-Mark 準拠の 84%黒相当・56%黒相当でコントラストを確保 */
+.theme-adeb {
+  --color-rc-teal: #D82454;      /* AdeBピンク（正式ロゴ #E72459 の色相を、白文字が4.5:1で読める濃さに調整） */
+  --color-rc-teal-dark: #A31B40; /* ホバー・ダーク面 */
+  --color-rc-teal-soft: #FCE4EC; /* ピンクの薄面 */
+  --color-rc-ivory: #FFFFFF;     /* ページ背景（純白） */
+  --color-rc-sand: #EEE7E4;      /* 罫線・クリーム面 */
+  --color-rc-ink: #292526;       /* 本文 ≈ rgba(0,0,0,0.84) */
+  --color-rc-ink-soft: #6D6568;  /* 補助テキスト ≈ rgba(0,0,0,0.56) */
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* スクロールリビール（Reveal コンポーネントが is-in を付与） */
+.rc-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--rc-delay, 0ms);
+}
+.rc-reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ヒーローの登場アニメーション */
+@keyframes rc-hero-in {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: none; }
+}
+.rc-hero-in {
+  animation: rc-hero-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--rc-delay, 0ms);
+}
+
+/* 背景の装飾ブロブのゆらぎ */
+@keyframes rc-drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(12px, -18px) scale(1.06); }
+}
+.rc-drift { animation: rc-drift 14s ease-in-out infinite; }
+
+/* チャット起動ボタンの注意喚起パルス */
+@keyframes rc-pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-rc-teal) 45%, transparent); }
+  70% { box-shadow: 0 0 0 14px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+.rc-pulse { animation: rc-pulse 2.6s ease-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .rc-reveal { opacity: 1; transform: none; transition: none; }
+  .rc-hero-in { animation: none; }
+  .rc-drift { animation: none; }
+  .rc-pulse { animation: none; }
+}

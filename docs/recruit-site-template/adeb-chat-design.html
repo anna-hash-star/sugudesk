@@ -1,0 +1,345 @@
+<title>AdeB 採用チャット設計｜候補者が聞きたいこと一覧</title>
+<style>
+  :root {
+    --pink: #D82454; --pink-dark: #A31B40; --pink-soft: #FCE4EC;
+    --ink: #292526; --ink-soft: #6D6568; --paper: #FFFFFF; --panel: #FBF7F8;
+    --line: #EBDDE1; --sand: #EEE7E4;
+    --ok: #1F8A5B; --ok-soft: #E4F3EB; --warn: #B4690E; --warn-soft: #FBEEDD;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --pink: #F2789A; --pink-dark: #F2A9BF; --pink-soft: #33232A;
+      --ink: #ECE6E8; --ink-soft: #A99DA2; --paper: #171315; --panel: #1E181B;
+      --line: #362A2F; --sand: #2A2126;
+      --ok: #5FC894; --ok-soft: #16281F; --warn: #E0A458; --warn-soft: #2B2113;
+    }
+  }
+  :root[data-theme="light"] {
+    --pink:#D82454;--pink-dark:#A31B40;--pink-soft:#FCE4EC;--ink:#292526;--ink-soft:#6D6568;
+    --paper:#FFFFFF;--panel:#FBF7F8;--line:#EBDDE1;--sand:#EEE7E4;
+    --ok:#1F8A5B;--ok-soft:#E4F3EB;--warn:#B4690E;--warn-soft:#FBEEDD;
+  }
+  :root[data-theme="dark"] {
+    --pink:#F2789A;--pink-dark:#F2A9BF;--pink-soft:#33232A;--ink:#ECE6E8;--ink-soft:#A99DA2;
+    --paper:#171315;--panel:#1E181B;--line:#362A2F;--sand:#2A2126;
+    --ok:#5FC894;--ok-soft:#16281F;--warn:#E0A458;--warn-soft:#2B2113;
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--paper); color:var(--ink);
+    font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic","Noto Sans JP",sans-serif;
+    font-size:15px; line-height:1.8; }
+  .wrap { max-width:1000px; margin:0 auto; padding:48px 22px 96px; }
+  .kicker { font-family:ui-monospace,Menlo,monospace; font-size:12px; letter-spacing:.14em; color:var(--pink); font-weight:700; margin:0 0 10px; }
+  h1 { font-size:clamp(24px,4vw,34px); font-weight:800; line-height:1.35; margin:0 0 14px; letter-spacing:.01em; }
+  .lead { color:var(--ink-soft); margin:0; max-width:44em; }
+  .meta { display:flex; flex-wrap:wrap; gap:8px; margin:18px 0 0; }
+  .meta span { font-size:12.5px; background:var(--panel); border:1px solid var(--line); border-radius:99px; padding:4px 12px; }
+  h2 { font-size:21px; font-weight:800; margin:56px 0 6px; display:flex; align-items:baseline; gap:10px; }
+  h2 .n { font-family:ui-monospace,Menlo,monospace; font-size:13px; color:var(--pink); }
+  .sub { color:var(--ink-soft); margin:0 0 22px; max-width:46em; font-size:14px; }
+
+  /* データバー */
+  .bars { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:20px 22px; }
+  .bars h3 { font-size:14px; margin:0 0 14px; font-weight:700; }
+  .bars h3:not(:first-child) { margin-top:22px; }
+  .bar { display:grid; grid-template-columns:1fr; gap:3px; margin:7px 0; }
+  .bar .l { display:flex; justify-content:space-between; font-size:13px; }
+  .bar .l b { color:var(--pink); font-variant-numeric:tabular-nums; }
+  .track { height:8px; background:var(--sand); border-radius:99px; overflow:hidden; }
+  .fill { height:100%; background:var(--pink); border-radius:99px; }
+
+  /* カテゴリカード */
+  .cat { border:1px solid var(--line); border-radius:12px; overflow:hidden; margin-bottom:16px; background:var(--paper); }
+  .cat > summary { list-style:none; cursor:pointer; padding:18px 20px; display:flex; align-items:flex-start; gap:14px; }
+  .cat > summary::-webkit-details-marker { display:none; }
+  .cat[open] > summary { border-bottom:1px solid var(--line); background:var(--panel); }
+  .cnum { flex:none; width:30px; height:30px; border-radius:8px; background:var(--pink-soft); color:var(--pink);
+    font-family:ui-monospace,Menlo,monospace; font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:center; }
+  .chead { flex:1; }
+  .chead .t { font-weight:800; font-size:16px; }
+  .chead .m { font-size:12.5px; color:var(--ink-soft); margin-top:2px; }
+  .badge { flex:none; font-size:11px; font-weight:700; border-radius:99px; padding:3px 10px; align-self:center; white-space:nowrap; }
+  .b-ok { background:var(--ok-soft); color:var(--ok); }
+  .b-warn { background:var(--warn-soft); color:var(--warn); }
+  .b-mix { background:var(--pink-soft); color:var(--pink); }
+  .cbody { padding:16px 20px 20px; }
+  .cbody .voice { font-size:13px; color:var(--ink-soft); border-left:3px solid var(--sand); padding:2px 0 2px 12px; margin:0 0 14px; }
+  .cbody .voice b { color:var(--ink); font-weight:600; }
+  .qa { margin:0; }
+  .qa dt { font-weight:700; font-size:14px; margin-top:12px; display:flex; gap:8px; align-items:baseline; }
+  .qa dt::before { content:"Q"; font-family:ui-monospace,Menlo,monospace; color:var(--pink); font-size:12px; }
+  .qa dd { margin:4px 0 0 20px; font-size:14px; }
+  .tag { display:inline-block; font-size:11px; font-weight:700; border-radius:5px; padding:1px 7px; margin-right:6px; vertical-align:1px; }
+  .t-ok { background:var(--ok-soft); color:var(--ok); }
+  .t-warn { background:var(--warn-soft); color:var(--warn); }
+  .confirm { margin-top:14px; background:var(--warn-soft); border-radius:8px; padding:12px 14px; font-size:13px; }
+  .confirm b { color:var(--warn); }
+  .confirm ul { margin:6px 0 0; padding-left:18px; }
+
+  .note { background:var(--panel); border:1px solid var(--line); border-left:4px solid var(--pink); border-radius:0 8px 8px 0; padding:16px 20px; margin:22px 0; font-size:14px; }
+  .note b { color:var(--pink); }
+  .legend { display:flex; flex-wrap:wrap; gap:14px; font-size:12.5px; color:var(--ink-soft); margin:16px 0 0; }
+  .legend span { display:inline-flex; align-items:center; gap:6px; }
+  .dot { width:11px; height:11px; border-radius:3px; }
+  table.sum { width:100%; border-collapse:collapse; font-size:13.5px; margin-top:8px; }
+  table.sum th, table.sum td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+  table.sum th { font-size:12px; color:var(--ink-soft); background:var(--panel); }
+  .footer { margin-top:60px; border-top:2px solid var(--ink); padding-top:16px; font-size:12.5px; color:var(--ink-soft); }
+</style>
+
+<div class="wrap">
+  <p class="kicker">ADEB CLINIC — CHATBOT DESIGN</p>
+  <h1>採用チャット設計書<br>候補者が「チャットで聞きたいこと」一覧</h1>
+  <p class="lead">医療職89名のアンケート（Q38「チャットがあればどんな質問をしたいか」ほか）を分析し、候補者が本当に知りたいことを13カテゴリに整理。各項目にAdeBの回答方針を紐づけた。<b style="color:var(--ink)">緑＝既知の情報で回答可／橙＝先方確認が必要</b>。</p>
+  <div class="meta">
+    <span>回答者 n=89</span><span>看護師39・リハ10・医療事務9・薬剤師9・検査放射線6・医師4・介護4 ほか</span>
+    <span>チャット利用意向 94%（使いたい52＋内容次第32）</span>
+  </div>
+
+  <h2><span class="n">01</span>調査で分かった前提</h2>
+  <p class="sub">チャット設計の土台になる定量データ。候補者は「求人票に載らないリアル」を、面接前に気軽に確かめたがっている。</p>
+  <div class="bars">
+    <h3>採用ページで特に見る情報（Q34・複数選択／n=89）</h3>
+    <div class="bar"><div class="l"><span>給与・待遇</span><b>73</b></div><div class="track"><div class="fill" style="width:82%"></div></div></div>
+    <div class="bar"><div class="l"><span>勤務時間・休日</span><b>61</b></div><div class="track"><div class="fill" style="width:69%"></div></div></div>
+    <div class="bar"><div class="l"><span>職場の雰囲気・スタッフの声</span><b>50</b></div><div class="track"><div class="fill" style="width:56%"></div></div></div>
+    <div class="bar"><div class="l"><span>アクセス</span><b>30</b></div><div class="track"><div class="fill" style="width:34%"></div></div></div>
+    <div class="bar"><div class="l"><span>写真・動画</span><b>25</b></div><div class="track"><div class="fill" style="width:28%"></div></div></div>
+    <div class="bar"><div class="l"><span>教育体制</span><b>21</b></div><div class="track"><div class="fill" style="width:24%"></div></div></div>
+    <div class="bar"><div class="l"><span>院長・理念</span><b>21</b></div><div class="track"><div class="fill" style="width:24%"></div></div></div>
+
+    <h3>応募をやめる・避ける求人（Q31・複数選択／n=89）</h3>
+    <div class="bar"><div class="l"><span>給与が書いていない</span><b>64</b></div><div class="track"><div class="fill" style="width:72%"></div></div></div>
+    <div class="bar"><div class="l"><span>情報が少ない・古い</span><b>59</b></div><div class="track"><div class="fill" style="width:66%"></div></div></div>
+    <div class="bar"><div class="l"><span>条件が曖昧</span><b>54</b></div><div class="track"><div class="fill" style="width:61%"></div></div></div>
+    <div class="bar"><div class="l"><span>悪い口コミがある</span><b>42</b></div><div class="track"><div class="fill" style="width:47%"></div></div></div>
+    <div class="bar"><div class="l"><span>応募方法が面倒</span><b>19</b></div><div class="track"><div class="fill" style="width:21%"></div></div></div>
+  </div>
+  <div class="note">
+    <b>示唆</b> ①「給与・条件の明示」不足が最大の離脱要因（64件）。チャットは<b style="color:var(--ink)">曖昧な条件を面接前に補完する場</b>として設計する。②「職場の雰囲気・スタッフの声」ニーズ（50件）は、面接では聞きにくい"リアル"をチャットで匿名に開示することで満たせる＝SuguDeskチャットの最大の勝ち筋。
+  </div>
+
+  <h2><span class="n">02</span>チャットで聞きたいこと × AdeBの回答方針</h2>
+  <p class="sub">Q38の自由記述89件をクラスタリングした13カテゴリ。頻出順。各質問にAdeBの回答（分かる情報）または要確認事項を付した。</p>
+  <div class="legend">
+    <span><i class="dot" style="background:var(--ok)"></i>既知の情報で回答できる</span>
+    <span><i class="dot" style="background:var(--warn)"></i>先方確認が必要</span>
+    <span><i class="dot" style="background:var(--pink)"></i>一部わかる／一部要確認</span>
+  </div>
+
+  <details class="cat" open>
+    <summary><span class="cnum">1</span><div class="chead"><div class="t">残業の"実態"</div><div class="m">求人票の「残業なし」を本当か確かめたい・繁忙期はどうか</div></div><span class="badge b-mix">一部要確認</span></summary>
+    <div class="cbody">
+      <p class="voice">「<b>実際の平均残業時間</b>、休憩がきちんと取れるか」「面接では聞きにくいリアルな勤務実態を事前に」（看護師・複数）</p>
+      <dl class="qa">
+        <dt>実際、残業はどのくらいありますか？</dt>
+        <dd><span class="tag t-ok">回答可</span>受付・医師とも求人票で「残業なし」。完全予約制の外来のため終業時刻が読みやすい旨を添える。</dd>
+        <dt>休憩はきちんと取れますか？／繁忙期（連休前など）はどうですか？</dt>
+        <dd><span class="tag t-warn">要確認</span>休憩の実態、繁忙期の残業有無。</dd>
+      </dl>
+      <div class="confirm"><b>先方確認：</b><ul><li>受付の休憩時間（分）と、繁忙期でも残業が発生しないか</li></ul></div>
+    </div>
+  </details>
+
+  <details class="cat">
+    <summary><span class="cnum">2</span><div class="chead"><div class="t">子育て・急な休みへの対応</div><div class="m">看護師・女性職で最頻出。面接で最も聞きにくい</div></div><span class="badge b-warn">要確認</span></summary>
+    <div class="cbody">
+      <p class="voice">「子どもの体調不良での<b>急な早退・当日欠勤</b>は可能か」「保育園から連絡が来たとき早退できるか」「行事で休めるか」「<b>子育て中のスタッフは在籍しているか</b>」（多数）</p>
+      <dl class="qa">
+        <dt>子どもの急な発熱で当日休み・早退はできますか？</dt>
+        <dd><span class="tag t-warn">要確認</span>実際のフォロー体制（相互カバーの有無）。</dd>
+        <dt>子育て中のスタッフはいますか？行事での休みは取れますか？</dt>
+        <dd><span class="tag t-warn">要確認</span>在籍状況・実績。</dd>
+      </dl>
+      <div class="confirm"><b>先方確認（最優先・看護師/受付に効く）：</b><ul>
+        <li>急な早退・当日欠勤への対応可否と、カバー体制の実際</li>
+        <li>子育て中スタッフの在籍（人数・ざっくりでOK）</li>
+        <li>学校行事・保育園都合での休みの取りやすさ</li>
+      </ul></div>
+    </div>
+  </details>
+
+  <details class="cat">
+    <summary><span class="cnum">3</span><div class="chead"><div class="t">休日・シフト・希望休</div><div class="m">Q18「最重視」1位＝働き方（41/89）</div></div><span class="badge b-mix">一部要確認</span></summary>
+    <div class="cbody">
+      <p class="voice">「勤務時間は固定シフトか変動か」「<b>希望休はどれくらい通るか</b>」「シフトの希望調整は可能か」</p>
+      <dl class="qa">
+        <dt>勤務日数・休みはどうなっていますか？</dt>
+        <dd><span class="tag t-ok">回答可</span>毎週木曜定休＋希望日（応相談）。受付は土日＋平日1〜2日の週3〜4日。</dd>
+        <dt>希望休はどのくらい通りますか？シフトは固定ですか変動ですか？</dt>
+        <dd><span class="tag t-warn">要確認</span>希望休の通りやすさ、固定/変動の別。</dd>
+      </dl>
+      <div class="confirm"><b>先方確認：</b><ul><li>シフトは固定制か希望制か／1人あたり月の希望休の目安</li></ul></div>
+    </div>
+  </details>
+
+  <details class="cat">
+    <summary><span class="cnum">4</span><div class="chead"><div class="t">給与の"具体"（手当内訳・賞与・退職金・昇給）</div><div class="m">Q31「給与が書いてない＝避ける」64/89で最大の離脱要因</div></div><span class="badge b-mix">一部要確認</span></summary>
+    <div class="cbody">
+      <p class="voice">「具体的な給与」「手当込みの内訳を基本給と分けて」「<b>年収レンジ・退職金・賞与</b>」「自分の経歴でいくらになりそうか」</p>
+      <dl class="qa">
+        <dt>お給料はいくらですか？</dt>
+        <dd><span class="tag t-ok">回答可</span>受付：時給1,031〜1,200円。医師：経験・資格に応じて面接時ご案内（※非公開方針）。</dd>
+        <dt>賞与・退職金・昇給・手当の内訳は？／私の経歴だといくらになりそう？</dt>
+        <dd><span class="tag t-warn">要確認</span>賞与・退職金・昇給の有無、手当内訳。</dd>
+      </dl>
+      <div class="confirm"><b>先方確認：</b><ul>
+        <li>受付：賞与の有無、昇給、交通費の上限額</li>
+        <li>医師：時給を出さない方針は継続でよいか（Q31的には未記載は避けられやすい点は共有）</li>
+      </ul></div>
+    </div>
+  </details>
+
+  <details class="cat">
+    <summary><span class="cnum">5</span><div class="chead"><div class="t">職場の雰囲気・スタッフ構成</div><div class="m">年齢層・人数・男女比・雇用形態比率・派遣の有無</div></div><span class="badge b-warn">要確認</span></summary>
+    <div class="cbody">
+      <p class="voice">「<b>在籍している看護師の人数と年齢層</b>」「パートと正社員の比率、派遣を使っているか」「人間関係・雰囲気」「実際の口コミ・辞めた人の理由」</p>
+      <dl class="qa">
+        <dt>スタッフは何人くらい？年齢層は？男女比は？</dt>
+        <dd><span class="tag t-warn">要確認</span>職種別の人数・年齢層・男女比。</dd>
+        <dt>職場の雰囲気・人間関係はどうですか？</dt>
+        <dd><span class="tag t-warn">要確認</span>定性情報。院の言葉で用意しておく。</dd>
+      </dl>
+      <div class="confirm"><b>先方確認（雰囲気ニーズ50/89・勝ち筋）：</b><ul>
+        <li>受付・看護・医師それぞれのおおよその人数・年齢層</li>
+        <li>正社員/パートの比率、派遣の有無</li>
+        <li>「雰囲気」を一言で表すなら（院の言葉で1〜2文）</li>
+      </ul></div>
+    </div>
+  </details>
+
+  <details class="cat">
+    <summary><span class="cnum">6</span><div class="chead"><div class="t">自分の条件で応募していいか</div><div class="m">"応募していいか分からない"を解消＝応募数に直結</div></div><span class="badge b-ok">回答可</span></summary>
+    <div class="cbody">
+      <p class="voice">「自分の経歴で応募は可能か」「<b>ブランクがあっても大丈夫か</b>」「こういう条件でも応募していいか」「経験問わずと書いてあるのに断られた（避けたい体験）」</p>
+      <dl class="qa">
+        <dt>ブランクがあります／未経験ですが応募できますか？</dt>
+        <dd><span class="tag t-ok">回答可</span>受付：未経験歓迎・ブランク可・マニュアルあり。医師：専門不問・美容未経験歓迎、技術指導医の指導あり。</dd>
+        <dt>年齢は問われますか？</dt>
+        <dd><span class="tag t-ok">回答可</span>受付は年齢不問・土日祝勤務できる方優遇。</dd>
+      </dl>
+      <div class="note" style="margin:14px 0 0"><b>設計ポイント</b> 「応募していいか分からず問い合わせできない」という声が複数。<b style="color:var(--ink)">チャットの起点チップに「こんな私でも応募できる？」を必ず置く。</b></div>
+    </div>
+  </details>
+
+  <details class="cat">
+    <summary><span class="cnum">7</span><div class="chead"><div class="t">夜勤・当直・オンコールの有無</div><div class="m">検査/放射線・薬剤師・医師で頻出</div></div><span class="badge b-ok">回答可</span></summary>
+    <div class="cbody">
+      <p class="voice">「当直・日直の有無」「呼出・オンコール・時間外・休日勤務の有無」</p>
+      <dl class="qa">
+        <dt>夜勤・当直・オンコールはありますか？</dt>
+        <dd><span class="tag t-ok">回答可</span>外来のみの美容皮膚科のため、夜勤・当直・オンコールなし（医師は土曜日中のみ）。<span class="tag t-warn" style="margin-left:6px">要確認</span>祝日勤務は「通常どおりあり」の旨まで確定。</dd>
+      </dl>
+    </div>
+  </details>
+
+  <details class="cat">
+    <summary><span class="cnum">8</span><div class="chead"><div class="t">業務の詳細（1日の患者数・担当範囲・電子カルテ）</div><div class="m">ミスマッチ防止のための具体確認</div></div><span class="badge b-mix">一部要確認</span></summary>
+    <div class="cbody">
+      <p class="voice">「1日の患者数・来院数」「<b>受付とクラークの業務割合・担当範囲</b>」「電子カルテはどこのメーカーか、何人で回すか」</p>
+      <dl class="qa">
+        <dt>1日に何人くらい対応しますか？</dt>
+        <dd><span class="tag t-ok">回答可</span>医師：対応数60名程度・1診体制。<span class="tag t-warn" style="margin-left:6px">要確認</span>受付の1日の来院数目安。</dd>
+        <dt>電子カルテは使っていますか？</dt>
+        <dd><span class="tag t-ok">回答可</span>電子カルテあり。<span class="tag t-warn" style="margin-left:6px">要確認</span>メーカー名。</dd>
+      </dl>
+      <div class="confirm"><b>先方確認：</b><ul><li>受付の1日来院数の目安／電子カルテのメーカー</li></ul></div>
+    </div>
+  </details>
+
+  <details class="cat">
+    <summary><span class="cnum">9</span><div class="chead"><div class="t">教育・研修（内容・期間・未経験フォロー）</div><div class="m">未経験・ブランク層の応募を後押し</div></div><span class="badge b-mix">一部要確認</span></summary>
+    <div class="cbody">
+      <p class="voice">「研修やOJTの内容」「<b>未経験者へのフォロー体制</b>」「研修期間の長さ」「資格取得サポート」</p>
+      <dl class="qa">
+        <dt>未経験ですが研修はありますか？どのくらいで慣れますか？</dt>
+        <dd><span class="tag t-ok">回答可</span>受付：マニュアル完備・先輩が並走。医師：施術ができるまで技術指導医が指導。<span class="tag t-warn" style="margin-left:6px">要確認</span>ひとり立ちまでの期間の目安。</dd>
+      </dl>
+      <div class="confirm"><b>先方確認：</b><ul><li>受付がひとり立ちするまでの目安期間（例：3ヶ月）</li></ul></div>
+    </div>
+  </details>
+
+  <details class="cat">
+    <summary><span class="cnum">10</span><div class="chead"><div class="t">有給の取りやすさ・取得率</div><div class="m">"数字"より"実際に取れるか"を聞きたい</div></div><span class="badge b-warn">要確認</span></summary>
+    <div class="cbody">
+      <p class="voice">「有給休暇の取得状況」「有給の取りやすさ」</p>
+      <dl class="qa">
+        <dt>有給は実際に取れますか？取得率はどのくらい？</dt>
+        <dd><span class="tag t-warn">要確認</span>現在サイトの「有休消化率100%」はサンプル値。実数の確定が必要。</dd>
+      </dl>
+      <div class="confirm"><b>先方確認：</b><ul><li>有給取得率の実数（不明なら「取りやすい/相談ベース」等の定性表現に変更）</li></ul></div>
+    </div>
+  </details>
+
+  <details class="cat">
+    <summary><span class="cnum">11</span><div class="chead"><div class="t">見学の可否</div><div class="m">複数が「見学と面接を別日にできるか」を希望</div></div><span class="badge b-warn">要確認（方針）</span></summary>
+    <div class="cbody">
+      <p class="voice">「施設見学と面接日が別にできるか」「見学は可能か」「見学が可能かどうかもチャットで確認できると安心」</p>
+      <dl class="qa">
+        <dt>応募前に見学はできますか？</dt>
+        <dd><span class="tag t-warn">要確認</span>現在のLPは見学導線なしで設計。候補者ニーズは高いため<b>方針判断が必要</b>。</dd>
+      </dl>
+      <div class="confirm"><b>先方確認（方針）：</b><ul><li>見学を受け付けるか（受けるなら、面接と別日でも可か）。受ける場合はチャットに見学予約を追加します。</li></ul></div>
+    </div>
+  </details>
+
+  <details class="cat">
+    <summary><span class="cnum">12</span><div class="chead"><div class="t">面接・選考の事務（日程調整・持ち物・場所・所要・選考期間）</div><div class="m">チャットが最も気軽に使われる領域</div></div><span class="badge b-mix">一部要確認</span></summary>
+    <div class="cbody">
+      <p class="voice">「<b>面接日程の調整・変更</b>」「面接の場所・時間・持ち物」「選考にかかる時間（他社との兼ね合いで事前に知りたい）」「応募方法の確認」</p>
+      <dl class="qa">
+        <dt>面接の日程を相談・変更したいのですが</dt>
+        <dd><span class="tag t-ok">回答可</span>チャット・電話（050-8882-5880／採用担当：安田）で調整可能。子育て等での日程変更相談も歓迎の旨を添える。</dd>
+        <dt>面接の持ち物・所要時間・選考期間は？</dt>
+        <dd><span class="tag t-warn">要確認</span>持ち物、所要時間、応募〜結果連絡までの日数。</dd>
+      </dl>
+      <div class="confirm"><b>先方確認：</b><ul><li>面接の持ち物／所要時間の目安／結果連絡までの日数（例：1週間以内）</li></ul>
+        <div style="margin-top:8px">※アンケートでは「1週間以内に連絡してほしい」「選考期間が不明だと避ける」の声。<b style="color:var(--warn)">"◯営業日以内にご連絡"を明示できると強い。</b></div>
+      </div>
+    </div>
+  </details>
+
+  <details class="cat">
+    <summary><span class="cnum">13</span><div class="chead"><div class="t">通勤・アクセス（車通勤の可否）</div><div class="m">Q34アクセス30/89。地方は車通勤が争点</div></div><span class="badge b-mix">一部要確認</span></summary>
+    <div class="cbody">
+      <p class="voice">「<b>車通勤OKか</b>、面接・見学も車で行ってよいか」「駐車場はあるか」</p>
+      <dl class="qa">
+        <dt>車通勤はできますか？面接も車で行っていいですか？</dt>
+        <dd><span class="tag t-warn">要確認</span>車通勤の可否・駐車場・面接時の駐車。</dd>
+        <dt>場所はどこですか？</dt>
+        <dd><span class="tag t-ok">回答可</span>なかいち1階・秋田駅徒歩約7分。</dd>
+      </dl>
+      <div class="confirm"><b>先方確認：</b><ul><li>車通勤可否・駐車場の有無（近隣コインパーキング補助など）</li></ul></div>
+    </div>
+  </details>
+
+  <h2><span class="n">03</span>チャットの入口設計（起動チップ）</h2>
+  <p class="sub">頻度と「応募への効き」で、最初に見せる質問チップを選定。現在の4つを、調査に基づき下記へ更新することを提案。</p>
+  <table class="sum">
+    <tr><th>順</th><th>チップ（候補者の言葉に寄せる）</th><th>狙い・根拠</th></tr>
+    <tr><td>1</td><td>こんな私でも応募できる？（未経験・ブランク）</td><td>「応募していいか分からず問い合わせできない」層を回収。回答可</td></tr>
+    <tr><td>2</td><td>残業・休み・シフトのリアルは？</td><td>Q18最重視1位・働き方（41/89）。一部要確認</td></tr>
+    <tr><td>3</td><td>子どもの急な休みに対応できる？</td><td>看護/受付の最頻出・面接で聞きにくい。要確認</td></tr>
+    <tr><td>4</td><td>職場の雰囲気・スタッフの年齢層は？</td><td>雰囲気ニーズ50/89。要確認</td></tr>
+    <tr><td>5</td><td>お給料・待遇のこと</td><td>離脱要因1位の裏返し。受付は回答可</td></tr>
+    <tr><td>6</td><td>面接の日程を相談したい</td><td>チャットが最も気軽に使われる。回答可</td></tr>
+  </table>
+  <div class="note">
+    <b>運用の注意（調査から）</b> ①「AIか人か分からないと使いにくい／的外れだと使わない」という声。チャット冒頭に<b style="color:var(--ink)">「まずはボットがお答えし、必要に応じて担当者におつなぎします」</b>と明示する。②「◯分以内に返信」と急かされると使いにくい、という声もあるため、返信保証は<b style="color:var(--ink)">急かさないトーン</b>で。③Q39「返信が早いと嬉しい」が多数＝スピードは正義だが、プレッシャーを与えない見せ方に。
+  </div>
+
+  <h2><span class="n">04</span>先方確認リスト（この5点が埋まればチャットが強くなる）</h2>
+  <table class="sum">
+    <tr><th>#</th><th>確認したいこと</th><th>効く候補者</th></tr>
+    <tr><td>1</td><td><b>急な休み・早退への対応</b>と子育て中スタッフの在籍</td><td>看護師・受付（女性・子育て層）</td></tr>
+    <tr><td>2</td><td><b>スタッフの人数・年齢層・雰囲気</b>（院の言葉で1〜2文）</td><td>全職種（雰囲気ニーズ50/89）</td></tr>
+    <tr><td>3</td><td>受付の<b>賞与・昇給・交通費上限</b>、ひとり立ち期間の目安</td><td>受付</td></tr>
+    <tr><td>4</td><td><b>車通勤・駐車場</b>の可否</td><td>地方の全職種</td></tr>
+    <tr><td>5</td><td><b>見学を受けるか</b>／<b>結果連絡までの日数</b></td><td>全職種（"選考期間不明"は離脱要因）</td></tr>
+  </table>
+
+  <footer class="footer">
+    出典：クライアント提供アンケートCSV（医療職 n=89・Q38ほか）／AdeBの回答は本プロジェクトの求人票・LPデータに基づく。緑=既知情報で回答可／橙=先方確認が必要。<br>
+    この設計が固まり次第、チャットのナレッジ（<code>lib/recruit/clinics/adeb.js</code> の faqs / chatScript、および SuguDesk 回答ルール）に反映します。
+  </footer>
+</div>
