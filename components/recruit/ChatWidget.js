@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { clinic, faqs, chatScript } from '../../lib/recruit/site-data';
+import { useClinic } from '../../lib/recruit/clinic-context';
 
 // どのページ・セクションからでもチャットを開けるようにContextで公開する
 const ChatContext = createContext({ openChat: () => {} });
@@ -53,9 +53,8 @@ function fireClick(el) {
   }
 }
 
-function tryOpenSuguDeskOnce() {
+function tryOpenSuguDeskOnce(cfg = {}) {
   if (typeof window === 'undefined') return false;
-  const cfg = clinic.chatWidget || {};
   // 1) 設定されたグローバル関数パス（例: "sugudesk.open"）
   if (cfg.openGlobal) {
     let obj = window;
@@ -116,16 +115,18 @@ function findCornerLauncher() {
 
 // ウィジェットのマウントを待ちつつ最大 timeout ミリ秒まで開くのを試みる。
 // 開けたら onOpened() を呼ぶ。開けなければ onFail() を呼ぶ（内蔵パネルへフォールバック）。
-function tryOpenSuguDeskWithRetry(onOpened, onFail, timeout = 3500) {
-  if (tryOpenSuguDeskOnce()) { onOpened && onOpened(); return; }
+function tryOpenSuguDeskWithRetry(cfg, onOpened, onFail, timeout = 3500) {
+  if (tryOpenSuguDeskOnce(cfg)) { onOpened && onOpened(); return; }
   const start = Date.now();
   const iv = setInterval(() => {
-    if (tryOpenSuguDeskOnce()) { clearInterval(iv); onOpened && onOpened(); return; }
+    if (tryOpenSuguDeskOnce(cfg)) { clearInterval(iv); onOpened && onOpened(); return; }
     if (Date.now() - start > timeout) { clearInterval(iv); onFail && onFail(); }
   }, 250);
 }
 
 export function ChatProvider({ children }) {
+  const { clinic, faqs, chatScript, slug } = useClinic();
+  const base = `/recruit/${slug}`;
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([]); // { from: 'bot'|'user', text, chips?, bridge? }
   const [input, setInput] = useState('');
@@ -147,7 +148,7 @@ export function ChatProvider({ children }) {
     // SuguDeskウィジェット導入時はそのバブルだけを開く（マウント待ちで最大数秒リトライ）。
     // 見つからない場合でも、旧・内蔵の静的チャットは出さない（常設のSuguDeskバブルで対応するため）。
     if (clinic.chatWidget) {
-      tryOpenSuguDeskWithRetry(() => {}, () => {});
+      tryOpenSuguDeskWithRetry(clinic.chatWidget, () => {}, () => {});
       return;
     }
     openPanel(contextLabel);
@@ -261,7 +262,7 @@ export function ChatProvider({ children }) {
                 {m.bridge && (
                   <div className="flex flex-wrap gap-2 mt-2.5">
                     <Link
-                      href={chatScript.bridgeCta?.href || '/recruit/entry'}
+                      href={chatScript.bridgeCta?.href || `${base}/entry`}
                       className="text-[14px] font-bold bg-rc-teal text-white rounded-full px-4 py-2 hover:bg-rc-teal-dark transition-colors"
                     >
                       {chatScript.bridgeCta?.label || '応募フォームへ'}

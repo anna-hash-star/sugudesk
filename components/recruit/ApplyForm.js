@@ -1,4 +1,4 @@
-import { clinic } from '../../lib/recruit/site-data';
+import { useClinic } from '../../lib/recruit/clinic-context';
 import RecruitApplyForm from './RecruitApplyForm';
 
 // 応募フォームの表示。
@@ -8,6 +8,7 @@ import RecruitApplyForm from './RecruitApplyForm';
 // - 既定：別タブで開く「応募フォームを開く」ボタン。formrun のように iframe直埋めを拒否する
 //   フォームや、ファイル添付でログインを挟むフォームでも確実に動く。
 export default function ApplyForm({ height = 1400 }) {
+  const { clinic } = useClinic();
   // 自作の応募フォーム（履歴書アップロード付き・Apps Script送信）を最優先で使う
   if (clinic.applyForm) return <RecruitApplyForm />;
 

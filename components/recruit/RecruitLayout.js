@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { clinic, tourDetail } from '../../lib/recruit/site-data';
-
-// 見学を実施しないクリニック（tourDetail が null）では見学系の導線・文言を出さない
-export const hasTour = Boolean(tourDetail);
+import { useRouter } from 'next/router';
+import { ClinicProvider, useClinic } from '../../lib/recruit/clinic-context';
+import { asset } from '../../lib/recruit/asset';
 import { ChatProvider, useRecruitChat } from './ChatWidget';
 import ChatWidgetLoader from './ChatWidgetLoader';
 import Illust from './Illust';
@@ -28,7 +27,7 @@ export function Photo({ label, scene, src, ratio = 'aspect-[4/3]', className = '
       )}
       {src && imgOk && (
         <img
-          src={src}
+          src={asset(src)}
           alt=""
           onError={() => setImgOk(false)}
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover/photo:scale-[1.04]"
@@ -59,7 +58,7 @@ function AdeBLogo() {
   }
   return (
     <img
-      src="/recruit-photos/adeb-logo.svg"
+      src={asset('/recruit-photos/adeb-logo.svg')}
       alt="AdeB Clinic"
       onError={() => setLogoOk(false)}
       className="h-9 md:h-12 w-auto"
@@ -68,18 +67,20 @@ function AdeBLogo() {
 }
 
 function HeaderNav() {
+  const { clinic, hasTour, slug } = useClinic();
   const { openChat } = useRecruitChat();
+  const base = `/recruit/${slug}`;
   const nav = [
-    { label: '数字で見る', href: '/recruit#stats' },
-    { label: '職種', href: '/recruit#jobs' },
-    { label: 'スタッフの声', href: '/recruit#voice' },
-    { label: hasTour ? '見学・応募の流れ' : '応募の流れ', href: '/recruit/flow' },
-    { label: 'FAQ', href: '/recruit#faq' },
+    { label: '数字で見る', href: `${base}#stats` },
+    { label: '職種', href: `${base}#jobs` },
+    { label: 'スタッフの声', href: `${base}#voice` },
+    { label: hasTour ? '見学・応募の流れ' : '応募の流れ', href: `${base}/flow` },
+    { label: 'FAQ', href: `${base}#faq` },
   ];
   return (
     <header className="sticky top-0 z-30 bg-rc-ivory/90 backdrop-blur border-b border-rc-sand">
       <div className="max-w-6xl mx-auto flex items-center gap-4 px-4 md:px-6 h-[4.5rem]">
-        <Link href="/recruit" className="flex items-center gap-2 md:gap-3 shrink-0 min-w-0">
+        <Link href={base} className="flex items-center gap-2 md:gap-3 shrink-0 min-w-0">
           {clinic.logoMark === 'adeb' ? (
             <>
               <AdeBLogo />
@@ -109,14 +110,14 @@ function HeaderNav() {
             </button>
           )}
           <Link
-            href="/recruit/entry"
+            href={`${base}/entry`}
             className="text-[15px] font-bold bg-rc-teal text-white rounded-full px-5 py-2 hover:bg-rc-teal-dark transition-colors shadow-sm"
           >
             応募する
           </Link>
         </nav>
         <Link
-          href="/recruit/entry"
+          href={`${base}/entry`}
           className="md:hidden ml-auto shrink-0 text-[14px] font-bold bg-rc-teal text-white rounded-full px-3.5 py-2 whitespace-nowrap"
         >
           応募する
@@ -127,10 +128,12 @@ function HeaderNav() {
 }
 
 function StickyBar() {
+  const { clinic, slug } = useClinic();
   const { openChat } = useRecruitChat();
+  const base = `/recruit/${slug}`;
   return (
     <div className={`md:hidden fixed bottom-0 inset-x-0 z-30 grid gap-px bg-rc-sand border-t border-rc-sand ${clinic.chatWidget ? 'grid-cols-1' : 'grid-cols-2'}`} role="navigation" aria-label="応募・相談">
-      <Link href="/recruit/entry" className="bg-rc-teal text-white text-center text-[16px] font-bold py-4 active:bg-rc-teal-dark">
+      <Link href={`${base}/entry`} className="bg-rc-teal text-white text-center text-[16px] font-bold py-4 active:bg-rc-teal-dark">
         応募する
       </Link>
       {!clinic.chatWidget && (
@@ -143,14 +146,16 @@ function StickyBar() {
 }
 
 function Footer() {
+  const { clinic, hasTour, slug } = useClinic();
+  const base = `/recruit/${slug}`;
   return (
     <footer className="bg-rc-teal-dark text-white/90 mt-0">
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-12 pb-28 md:pb-12">
         <div className="rc-mincho text-lg">{clinic.name}</div>
         <p className="text-[16px] text-white/60 mt-2">{clinic.address}／{clinic.station}</p>
         <div className="flex flex-wrap gap-x-6 gap-y-2 mt-6 text-[15px]">
-          <Link href="/recruit/flow" className="hover:text-white">{hasTour ? '見学・応募の流れ' : '応募の流れ'}</Link>
-          <Link href="/recruit/entry" className="hover:text-white">エントリー</Link>
+          <Link href={`${base}/flow`} className="hover:text-white">{hasTour ? '見学・応募の流れ' : '応募の流れ'}</Link>
+          <Link href={`${base}/entry`} className="hover:text-white">エントリー</Link>
           <a href={clinic.patientSiteUrl} className="hover:text-white">患者さま向けサイト</a>
         </div>
       </div>
@@ -158,8 +163,16 @@ function Footer() {
   );
 }
 
-export default function RecruitLayout({ children, title, description }) {
+function RecruitLayoutInner({ children, title, description }) {
+  const { clinic } = useClinic();
+  const router = useRouter();
   const pageTitle = title ? `${title}｜${clinic.shortName} 採用サイト` : `${clinic.shortName} 採用サイト｜${clinic.tagline}`;
+  const favicon = asset(clinic.favicon || '/recruit-photos/adeb-favicon.png');
+  // canonical：本番の公開URL（例 https://www.sugudesk.com/recruit/adeb/...）を正規URLに固定する。
+  // NEXT_PUBLIC_SITE_URL を採用デプロイに設定すると、素の *.vercel.app が別途クロールされても
+  // 評価が本体ドメインに集約される（マルチゾーンのSEO衛生）。
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
+  const canonical = siteUrl ? siteUrl + (router.asPath || '/').split('#')[0].split('?')[0] : null;
   return (
     <div className={clinic.themeClass || undefined}>
       <ChatProvider>
@@ -167,16 +180,18 @@ export default function RecruitLayout({ children, title, description }) {
           <title>{pageTitle}</title>
           <meta name="description" content={description || clinic.lead} />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
+          {canonical && <link rel="canonical" href={canonical} />}
           {/* 採用サイト専用ファビコン（クライアント提供のAdeB正式ロゴ・透過PNG）。
               SuguDesk本体の favicon.png を同じ key で上書きする。
               clinic.favicon を設定すればクリニックごとに差し替え可能。 */}
-          <link rel="icon" type="image/png" href={clinic.favicon || '/recruit-photos/adeb-favicon.png'} key="favicon" />
-          <link rel="apple-touch-icon" href={clinic.favicon || '/recruit-photos/adeb-favicon.png'} />
+          <link rel="icon" type="image/png" href={favicon} key="favicon" />
+          <link rel="apple-touch-icon" href={favicon} />
           {/* OGP：求人媒体・SNS・LINEでシェアされたときの見え方（og:imageは実写撮影後に追加） */}
           <meta property="og:title" content={pageTitle} />
           <meta property="og:description" content={description || clinic.lead} />
           <meta property="og:type" content="website" />
           <meta property="og:site_name" content={`${clinic.shortName} 採用サイト`} />
+          {canonical && <meta property="og:url" content={canonical} />}
           <meta name="twitter:card" content="summary" />
         </Head>
         <div className="min-h-screen bg-rc-ivory text-rc-ink antialiased">
@@ -188,5 +203,14 @@ export default function RecruitLayout({ children, title, description }) {
         <ChatWidgetLoader />
       </ChatProvider>
     </div>
+  );
+}
+
+// 採用サイト共通レイアウト。bundle（クリニックのデータ一式）を受け取り、配下に配布する。
+export default function RecruitLayout({ bundle, children, title, description }) {
+  return (
+    <ClinicProvider bundle={bundle}>
+      <RecruitLayoutInner title={title} description={description}>{children}</RecruitLayoutInner>
+    </ClinicProvider>
   );
 }

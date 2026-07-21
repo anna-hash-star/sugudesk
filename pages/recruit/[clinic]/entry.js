@@ -1,29 +1,53 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import RecruitLayout, { hasTour } from '../../components/recruit/RecruitLayout';
-import { useRecruitChat, ChatIcon } from '../../components/recruit/ChatWidget';
-import ApplyForm from '../../components/recruit/ApplyForm';
-import { clinic, jobs } from '../../lib/recruit/site-data';
+import RecruitLayout from '../../../components/recruit/RecruitLayout';
+import { useRecruitChat, ChatIcon } from '../../../components/recruit/ChatWidget';
+import ApplyForm from '../../../components/recruit/ApplyForm';
+import { CLINIC_SLUGS, getClinicBundle } from '../../../lib/recruit/clinics';
+
+export function getStaticPaths() {
+  return { paths: CLINIC_SLUGS.map(clinic => ({ params: { clinic } })), fallback: false };
+}
+
+export function getStaticProps({ params }) {
+  const bundle = getClinicBundle(params.clinic);
+  if (!bundle) return { notFound: true };
+  return { props: { bundle } };
+}
+
+// チャット相談CTA（RecruitLayout の内側でのみ使う＝ChatProvider配下）
+function EntryChatCta() {
+  const { openChat } = useRecruitChat();
+  return (
+    <div className="mt-10 rounded-xl bg-rc-teal-soft border border-rc-teal/30 p-5 text-center">
+      <p className="text-[15px] text-rc-ink">フォームより先に聞きたいことがある方は</p>
+      <button onClick={() => openChat()} className="mt-2 inline-flex items-center gap-1.5 text-[16px] font-bold text-rc-teal underline underline-offset-4 decoration-rc-teal/40 hover:decoration-rc-teal">
+        <ChatIcon className="w-4 h-4" /> 匿名チャットで相談する
+      </button>
+    </div>
+  );
+}
 
 // エントリーフォーム：必須4項目のみ・履歴書添付なし（スマホでの離脱防止）。
 // 送信はデモ実装。実運用では /api/recruit-entry を作り、SuguDesk管理画面 or メール通知に接続する。
-export default function EntryPage() {
+export default function EntryPage({ bundle }) {
+  const { clinic, jobs, hasTour, slug } = bundle;
+  const base = `/recruit/${slug}`;
   const router = useRouter();
-  const { openChat } = useRecruitChat();
   const [mode, setMode] = useState('apply');
   const [form, setForm] = useState({ name: '', contact: '', job: '', timeslot: '', note: '' });
   const [errors, setErrors] = useState({});
   const [done, setDone] = useState(false);
 
-  // クエリを初期値に反映（?mode=tour：チャット/フローからの見学導線、?job=nurse：職種ページからの導線）
+  // クエリを初期値に反映（?mode=tour：フローからの見学導線、?job=xxx：職種ページからの導線）
   useEffect(() => {
     if (!router.isReady) return;
     if (hasTour && router.query.mode === 'tour') setMode('tour');
     if (typeof router.query.job === 'string') {
       setForm(f => (f.job ? f : { ...f, job: router.query.job }));
     }
-  }, [router.isReady, router.query.mode, router.query.job]);
+  }, [router.isReady, router.query.mode, router.query.job, hasTour]);
 
   const set = (key) => (e) => setForm(f => ({ ...f, [key]: e.target.value }));
 
@@ -48,7 +72,7 @@ export default function EntryPage() {
 
   if (done) {
     return (
-      <RecruitLayout title="送信完了">
+      <RecruitLayout bundle={bundle} title="送信完了">
         <section className="max-w-xl mx-auto px-4 md:px-6 py-20 text-center">
           <div className="w-14 h-14 rounded-full bg-rc-teal-soft text-rc-teal flex items-center justify-center mx-auto" aria-hidden="true">
             <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -60,23 +84,23 @@ export default function EntryPage() {
           </h1>
           <p className="text-[16px] leading-7 text-rc-ink-soft mt-4">
             <b className="text-rc-ink">2営業日以内</b>に、ご希望の時間帯にご連絡します。
-            発信元は院の代表番号です。もしお急ぎの場合や補足があれば、チャットからも受け付けています。
+            発信元は院の代表番号です。
           </p>
           <div className="flex justify-center gap-3 mt-8">
-            <Link href="/recruit" className="text-[16px] font-bold text-rc-teal hover:underline underline-offset-4">採用トップへ戻る</Link>
+            <Link href={base} className="text-[16px] font-bold text-rc-teal hover:underline underline-offset-4">採用トップへ戻る</Link>
           </div>
         </section>
       </RecruitLayout>
     );
   }
 
-  // Googleフォームを設定している場合は、フォームを埋め込んで表示（従来の簡易フォームは使わない）
-  if (clinic.applyFormUrl) {
+  // 自作フォーム/Googleフォームを設定している場合は、そのフォームを表示（従来の簡易フォームは使わない）
+  if (clinic.applyForm || clinic.applyFormUrl) {
     return (
-      <RecruitLayout title="応募フォーム" description="応募フォームからご応募ください。">
+      <RecruitLayout bundle={bundle} title="応募フォーム" description="応募フォームからご応募ください。">
         <section className="max-w-2xl mx-auto px-4 md:px-6 pt-10 md:pt-16 pb-16">
           <nav className="mb-6" aria-label="パンくず">
-            <Link href="/recruit" className="inline-flex items-center gap-1.5 text-[15px] font-bold text-rc-teal hover:text-rc-teal-dark transition-colors">
+            <Link href={base} className="inline-flex items-center gap-1.5 text-[15px] font-bold text-rc-teal hover:text-rc-teal-dark transition-colors">
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M19 12H5M11 6l-6 6 6 6" /></svg>
               採用トップへ戻る
             </Link>
@@ -102,10 +126,10 @@ export default function EntryPage() {
 
   const pageTitle = hasTour ? '応募・見学予約' : '応募フォーム';
   return (
-    <RecruitLayout title={pageTitle} description="入力は4項目・1分で完了。選考には履歴書・職務経歴書が必要です。">
+    <RecruitLayout bundle={bundle} title={pageTitle} description="入力は4項目・1分で完了。選考には履歴書・職務経歴書が必要です。">
       <section className="max-w-xl mx-auto px-4 md:px-6 pt-10 md:pt-16 pb-16">
         <nav className="mb-6" aria-label="パンくず">
-          <Link href="/recruit" className="inline-flex items-center gap-1.5 text-[15px] font-bold text-rc-teal hover:text-rc-teal-dark transition-colors">
+          <Link href={base} className="inline-flex items-center gap-1.5 text-[15px] font-bold text-rc-teal hover:text-rc-teal-dark transition-colors">
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M19 12H5M11 6l-6 6 6 6" /></svg>
             採用トップへ戻る
           </Link>
@@ -213,14 +237,7 @@ export default function EntryPage() {
           </p>
         </form>
 
-        {!clinic.chatWidget && (
-          <div className="mt-10 rounded-xl bg-rc-teal-soft border border-rc-teal/30 p-5 text-center">
-            <p className="text-[15px] text-rc-ink">フォームより先に聞きたいことがある方は</p>
-            <button onClick={() => openChat()} className="mt-2 inline-flex items-center gap-1.5 text-[16px] font-bold text-rc-teal underline underline-offset-4 decoration-rc-teal/40 hover:decoration-rc-teal">
-              <ChatIcon className="w-4 h-4" /> 匿名チャットで相談する
-            </button>
-          </div>
-        )}
+        {!clinic.chatWidget && <EntryChatCta />}
       </section>
     </RecruitLayout>
   );
