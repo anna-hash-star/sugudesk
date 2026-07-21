@@ -43,6 +43,9 @@ export function middleware(request) {
   return NextResponse.next();
 }
 
+// 採用サブドメインの遮断を確実にするため、booster も matcher から除外しない
+// （除外すると recruit.sugudesk.com/booster/... が middleware を素通りして内部ツールが露出する）。
+// 本体ドメインでは host 分岐に該当せず NextResponse.next() となり従来どおり表示される。
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon\\.png|booster).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon\\.png).*)'],
 };
