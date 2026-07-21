@@ -167,6 +167,10 @@ export default function RecruitLayout({ children, title, description }) {
           <title>{pageTitle}</title>
           <meta name="description" content={description || clinic.lead} />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
+          {/* 採用サイト専用ファビコン（AdeBの「A」マークのみを切り出した正方形版）。
+              SuguDesk本体の favicon.png を同じ key で上書きする。
+              clinic.favicon を設定すればクリニックごとに差し替え可能。 */}
+          <link rel="icon" type="image/svg+xml" href={clinic.favicon || '/recruit-photos/adeb-favicon.svg'} key="favicon" />
           {/* OGP：求人媒体・SNS・LINEでシェアされたときの見え方（og:imageは実写撮影後に追加） */}
           <meta property="og:title" content={pageTitle} />
           <meta property="og:description" content={description || clinic.lead} />

@@ -1,6 +1,7 @@
 import '../styles/globals.css';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
+import Head from 'next/head';
 
 export default function App({ Component, pageProps }) {
   const router = useRouter();
@@ -27,5 +28,14 @@ export default function App({ Component, pageProps }) {
     };
   }, [router.events]);
 
-  return <Component {...pageProps} />;
+  return (
+    <>
+      {/* 既定のファビコン（SuguDesk本体）。採用サイトは RecruitLayout が同じ key="favicon" で
+          SVG に上書きする（next/head は同一 key の最後の1つを採用するため確実に差し替わる）。 */}
+      <Head>
+        <link rel="icon" type="image/png" href="/favicon.png" key="favicon" />
+      </Head>
+      <Component {...pageProps} />
+    </>
+  );
 }
