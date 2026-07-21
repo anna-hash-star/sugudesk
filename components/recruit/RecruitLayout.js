@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { clinic, tourDetail } from '../../lib/recruit/site-data';
-
-// 見学を実施しないクリニック（tourDetail が null）では見学系の導線・文言を出さない
-export const hasTour = Boolean(tourDetail);
+import { ClinicProvider, useClinic } from '../../lib/recruit/clinic-context';
 import { ChatProvider, useRecruitChat } from './ChatWidget';
 import ChatWidgetLoader from './ChatWidgetLoader';
 import Illust from './Illust';
@@ -68,18 +65,20 @@ function AdeBLogo() {
 }
 
 function HeaderNav() {
+  const { clinic, hasTour, slug } = useClinic();
   const { openChat } = useRecruitChat();
+  const base = `/recruit/${slug}`;
   const nav = [
-    { label: '数字で見る', href: '/recruit#stats' },
-    { label: '職種', href: '/recruit#jobs' },
-    { label: 'スタッフの声', href: '/recruit#voice' },
-    { label: hasTour ? '見学・応募の流れ' : '応募の流れ', href: '/recruit/flow' },
-    { label: 'FAQ', href: '/recruit#faq' },
+    { label: '数字で見る', href: `${base}#stats` },
+    { label: '職種', href: `${base}#jobs` },
+    { label: 'スタッフの声', href: `${base}#voice` },
+    { label: hasTour ? '見学・応募の流れ' : '応募の流れ', href: `${base}/flow` },
+    { label: 'FAQ', href: `${base}#faq` },
   ];
   return (
     <header className="sticky top-0 z-30 bg-rc-ivory/90 backdrop-blur border-b border-rc-sand">
       <div className="max-w-6xl mx-auto flex items-center gap-4 px-4 md:px-6 h-[4.5rem]">
-        <Link href="/recruit" className="flex items-center gap-2 md:gap-3 shrink-0 min-w-0">
+        <Link href={base} className="flex items-center gap-2 md:gap-3 shrink-0 min-w-0">
           {clinic.logoMark === 'adeb' ? (
             <>
               <AdeBLogo />
@@ -109,14 +108,14 @@ function HeaderNav() {
             </button>
           )}
           <Link
-            href="/recruit/entry"
+            href={`${base}/entry`}
             className="text-[15px] font-bold bg-rc-teal text-white rounded-full px-5 py-2 hover:bg-rc-teal-dark transition-colors shadow-sm"
           >
             応募する
           </Link>
         </nav>
         <Link
-          href="/recruit/entry"
+          href={`${base}/entry`}
           className="md:hidden ml-auto shrink-0 text-[14px] font-bold bg-rc-teal text-white rounded-full px-3.5 py-2 whitespace-nowrap"
         >
           応募する
@@ -127,10 +126,12 @@ function HeaderNav() {
 }
 
 function StickyBar() {
+  const { clinic, slug } = useClinic();
   const { openChat } = useRecruitChat();
+  const base = `/recruit/${slug}`;
   return (
     <div className={`md:hidden fixed bottom-0 inset-x-0 z-30 grid gap-px bg-rc-sand border-t border-rc-sand ${clinic.chatWidget ? 'grid-cols-1' : 'grid-cols-2'}`} role="navigation" aria-label="応募・相談">
-      <Link href="/recruit/entry" className="bg-rc-teal text-white text-center text-[16px] font-bold py-4 active:bg-rc-teal-dark">
+      <Link href={`${base}/entry`} className="bg-rc-teal text-white text-center text-[16px] font-bold py-4 active:bg-rc-teal-dark">
         応募する
       </Link>
       {!clinic.chatWidget && (
@@ -143,14 +144,16 @@ function StickyBar() {
 }
 
 function Footer() {
+  const { clinic, hasTour, slug } = useClinic();
+  const base = `/recruit/${slug}`;
   return (
     <footer className="bg-rc-teal-dark text-white/90 mt-0">
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-12 pb-28 md:pb-12">
         <div className="rc-mincho text-lg">{clinic.name}</div>
         <p className="text-[16px] text-white/60 mt-2">{clinic.address}／{clinic.station}</p>
         <div className="flex flex-wrap gap-x-6 gap-y-2 mt-6 text-[15px]">
-          <Link href="/recruit/flow" className="hover:text-white">{hasTour ? '見学・応募の流れ' : '応募の流れ'}</Link>
-          <Link href="/recruit/entry" className="hover:text-white">エントリー</Link>
+          <Link href={`${base}/flow`} className="hover:text-white">{hasTour ? '見学・応募の流れ' : '応募の流れ'}</Link>
+          <Link href={`${base}/entry`} className="hover:text-white">エントリー</Link>
           <a href={clinic.patientSiteUrl} className="hover:text-white">患者さま向けサイト</a>
         </div>
       </div>
@@ -158,7 +161,8 @@ function Footer() {
   );
 }
 
-export default function RecruitLayout({ children, title, description }) {
+function RecruitLayoutInner({ children, title, description }) {
+  const { clinic } = useClinic();
   const pageTitle = title ? `${title}｜${clinic.shortName} 採用サイト` : `${clinic.shortName} 採用サイト｜${clinic.tagline}`;
   return (
     <div className={clinic.themeClass || undefined}>
@@ -188,5 +192,14 @@ export default function RecruitLayout({ children, title, description }) {
         <ChatWidgetLoader />
       </ChatProvider>
     </div>
+  );
+}
+
+// 採用サイト共通レイアウト。bundle（クリニックのデータ一式）を受け取り、配下に配布する。
+export default function RecruitLayout({ bundle, children, title, description }) {
+  return (
+    <ClinicProvider bundle={bundle}>
+      <RecruitLayoutInner title={title} description={description}>{children}</RecruitLayoutInner>
+    </ClinicProvider>
   );
 }

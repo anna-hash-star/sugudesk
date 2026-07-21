@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import RecruitLayout, { Photo, hasTour } from '../../../components/recruit/RecruitLayout';
-import { useRecruitChat, ChatIcon } from '../../../components/recruit/ChatWidget';
-import { Reveal } from '../../../components/recruit/Reveal';
-import ApplyForm from '../../../components/recruit/ApplyForm';
-import { clinic, jobs, voices } from '../../../lib/recruit/site-data';
+import RecruitLayout, { Photo } from '../../../../components/recruit/RecruitLayout';
+import { useRecruitChat, ChatIcon } from '../../../../components/recruit/ChatWidget';
+import { Reveal } from '../../../../components/recruit/Reveal';
+import ApplyForm from '../../../../components/recruit/ApplyForm';
+import { useClinic } from '../../../../lib/recruit/clinic-context';
+import { CLINIC_SLUGS, getClinicBundle } from '../../../../lib/recruit/clinics';
 
 // Google しごと検索（Google for Jobs）向けの JobPosting 構造化データ。
 // 採用サイト単体でも「職種名＋地域」の検索結果に求人枠で露出できる集客施策。
-function buildJobPostingJsonLd(job) {
+function buildJobPostingJsonLd(job, clinic) {
   const typeMap = { '常勤': 'FULL_TIME', '正社員': 'FULL_TIME', 'パート': 'PART_TIME', '定期非常勤': 'PART_TIME', '非常勤': 'PART_TIME' };
   return {
     '@context': 'https://schema.org',
@@ -32,22 +33,29 @@ function buildJobPostingJsonLd(job) {
 }
 
 export function getStaticPaths() {
-  return {
-    paths: jobs.map(j => ({ params: { job: j.slug } })),
-    fallback: false,
-  };
+  const paths = [];
+  for (const clinic of CLINIC_SLUGS) {
+    const bundle = getClinicBundle(clinic);
+    for (const j of bundle.jobs) paths.push({ params: { clinic, job: j.slug } });
+  }
+  return { paths, fallback: false };
 }
 
 export function getStaticProps({ params }) {
-  const job = jobs.find(j => j.slug === params.job);
-  return { props: { slug: job.slug } };
+  const bundle = getClinicBundle(params.clinic);
+  if (!bundle) return { notFound: true };
+  const job = bundle.jobs.find(j => j.slug === params.job);
+  if (!job) return { notFound: true };
+  return { props: { bundle, jobSlug: params.job } };
 }
 
 function JobCta({ job }) {
+  const { clinic, slug } = useClinic();
   const { openChat } = useRecruitChat();
+  const base = `/recruit/${slug}`;
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <Link href={clinic.applyFormUrl && !job.pending ? '#apply' : `/recruit/entry?job=${job.slug}`}
+      <Link href={clinic.applyFormUrl && !job.pending ? '#apply' : `${base}/entry?job=${job.slug}`}
         className="bg-rc-teal text-white font-bold text-[17px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
         {job.pending ? `${job.title}の求人について問い合わせる` : `${job.title}に応募する`}
       </Link>
@@ -62,26 +70,28 @@ function JobCta({ job }) {
   );
 }
 
-export default function JobPage({ slug }) {
-  const job = jobs.find(j => j.slug === slug);
+function JobBody({ jobSlug }) {
+  const { clinic, jobs, voices, hasTour, slug } = useClinic();
+  const base = `/recruit/${slug}`;
+  const job = jobs.find(j => j.slug === jobSlug);
   const voice = voices.find(v => v.id === job.voiceId);
   const [typeIndex, setTypeIndex] = useState(0);
   const employment = job.employmentTypes[typeIndex];
 
   return (
-    <RecruitLayout title={`${job.title} 募集要項`} description={job.summary}>
+    <>
       <Head>
         {job.employmentTypes.length > 0 && (
           <script
             type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(buildJobPostingJsonLd(job)) }}
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(buildJobPostingJsonLd(job, clinic)) }}
           />
         )}
       </Head>
       {/* 職種ヒーロー */}
       <section className="max-w-6xl mx-auto px-4 md:px-6 pt-10 md:pt-16 pb-10">
         <nav className="mb-6" aria-label="パンくず">
-          <Link href="/recruit" className="inline-flex items-center gap-1.5 text-[15px] font-bold text-rc-teal hover:text-rc-teal-dark transition-colors">
+          <Link href={base} className="inline-flex items-center gap-1.5 text-[15px] font-bold text-rc-teal hover:text-rc-teal-dark transition-colors">
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M19 12H5M11 6l-6 6 6 6" /></svg>
             採用トップへ戻る
           </Link>
@@ -217,12 +227,21 @@ export default function JobPage({ slug }) {
           <JobCta job={job} />
         </div>
         <div className="mt-10">
-          <Link href="/recruit" className="inline-flex items-center gap-1.5 text-[16px] font-bold text-rc-teal border-2 border-rc-teal rounded-full px-6 py-2.5 hover:bg-rc-teal-soft transition-colors">
+          <Link href={base} className="inline-flex items-center gap-1.5 text-[16px] font-bold text-rc-teal border-2 border-rc-teal rounded-full px-6 py-2.5 hover:bg-rc-teal-soft transition-colors">
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M19 12H5M11 6l-6 6 6 6" /></svg>
             採用トップへ戻る
           </Link>
         </div>
       </section>
+    </>
+  );
+}
+
+export default function JobPage({ bundle, jobSlug }) {
+  const job = bundle.jobs.find(j => j.slug === jobSlug);
+  return (
+    <RecruitLayout bundle={bundle} title={`${job.title} 募集要項`} description={job.summary}>
+      <JobBody jobSlug={jobSlug} />
     </RecruitLayout>
   );
 }

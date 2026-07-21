@@ -1,16 +1,19 @@
 import Link from 'next/link';
-import RecruitLayout, { Photo, hasTour } from '../../components/recruit/RecruitLayout';
-import { useRecruitChat, ChatIcon } from '../../components/recruit/ChatWidget';
-import { clinic, flowSteps, tourDetail } from '../../lib/recruit/site-data';
+import RecruitLayout, { Photo } from '../../../components/recruit/RecruitLayout';
+import { useRecruitChat, ChatIcon } from '../../../components/recruit/ChatWidget';
+import { useClinic } from '../../../lib/recruit/clinic-context';
+import { CLINIC_SLUGS, getClinicBundle } from '../../../lib/recruit/clinics';
 
-export default function FlowPage() {
+function FlowBody() {
+  const { clinic, flowSteps, tourDetail, hasTour, slug } = useClinic();
   const { openChat } = useRecruitChat();
+  const base = `/recruit/${slug}`;
   const pageTitle = hasTour ? '見学・応募の流れ' : '応募の流れ';
   return (
-    <RecruitLayout title={pageTitle} description="応募前の見学もOK。応募〜面接〜入職の流れをご案内します。">
+    <>
       <section className="max-w-3xl mx-auto px-4 md:px-6 pt-10 md:pt-16 pb-12">
         <nav className="mb-6" aria-label="パンくず">
-          <Link href="/recruit" className="inline-flex items-center gap-1.5 text-[15px] font-bold text-rc-teal hover:text-rc-teal-dark transition-colors">
+          <Link href={base} className="inline-flex items-center gap-1.5 text-[15px] font-bold text-rc-teal hover:text-rc-teal-dark transition-colors">
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M19 12H5M11 6l-6 6 6 6" /></svg>
             採用トップへ戻る
           </Link>
@@ -69,7 +72,7 @@ export default function FlowPage() {
           {hasTour ? '見学だけで終わっても、まったく問題ありません。' : '聞くだけで終わっても、まったく問題ありません。'}
         </p>
         <div className="flex flex-wrap justify-center gap-3 mt-6">
-          <Link href={hasTour ? '/recruit/entry?mode=tour' : '/recruit/entry'}
+          <Link href={hasTour ? `${base}/entry?mode=tour` : `${base}/entry`}
             className="bg-rc-teal text-white font-bold text-[17px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
             {hasTour ? '見学を予約する' : '応募する（1分）'}
           </Link>
@@ -82,6 +85,25 @@ export default function FlowPage() {
           )}
         </div>
       </section>
+    </>
+  );
+}
+
+export function getStaticPaths() {
+  return { paths: CLINIC_SLUGS.map(clinic => ({ params: { clinic } })), fallback: false };
+}
+
+export function getStaticProps({ params }) {
+  const bundle = getClinicBundle(params.clinic);
+  if (!bundle) return { notFound: true };
+  return { props: { bundle } };
+}
+
+export default function FlowPage({ bundle }) {
+  const pageTitle = bundle.hasTour ? '見学・応募の流れ' : '応募の流れ';
+  return (
+    <RecruitLayout bundle={bundle} title={pageTitle} description="応募前の見学もOK。応募〜面接〜入職の流れをご案内します。">
+      <FlowBody />
     </RecruitLayout>
   );
 }

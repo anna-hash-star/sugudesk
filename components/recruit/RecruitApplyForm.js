@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { clinic, jobs } from '../../lib/recruit/site-data';
+import { useClinic } from '../../lib/recruit/clinic-context';
 
 // LP内に埋め込む自作の応募フォーム（履歴書・職務経歴書アップロード付き）。
 // 送信先は clinic.applyForm.endpoint（Google Apps Script Web App）。応募者のログインは不要。
@@ -66,6 +66,7 @@ function FileField({ id, file, onPick, error }) {
 }
 
 export default function RecruitApplyForm() {
+  const { clinic, jobs } = useClinic();
   const cfg = clinic.applyForm || {};
   const [form, setForm] = useState({ name: '', email: '', phone: '', address: '', job: '', start: '', times: [], note: '' });
   const [resume, setResume] = useState(null);
