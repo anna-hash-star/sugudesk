@@ -282,6 +282,7 @@ function Gallery() {
 /* 5. スタッフの声 */
 function Voices() {
   const { voices } = useClinic();
+  if (!voices || voices.length === 0) return null;
   return (
     <section id="voice" className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20 scroll-mt-20">
       <Eyebrow en="スタッフの声" ja="先に働いている人の、正直な話。" />

@@ -67,13 +67,13 @@ function AdeBLogo() {
 }
 
 function HeaderNav() {
-  const { clinic, hasTour, slug } = useClinic();
+  const { clinic, hasTour, slug, voices } = useClinic();
   const { openChat } = useRecruitChat();
   const base = `/recruit/${slug}`;
   const nav = [
     { label: '数字で見る', href: `${base}#stats` },
     { label: '職種', href: `${base}#jobs` },
-    { label: 'スタッフの声', href: `${base}#voice` },
+    ...(voices && voices.length ? [{ label: 'スタッフの声', href: `${base}#voice` }] : []),
     { label: hasTour ? '見学・応募の流れ' : '応募の流れ', href: `${base}/flow` },
     { label: 'FAQ', href: `${base}#faq` },
   ];
