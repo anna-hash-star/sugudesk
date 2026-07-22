@@ -33,6 +33,19 @@
   --color-rc-ink-soft: #6D6568;  /* 補助テキスト ≈ rgba(0,0,0,0.56) */
 }
 
+/* ルナレディースクリニック：婦人科向けのやわらかなダスティローズ×温かい白。
+   ※luna-dr.com へ直接アクセスできなかったため、事例ページのアクセント（#D984AE 系）と
+   レディースクリニックのトーンから設定した近似値。正式ブランド色が分かれば微調整する。 */
+.theme-luna {
+  --color-rc-teal: #B0517A;      /* Lunaローズ（白文字が4.5:1で読める濃さ） */
+  --color-rc-teal-dark: #8A3D60; /* ホバー・ダーク面（フッター等） */
+  --color-rc-teal-soft: #FAE8F0; /* 薄ピンクの面 */
+  --color-rc-ivory: #FFFCFD;     /* ほんのり温かい白背景 */
+  --color-rc-sand: #EEE2E8;      /* 罫線・面 */
+  --color-rc-ink: #33272E;       /* 本文 */
+  --color-rc-ink-soft: #6E626A;  /* 補助テキスト */
+}
+
 html {
   scroll-behavior: smooth;
 }

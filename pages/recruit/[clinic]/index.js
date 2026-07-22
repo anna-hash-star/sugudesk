@@ -199,9 +199,14 @@ function Signature() {
         </div>
       </Reveal>
       <Reveal delay={150}>
-        <figure className="rounded-xl overflow-hidden bg-white border border-rc-sand shadow-lg shadow-rc-teal/10">
-          <img src={asset(signature.image)} alt={signature.imageAlt} className="w-full h-auto" />
-        </figure>
+        {signature.image ? (
+          <figure className="rounded-xl overflow-hidden bg-white border border-rc-sand shadow-lg shadow-rc-teal/10">
+            <img src={asset(signature.image)} alt={signature.imageAlt} className="w-full h-auto" />
+          </figure>
+        ) : (
+          // 画像未提供のあいだは scene のイラストで表示（枠が空にならない）
+          <Photo label={signature.imageAlt || 'イメージ'} scene={signature.scene || 'clinic'} src={signature.image} ratio="aspect-[4/3]" className="shadow-lg shadow-rc-teal/10" />
+        )}
       </Reveal>
     </section>
   );
