@@ -88,6 +88,11 @@ function HeaderNav() {
                 {clinic.shortName}<span className="text-rc-teal">採用サイト</span>
               </span>
             </>
+          ) : clinic.logo ? (
+            <>
+              <img src={asset(clinic.logo)} alt={clinic.shortName} className="h-7 md:h-9 w-auto shrink-0" />
+              <span className="text-[13px] tracking-[0.12em] text-rc-ink-soft font-medium">採用サイト</span>
+            </>
           ) : (
             <>
               {clinic.markIcon && (
