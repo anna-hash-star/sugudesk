@@ -235,9 +235,17 @@ function Diagnosis() {
 
   let result = null;
   if (done && answers.length) {
-    const jobKey = (answers.find(a => a && a.job) || {}).job || 'clerk';
-    const tempo = (answers.find(a => a && a.tempo) || {}).tempo;
-    const pts = answers.reduce((s, a) => s + ((a && a.pts) || 0), 0);
+    // 各回答の重みを職種ごとに合算し、最高スコアの職種をおすすめする。
+    const scores = { doctor: 0, nurse: 0, clerk: 0, assistant: 0 };
+    let tempo, pts = 0;
+    answers.forEach(a => {
+      if (!a) return;
+      if (a.w) for (const k in a.w) scores[k] = (scores[k] || 0) + a.w[k];
+      if (a.tempo) tempo = a.tempo;
+      pts += a.pts || 0;
+    });
+    // 同点は doctor > nurse > clerk > assistant の順で優先（Object.keys の並び順）
+    const jobKey = Object.keys(scores).reduce((best, k) => (scores[k] > scores[best] ? k : best));
     const pct = Math.min(99, 90 + pts);
     let jobSlug = jobKey;
     if (jobKey === 'doctor') jobSlug = tempo === 'spot' ? 'doctor-parttime' : 'doctor-fulltime';
