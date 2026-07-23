@@ -10,6 +10,9 @@ export const SITE_URL = 'https://exmore.jp';
 // 採用情報の外部リンク（HERP）
 export const CAREERS_URL = 'https://herp.careers/v1/exmore12';
 
+// お問い合わせフォームの送信先（Formspree）
+export const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mrenajwb';
+
 // -------- ヘッダー / フッターのナビゲーション --------
 // type: 'anchor'（トップ内リンク）/ 'page'（別ページ）/ 'external'（外部リンク）
 export const NAV = [

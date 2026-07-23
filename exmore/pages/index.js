@@ -1,9 +1,29 @@
+import { useState } from 'react';
 import Layout from '../components/Layout';
 import Seo from '../components/Seo';
-import { COMPANY, CAREERS_URL } from '../data/site';
+import { COMPANY, CAREERS_URL, FORMSPREE_ENDPOINT } from '../data/site';
 import { NEWS_SORTED } from '../data/news';
 
 export default function Home() {
+  const [status, setStatus] = useState('idle'); // idle | sending | ok | error
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    setStatus('sending');
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { Accept: 'application/json' },
+      });
+      if (res.ok) { setStatus('ok'); form.reset(); }
+      else { setStatus('error'); }
+    } catch {
+      setStatus('error');
+    }
+  }
+
   return (
     <Layout>
       <Seo
@@ -200,16 +220,29 @@ export default function Home() {
                 お手数ですが再度お問い合わせをお願いいたします。
               </p>
             </div>
-            {/* ⚠️ 送信先バックエンドは未接続。README の「フォーム送信」を参照 */}
-            <form className="form" onSubmit={(e) => { e.preventDefault(); alert('送信機能は接続待ちです（README参照）'); }}>
-              <div className="field"><label>会社名<span className="req">*</span></label><input required placeholder="株式会社●●" /></div>
-              <div className="field"><label>お名前<span className="req">*</span></label><input required placeholder="山田 太郎" /></div>
-              <div className="field"><label>メールアドレス<span className="req">*</span></label><input type="email" required placeholder="xxx@example.com" /></div>
-              <div className="field"><label>電話番号</label><input placeholder="000-0000-0000" /></div>
-              <div className="field"><label>お問い合わせ内容<span className="req">*</span></label><textarea required placeholder="詳しい内容をご記入ください" /></div>
-              <label className="form__agree"><input type="checkbox" required /> プライバシーポリシーに同意して送信する</label>
-              <button className="btn btn--primary form__submit" type="submit">この内容で送信する →</button>
-            </form>
+            {status === 'ok' ? (
+              <div className="form form__done">
+                <div className="form__done-ic">✓</div>
+                <h3>送信が完了しました</h3>
+                <p>お問い合わせいただきありがとうございます。<br />3営業日以内にご返信いたします。</p>
+              </div>
+            ) : (
+              <form className="form" action={FORMSPREE_ENDPOINT} method="POST" onSubmit={handleSubmit}>
+                <input type="hidden" name="_subject" value="exmore公式サイトからのお問い合わせ" />
+                <div className="field"><label>会社名<span className="req">*</span></label><input name="company" required placeholder="株式会社●●" /></div>
+                <div className="field"><label>お名前<span className="req">*</span></label><input name="name" required placeholder="山田 太郎" /></div>
+                <div className="field"><label>メールアドレス<span className="req">*</span></label><input type="email" name="email" required placeholder="xxx@example.com" /></div>
+                <div className="field"><label>電話番号</label><input name="phone" placeholder="000-0000-0000" /></div>
+                <div className="field"><label>お問い合わせ内容<span className="req">*</span></label><textarea name="message" required placeholder="詳しい内容をご記入ください" /></div>
+                <label className="form__agree"><input type="checkbox" required /> プライバシーポリシーに同意して送信する</label>
+                {status === 'error' && (
+                  <p className="form__err">送信に失敗しました。時間をおいて再度お試しいただくか、info@exmore.jp までご連絡ください。</p>
+                )}
+                <button className="btn btn--primary form__submit" type="submit" disabled={status === 'sending'}>
+                  {status === 'sending' ? '送信中…' : 'この内容で送信する →'}
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </section>
