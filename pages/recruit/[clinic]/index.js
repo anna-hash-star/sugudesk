@@ -222,7 +222,7 @@ function JobsIndex() {
         <div className="mb-8">
           <div className="text-[14px] tracking-[0.16em] text-rc-teal-soft font-bold">募集職種</div>
           <h2 className="rc-mincho text-[22px] md:text-[32px] font-semibold text-white mt-1.5">
-            {jobs.length === 1 ? `${jobs[0].title}を募集しています` : `現在、${jobs.length}職種を募集しています`}
+            {jobs.length === 1 ? `${jobs[0].title}を募集しています` : `現在、${jobs.length}件の求人を募集しています`}
           </h2>
         </div>
         <div className={

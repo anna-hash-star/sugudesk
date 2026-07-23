@@ -14,8 +14,13 @@ export default function App({ Component, pageProps }) {
   useEffect(() => {
     const html = document.documentElement;
     const disable = () => { html.style.scrollBehavior = 'auto'; };
-    const restore = () => {
-      // Next の先頭スクロールが済んでから元に戻す（次フレームで復帰）
+    const restore = (url) => {
+      // 遷移先ではまず最上部へ即時移動する（Next の先頭スクロールがスムーズ化して
+      // 「下から上へぐーっと」動くのを確実に止める）。ハッシュ付きURL（#apply 等）は
+      // アンカー位置を尊重したいので即時移動しない。
+      const hasHash = typeof url === 'string' && url.includes('#');
+      if (!hasHash) window.scrollTo(0, 0);
+      // スムーズ設定は次フレームで元に戻す（以降の同一ページ内アンカーはスムーズのまま）
       window.requestAnimationFrame(() => { html.style.scrollBehavior = ''; });
     };
     router.events.on('routeChangeStart', disable);
