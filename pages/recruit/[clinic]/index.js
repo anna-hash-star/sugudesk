@@ -115,17 +115,31 @@ function Hero() {
             )}
           </div>
         </div>
-        <div className="rc-hero-in max-w-md ml-auto w-full" style={{ '--rc-delay': '260ms' }}>
-          <Photo
-            label="受付・院内の写真"
-            scene={clinic.heroScene || 'staff'}
-            src={clinic.photos?.hero}
-            ratio="aspect-[4/5] md:aspect-[4/4.6]"
-            className={softPink
-              ? '!rounded-[28px] shadow-[0_22px_48px_-20px_rgba(190,150,170,0.45)]'
-              : 'shadow-xl shadow-rc-teal/10'}
-          />
-        </div>
+        {softPink ? (
+          // やさしさのモチーフ：ゆっくり浮遊して重なり合う淡いピンクの円（受付写真の代わり）
+          <div className="rc-hero-in relative w-full max-w-md ml-auto aspect-[4/4.4] hidden md:block" style={{ '--rc-delay': '260ms' }} aria-hidden="true">
+            <span className="rc-orb rc-orb-a absolute left-[6%] top-[4%] w-[64%] h-[64%] rounded-full"
+                  style={{ background: 'radial-gradient(closest-side, rgba(247,220,232,0.9), rgba(247,220,232,0.12))' }} />
+            <span className="rc-orb rc-orb-b absolute right-[2%] top-[24%] w-[54%] h-[54%] rounded-full"
+                  style={{ background: 'radial-gradient(closest-side, rgba(243,200,218,0.85), rgba(243,200,218,0.1))' }} />
+            <span className="rc-orb rc-orb-c absolute left-[20%] bottom-[3%] w-[50%] h-[50%] rounded-full"
+                  style={{ background: 'radial-gradient(closest-side, rgba(247,220,232,0.8), rgba(247,220,232,0.08))' }} />
+            {/* 細いリング（曲線） */}
+            <span className="rc-orb rc-orb-b absolute left-[34%] top-[36%] w-[40%] h-[40%] rounded-full border border-[#F3C8DA]" style={{ mixBlendMode: 'normal', opacity: 0.5 }} />
+            {/* 濃いローズの小アクセント */}
+            <span className="rc-orb-c absolute right-[30%] bottom-[26%] w-2.5 h-2.5 rounded-full" style={{ background: 'rgba(194,76,126,0.45)' }} />
+          </div>
+        ) : (
+          <div className="rc-hero-in max-w-md ml-auto w-full" style={{ '--rc-delay': '260ms' }}>
+            <Photo
+              label="受付・院内の写真"
+              scene={clinic.heroScene || 'staff'}
+              src={clinic.photos?.hero}
+              ratio="aspect-[4/5] md:aspect-[4/4.6]"
+              className="shadow-xl shadow-rc-teal/10"
+            />
+          </div>
+        )}
       </div>
     </section>
   );
@@ -431,12 +445,18 @@ function Voices() {
   if (!voices || voices.length === 0) return null;
   return (
     <section id="voice" className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20 scroll-mt-20">
-      <Eyebrow en="スタッフの声" ja="先に働いている人の、正直な話。" />
-      <div className="mt-8 max-w-3xl mx-auto space-y-6">
-        {voices.map((v, i) => (
-          <Reveal key={v.id} delay={i * 110} as="article" className={`rounded-2xl bg-white border border-rc-sand overflow-hidden ${v.photo ? 'grid sm:grid-cols-[240px_1fr]' : ''}`}>
-            {v.photo && <Photo label={v.photoLabel} scene={v.scene} src={v.photo} ratio="aspect-[4/3] sm:aspect-auto sm:h-full sm:min-h-[280px]" className="!rounded-none" />}
-            <div className="p-6 md:p-7 flex flex-col">
+      <div className="flex items-end justify-between gap-4">
+        <Eyebrow en="スタッフの声" ja="先に働いている人の、正直な話。" />
+        {voices.length > 1 && (
+          <span className="hidden md:inline text-[13px] text-rc-ink-soft mb-4 whitespace-nowrap">← 横にスクロール →</span>
+        )}
+      </div>
+      {/* 横スクロールのカード（縦の間延びを避ける） */}
+      <div className="rc-hscroll -mx-4 md:-mx-6 px-4 md:px-6 mt-6 flex gap-5 overflow-x-auto snap-x snap-mandatory scroll-pl-4 md:scroll-pl-6">
+        {voices.map((v) => (
+          <article key={v.id} className="snap-start shrink-0 w-[86%] sm:w-[360px] rounded-2xl bg-white border border-rc-sand overflow-hidden flex flex-col">
+            {v.photo && <Photo label={v.photoLabel} scene={v.scene} src={v.photo} ratio="aspect-[4/3]" className="!rounded-none" />}
+            <div className="p-6 flex flex-col h-full">
               <div className="text-[14px] text-rc-ink-soft">{v.role}・{v.years}</div>
               <h3 className="rc-mincho text-[18px] text-rc-teal-dark leading-relaxed mt-2">「{v.headline || v.reason.slice(0, 34) + '…'}」</h3>
               <dl className="mt-4 space-y-3 text-[15px] leading-relaxed">
@@ -453,8 +473,10 @@ function Voices() {
                 <span className="font-bold">応募を考えている方へ：</span>{v.message}
               </p>
             </div>
-          </Reveal>
+          </article>
         ))}
+        {/* 右端の余白（最後のカードが端にぴったり付かないように） */}
+        <span className="shrink-0 w-1" aria-hidden="true" />
       </div>
     </section>
   );
