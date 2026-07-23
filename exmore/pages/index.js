@@ -89,7 +89,7 @@ export default function Home() {
               <a href="https://www.sugudesk.com/" target="_blank" rel="noopener noreferrer" className="btn btn--primary">サービスサイトを見る <span className="btn__arrow">→</span></a>
             </div>
             <div className="service__media service__media--img">
-              <img src="/solution-ai.png" alt="SuguDesk：医療機関向けAI FAQチャットのイメージ" width="1456" height="1080" />
+              <img src="/solution-ai.jpg" alt="SuguDesk：医療機関向けAI FAQチャットのイメージ" width="1200" height="900" />
             </div>
           </div>
 
@@ -104,7 +104,7 @@ export default function Home() {
               <a href="#contact" className="btn btn--ghost">お問い合わせ</a>
             </div>
             <div className="service__media service__media--img">
-              <img src="/solution-bpo.png" alt="SuguDesk 業務代行：診療以外の業務を引き受けるイメージ" width="1456" height="1080" />
+              <img src="/solution-bpo.jpg" alt="SuguDesk 業務代行：診療以外の業務を引き受けるイメージ" width="1200" height="900" />
             </div>
           </div>
 
@@ -119,7 +119,7 @@ export default function Home() {
               <a href="#contact" className="btn btn--ghost">お問い合わせ</a>
             </div>
             <div className="service__media service__media--img">
-              <img src="/solution-recruit.png" alt="SuguDesk 採用代行：医療機関の採用まわりの実務を代行するイメージ" width="1432" height="1148" />
+              <img src="/solution-recruit.jpg" alt="SuguDesk 採用代行：医療機関の採用まわりの実務を代行するイメージ" width="1200" height="960" />
             </div>
           </div>
 
