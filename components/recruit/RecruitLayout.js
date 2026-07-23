@@ -7,6 +7,7 @@ import { asset } from '../../lib/recruit/asset';
 import { ChatProvider, useRecruitChat } from './ChatWidget';
 import ChatWidgetLoader from './ChatWidgetLoader';
 import Illust from './Illust';
+import RecruitAnalytics, { GSC_VERIFICATION } from './Analytics';
 
 // ビジュアル枠。src（実写パス）があれば写真を表示し、
 // 画像が未配置・読み込み失敗のときは scene のイラストに自動フォールバックする。
@@ -180,6 +181,9 @@ function RecruitLayoutInner({ children, title, description }) {
           <title>{pageTitle}</title>
           <meta name="description" content={description || clinic.lead} />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
+          {/* Google Search Console「HTMLタグ」認証。NEXT_PUBLIC_GSC_VERIFICATION を採用デプロイに
+              設定すると全採用ページの <head> に出力され、プロパティ所有権を確認できる。 */}
+          {GSC_VERIFICATION && <meta name="google-site-verification" content={GSC_VERIFICATION} />}
           {canonical && <link rel="canonical" href={canonical} />}
           {/* 採用サイト専用ファビコン（クライアント提供のAdeB正式ロゴ・透過PNG）。
               SuguDesk本体の favicon.png を同じ key で上書きする。
@@ -194,6 +198,7 @@ function RecruitLayoutInner({ children, title, description }) {
           {canonical && <meta property="og:url" content={canonical} />}
           <meta name="twitter:card" content="summary" />
         </Head>
+        <RecruitAnalytics />
         <div className="min-h-screen bg-rc-ivory text-rc-ink antialiased">
           <HeaderNav />
           <main>{children}</main>
