@@ -14,14 +14,23 @@ export default function App({ Component, pageProps }) {
   useEffect(() => {
     const html = document.documentElement;
     const disable = () => { html.style.scrollBehavior = 'auto'; };
+    const jumpTop = () => {
+      // behavior:'instant' は CSS の smooth を無視して必ず瞬間移動する
+      try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); }
+      catch (e) { window.scrollTo(0, 0); }
+    };
     const restore = (url) => {
       // 遷移先ではまず最上部へ即時移動する（Next の先頭スクロールがスムーズ化して
       // 「下から上へぐーっと」動くのを確実に止める）。ハッシュ付きURL（#apply 等）は
       // アンカー位置を尊重したいので即時移動しない。
       const hasHash = typeof url === 'string' && url.includes('#');
-      if (!hasHash) window.scrollTo(0, 0);
-      // スムーズ設定は次フレームで元に戻す（以降の同一ページ内アンカーはスムーズのまま）
-      window.requestAnimationFrame(() => { html.style.scrollBehavior = ''; });
+      if (!hasHash) {
+        jumpTop();
+        // Next/描画後に入る「追いスクロール」も打ち消すため、次フレームでもう一度最上部へ
+        window.requestAnimationFrame(jumpTop);
+      }
+      // スムーズ設定は2フレーム後に戻す（それまでの遷移由来のスクロールは瞬間移動のまま）
+      window.requestAnimationFrame(() => window.requestAnimationFrame(() => { html.style.scrollBehavior = ''; }));
     };
     router.events.on('routeChangeStart', disable);
     router.events.on('routeChangeComplete', restore);

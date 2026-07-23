@@ -34,6 +34,7 @@ function Hero() {
   const { openChat } = useRecruitChat();
   const base = `/recruit/${slug}`;
   const softPink = clinic.heroDecor === 'soft-pink';
+  const centered = softPink; // 中央寄せ（キャッチ・バッジ・職種を各1行に整える）
 
   const heroText = (
     <>
@@ -43,7 +44,7 @@ function Hero() {
         return (
           <h1
             className={`rc-hero-in rc-mincho font-semibold leading-[1.4] mt-4 text-rc-ink ${
-              lines.length > 1 ? 'text-[21px] md:text-[38px]' : 'text-[34px] md:text-5xl'
+              lines.length > 1 ? 'text-[21px] md:text-[38px]' : 'text-[30px] md:text-5xl'
             }`}
             style={{ textWrap: lines.length > 1 ? undefined : 'balance', '--rc-delay': '120ms' }}
           >
@@ -51,26 +52,26 @@ function Hero() {
           </h1>
         );
       })()}
-      <p className="rc-hero-in mt-5 text-[17px] leading-8 text-rc-ink-soft max-w-xl" style={{ '--rc-delay': '240ms' }}>{clinic.lead}</p>
+      <p className={`rc-hero-in mt-5 text-[17px] leading-8 text-rc-ink-soft ${centered ? 'max-w-2xl mx-auto' : 'max-w-xl'}`} style={{ '--rc-delay': '240ms' }}>{clinic.lead}</p>
 
-      <div className="rc-hero-in flex flex-wrap gap-2 mt-6" style={{ '--rc-delay': '340ms' }} aria-label="働きやすさの要点">
+      <div className={`rc-hero-in flex flex-wrap gap-2 mt-6 ${centered ? 'justify-center' : ''}`} style={{ '--rc-delay': '340ms' }} aria-label="働きやすさの要点">
         {clinic.badges.map(b => (
-          <span key={b} className="text-[14px] font-medium bg-white border border-rc-sand rounded-full px-3.5 py-1.5 text-rc-ink">
+          <span key={b} className="text-[14px] font-medium bg-white border border-rc-sand rounded-full px-3.5 py-1.5 text-rc-ink whitespace-nowrap">
             {b}
           </span>
         ))}
       </div>
 
-      <div className="rc-hero-in flex flex-wrap gap-2 mt-4" style={{ '--rc-delay': '420ms' }} aria-label="募集中の職種">
+      <div className={`rc-hero-in flex flex-wrap gap-2 mt-4 ${centered ? 'justify-center' : ''}`} style={{ '--rc-delay': '420ms' }} aria-label="募集中の職種">
         {jobs.map(j => (
           <Link key={j.slug} href={`${base}/jobs/${j.slug}`}
-            className="text-[14px] font-bold text-rc-teal bg-rc-teal-soft rounded-full px-3.5 py-1.5 hover:bg-rc-teal hover:text-white transition-colors">
+            className="text-[14px] font-bold text-rc-teal bg-rc-teal-soft rounded-full px-3.5 py-1.5 hover:bg-rc-teal hover:text-white transition-colors whitespace-nowrap">
             {j.pending ? `${j.title}（求人準備中）` : `${j.title} 募集中`}
           </Link>
         ))}
       </div>
 
-      <div className="rc-hero-in flex flex-wrap items-center gap-3 mt-8" style={{ '--rc-delay': '500ms' }}>
+      <div className={`rc-hero-in flex flex-wrap items-center gap-3 mt-8 ${centered ? 'justify-center' : ''}`} style={{ '--rc-delay': '500ms' }}>
         <Link href={`${base}/entry`}
           className="bg-rc-teal text-white font-bold text-[17px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
           応募する
@@ -115,7 +116,7 @@ function Hero() {
           <span className="rc-orb-a absolute left-[18%] bottom-[22%] w-2 h-2 rounded-full bg-rc-teal opacity-30 hidden md:block" />
         </div>
 
-        <div className="relative z-10 max-w-3xl mx-auto px-6 md:px-10 pt-14 md:pt-24 pb-16 md:pb-28">
+        <div className="relative z-10 max-w-5xl mx-auto px-6 md:px-10 pt-14 md:pt-24 pb-16 md:pb-28 text-center">
           {heroText}
         </div>
       </section>
@@ -460,11 +461,11 @@ function Voices() {
             <article key={v.id} className="snap-start shrink-0 w-[86%] sm:w-[360px] md:w-auto rounded-2xl bg-white border border-rc-sand overflow-hidden flex flex-col">
               {v.photo && <Photo label={v.photoLabel} scene={v.scene} src={v.photo} ratio="aspect-[4/3]" className="!rounded-none" />}
               <div className="p-6 flex flex-col h-full">
-                {/* 職種チップ：ひと目でどの職種の先輩か分かるように */}
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-[13px] font-bold text-white bg-rc-teal rounded-full px-3 py-1">{jobTitle}</span>
-                  <span className="text-[13px] text-rc-ink-soft">{v.years}</span>
+                {/* 職種チップ＋経歴を常に2行で統一（ひと目でどの職種の先輩か分かるように） */}
+                <div>
+                  <span className="inline-block text-[13px] font-bold text-white bg-rc-teal rounded-full px-3 py-1">{jobTitle}</span>
                 </div>
+                <div className="text-[13px] text-rc-ink-soft mt-2 min-h-[1.25rem]">{v.years}</div>
                 <h3 className="rc-mincho text-[18px] text-rc-teal-dark leading-relaxed mt-3">「{v.headline || v.reason.slice(0, 34) + '…'}」</h3>
                 <dl className="mt-4 space-y-3 text-[15px] leading-relaxed">
                   <div>
