@@ -1,6 +1,7 @@
 import Layout from '../components/Layout';
 import Seo from '../components/Seo';
-import { NEWS, COMPANY, CAREERS_URL } from '../data/site';
+import { COMPANY, CAREERS_URL } from '../data/site';
+import { NEWS_SORTED } from '../data/news';
 
 export default function Home() {
   return (
@@ -95,6 +96,22 @@ export default function Home() {
 
           <div className="service reveal">
             <div>
+              <span className="service__tag">医療機関向け 採用代行</span>
+              <h3>SuguDesk 採用代行</h3>
+              <p>
+                自社採用強化を狙った採用ページの作成、チャットを活用した自己応募の促進施策をご提案。
+                その他、求人原稿の作成、媒体運用・スカウト送信、面接日程の調整、候補者へのリマインドまで、
+                医療機関の採用まわりを、お困りごとに合わせて採用のプロフェッショナルが柔軟に支援します。
+              </p>
+              <a href="#contact" className="btn btn--ghost">お問い合わせ</a>
+            </div>
+            <div className="service__media service__media--img">
+              <img src="/solution-recruit.jpg" alt="SuguDesk 採用代行：医療機関の採用まわりを支援するイメージ" width="1200" height="960" />
+            </div>
+          </div>
+
+          <div className="service reveal">
+            <div>
               <span className="service__tag">医療機関向け 業務代行</span>
               <h3>SuguDesk 業務代行</h3>
               <p>
@@ -105,21 +122,6 @@ export default function Home() {
             </div>
             <div className="service__media service__media--img">
               <img src="/solution-bpo.jpg" alt="SuguDesk 業務代行：診療以外の業務を引き受けるイメージ" width="1200" height="900" />
-            </div>
-          </div>
-
-          <div className="service reveal">
-            <div>
-              <span className="service__tag">医療機関向け 採用代行</span>
-              <h3>SuguDesk 採用代行</h3>
-              <p>
-                求人原稿の作成、媒体運用・スカウト送信、面接日程の調整、候補者へのリマインドまで、
-                医療機関の採用まわりの実務をまるごと代行します。必要な業務だけを月額で。
-              </p>
-              <a href="#contact" className="btn btn--ghost">お問い合わせ</a>
-            </div>
-            <div className="service__media service__media--img">
-              <img src="/solution-recruit.jpg" alt="SuguDesk 採用代行：医療機関の採用まわりの実務を代行するイメージ" width="1200" height="960" />
             </div>
           </div>
 
@@ -145,14 +147,19 @@ export default function Home() {
           <p className="eyebrow">News</p>
           <h2 className="h2">ニュース</h2>
           <div className="news">
-            {NEWS.map((n) => (
-              <a key={n.title} className="news__item" href={n.href} target={n.href.startsWith('http') ? '_blank' : undefined} rel="noreferrer">
-                <span className="news__date">{n.date}</span>
-                <span className="news__cat">{n.cat}</span>
-                <span className="news__title">{n.title}</span>
-                <span className="news__arrow">→</span>
-              </a>
-            ))}
+            {NEWS_SORTED.map((n) => {
+              const href = n.external || `/news/${n.slug}/`;
+              const ext = Boolean(n.external);
+              return (
+                <a key={n.slug} className="news__item" href={href}
+                   target={ext ? '_blank' : undefined} rel={ext ? 'noreferrer' : undefined}>
+                  <span className="news__date">{n.date}</span>
+                  <span className="news__cat">{n.cat}</span>
+                  <span className="news__title">{n.title}</span>
+                  <span className="news__arrow">→</span>
+                </a>
+              );
+            })}
           </div>
         </div>
       </section>

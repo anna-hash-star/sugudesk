@@ -95,6 +95,15 @@ img { max-width: 100%; display: block; }
 .pagehead { position: relative; padding: 128px 0 44px; background: linear-gradient(180deg, var(--soft), #fff); border-bottom: 1px solid var(--line); }
 .pagehead__title { font-size: clamp(30px, 5vw, 44px); font-weight: 800; color: var(--ink); margin: 6px 0 0; }
 
+/* ---------- ニュース記事ページ ---------- */
+.article__meta { display: flex; align-items: center; gap: 12px; margin: 4px 0 12px; }
+.article__date { color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
+.article__title { font-size: clamp(23px, 3.4vw, 33px); font-weight: 800; color: var(--ink); margin: 6px 0 0; line-height: 1.55; }
+.article { max-width: 760px; }
+.article__h2 { font-size: 21px; font-weight: 800; color: var(--ink); margin: 40px 0 16px; padding-left: 14px; border-left: 4px solid var(--brand); line-height: 1.5; }
+.article__p { color: #3a4b5c; font-size: 16.5px; margin: 0 0 18px; }
+.article__q { color: var(--brand-dark); font-weight: 700; font-size: 16.5px; margin: 28px 0 12px; }
+
 /* ---------- 代表メッセージ ページ ---------- */
 .msg { display: grid; grid-template-columns: 300px 1fr; gap: 56px; align-items: start; }
 .msg__aside { position: sticky; top: 100px; }
