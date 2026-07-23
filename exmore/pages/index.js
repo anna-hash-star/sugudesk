@@ -26,9 +26,9 @@ export default function Home() {
             誰もが安心して<span className="accent">医療にアクセスできる</span>社会をつくる。
           </h1>
           <p className="hero__lead">
-            知る機会や選択肢が、環境によって左右されない世界へ。
-            わたしたちは、テクノロジーと当事者視点で、一人ひとりが未来を前向きに
-            選べる社会をデザインします。
+            医療は、人と人のいとなみ。その大切な時間を守りながら、
+            テクノロジーで新しい可能性を広げ、誰もが安心して
+            医療にアクセスできる社会をつくります。
           </p>
           <div className="hero__actions">
             <a href="#about" className="btn btn--primary">私たちについて <span className="btn__arrow">→</span></a>
@@ -41,27 +41,27 @@ export default function Home() {
       <section id="about" className="section">
         <div className="container">
           <p className="eyebrow">What we do</p>
-          <h2 className="h2">「知る」「向き合う」「選ぶ」を、<br />テクノロジーで支える。</h2>
+          <h2 className="h2">人を、医療の真ん中に。</h2>
           <p className="lede">
-            医療と仕事、からだとこころ、キャリアとライフイベント。本来つながっているべきものが
-            分断され、知る機会や選択肢に気づけないまま時間だけが過ぎていく——。
-            だからこそ私たちは、仕組みとテクノロジーで、誰もが安心して医療にアクセスできる社会をつくります。
+            医療の現場には、人にしかできないことがたくさんあります。だからこそ私たちは、
+            テクノロジーを活かして現場に余白を生み、医療者が人と向き合う時間を増やしていく。
+            その積み重ねが、誰もが安心して医療にアクセスできる社会につながると信じています。
           </p>
           <div className="pillars">
             <div className="pillar reveal">
-              <div className="pillar__ic"><svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round"><path d="M12 3v18M3 12h18"/></svg></div>
-              <h3>知る</h3>
-              <p>正しい医療情報とヘルスリテラシーを、必要な人へ届く形で提供します。</p>
+              <div className="pillar__ic"><svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round"><path d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2.65A4 4 0 0 1 19 11c0 5.65-7 10-7 10z"/></svg></div>
+              <h3>人を、まんなかに</h3>
+              <p>医療は人と人のいとなみ。向き合う時間を、何よりも大切にします。</p>
             </div>
             <div className="pillar reveal">
-              <div className="pillar__ic"><svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round"><path d="M4 12a8 8 0 1 0 16 0 8 8 0 0 0-16 0zM12 8v4l3 2"/></svg></div>
-              <h3>向き合う</h3>
-              <p>医療機関のノンコア業務を効率化し、患者と向き合う時間を取り戻します。</p>
+              <div className="pillar__ic"><svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round"><path d="M12 3v18M3 12h18"/></svg></div>
+              <h3>テクノロジーで、余白を</h3>
+              <p>現場の負担をテクノロジーで軽くし、本来の仕事に集中できる環境をつくります。</p>
             </div>
             <div className="pillar reveal">
               <div className="pillar__ic"><svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round"><path d="M20 6 9 17l-5-5"/></svg></div>
-              <h3>選ぶ</h3>
-              <p>当事者視点から、一人ひとりが将来を前向きに選択できる仕組みをつくります。</p>
+              <h3>誰もが、選べる</h3>
+              <p>情報や環境の差をこえて、一人ひとりが安心して知り、選べる状態へ。</p>
             </div>
           </div>
         </div>
@@ -72,11 +72,14 @@ export default function Home() {
         <div className="container">
           <p className="eyebrow">Services</p>
           <h2 className="h2">事業内容</h2>
-          <p className="lede">医療DXと人材育成の両面から、ヘルスケアの課題を解決します。</p>
+          <p className="lede">
+            テクノロジーと人の力で、医療の現場と、はたらく人の健康を支えます。
+            医療機関の課題に合わせた幅広い取り組みを行っています。
+          </p>
 
           <div className="service reveal">
             <div>
-              <span className="service__tag">医療機関向け DX</span>
+              <span className="service__tag">医療機関向け AI</span>
               <h3>SuguDesk</h3>
               <p>
                 医療機関向けのAI FAQチャット。診療時間・料金の目安・アクセスなど、患者さまからの
@@ -101,6 +104,12 @@ export default function Home() {
             </div>
             <div className="service__media service__media--soft"><h4>Healthcare<br />Literacy Program</h4></div>
           </div>
+
+          <p className="lede" style={{ marginTop: 30 }}>
+            このほかにも、医療現場の負担を軽くし、人が人に向き合える時間をふやすための
+            取り組みを進めています。詳しくは
+            <a href="#contact" style={{ color: 'var(--brand)', fontWeight: 700 }}>お問い合わせ</a>ください。
+          </p>
         </div>
       </section>
 
