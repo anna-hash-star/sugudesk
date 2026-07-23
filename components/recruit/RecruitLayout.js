@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
+import Script from 'next/script';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ClinicProvider, useClinic } from '../../lib/recruit/clinic-context';
@@ -182,9 +183,37 @@ function RecruitLayoutInner({ children, title, description }) {
   // 評価が本体ドメインに集約される（マルチゾーンのSEO衛生）。
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
   const canonical = siteUrl ? siteUrl + (router.asPath || '/').split('#')[0].split('?')[0] : null;
+
+  // Google Analytics 4：clinic.gaId が設定されているクリニックのみ計測（AdeB等）。
+  // ページ内クリック遷移（SPA）でも page_view を送るため routeChangeComplete を購読する。
+  const gaId = clinic.gaId;
+  useEffect(() => {
+    if (!gaId || typeof window === 'undefined' || typeof window.gtag !== 'function') return;
+    const onRoute = (url) => {
+      window.gtag('event', 'page_view', {
+        page_path: url,
+        page_location: window.location.href,
+        page_title: document.title,
+      });
+    };
+    router.events.on('routeChangeComplete', onRoute);
+    return () => router.events.off('routeChangeComplete', onRoute);
+  }, [gaId, router.events]);
+
   return (
     <div className={clinic.themeClass || undefined}>
       <ChatProvider>
+        {gaId && (
+          <>
+            <Script src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} strategy="afterInteractive" />
+            <Script id="ga4-init" strategy="afterInteractive">
+              {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${gaId}');`}
+            </Script>
+          </>
+        )}
         <Head>
           <title>{pageTitle}</title>
           <meta name="description" content={description || clinic.lead} />
