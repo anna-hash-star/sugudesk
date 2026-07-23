@@ -14,7 +14,7 @@ export default function Seo({ title, description, path = '/', type = 'website', 
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: '株式会社exmore',
-    alternateName: 'exmore',
+    alternateName: ['エクスモア', '株式会社エクスモア', 'exmore'],
     url: SITE_URL,
     logo: SITE_URL + '/ogp.png',
     description,
@@ -33,6 +33,7 @@ export default function Seo({ title, description, path = '/', type = 'website', 
     <Head>
       <title>{title}</title>
       <meta name="description" content={description} />
+      <meta name="keywords" content="エクスモア,株式会社エクスモア,exmore,株式会社exmore,医療DX,ヘルスケア,SuguDesk,採用代行,業務代行" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <link rel="canonical" href={url} />
       <link rel="icon" href="/favicon.svg" />

@@ -24,7 +24,7 @@ export const NEWS = [
 
   {
     slug: 'ebara-training',
-    date: '2026.05.23',
+    date: '2025.09.29',
     cat: '導入事例',
     title: '【エバラ食品さま】多様な社員に寄り添う“自分たちらしい最初の一歩”を模索し、オーダーメイド型研修を導入',
     cover: '/news-ebara-cover.jpg',

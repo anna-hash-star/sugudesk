@@ -7,8 +7,8 @@ export default function Home() {
   return (
     <Layout>
       <Seo
-        title="株式会社exmore｜Healthcare Design for Future Choices"
-        description="誰もが安心して医療にアクセスできる社会をつくる。exmoreは医療・ヘルスケアの課題を、テクノロジーと当事者視点で解決する医療DXスタートアップです。"
+        title="株式会社exmore（エクスモア）｜Healthcare Design for Future Choices"
+        description="株式会社exmore（エクスモア）は、医療・ヘルスケアの課題をテクノロジーと当事者視点で解決する医療DXスタートアップです。誰もが安心して医療にアクセスできる社会をつくります。"
         path="/"
       />
 

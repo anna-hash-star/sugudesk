@@ -65,7 +65,7 @@ export default function Layout({ children }) {
             </nav>
           </div>
           <div className="footer__bottom">
-            <span>© {new Date().getFullYear()} exmore, Inc. All rights reserved.</span>
+            <span>© {new Date().getFullYear()} 株式会社exmore（エクスモア）All rights reserved.</span>
             <span>Healthcare Design for Future Choices</span>
           </div>
         </div>
