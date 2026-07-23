@@ -153,6 +153,11 @@ export default function Home() {
               return (
                 <a key={n.slug} className="news__item" href={href}
                    target={ext ? '_blank' : undefined} rel={ext ? 'noreferrer' : undefined}>
+                  <span className="news__thumb">
+                    {n.cover
+                      ? <img src={n.cover} alt="" loading="lazy" />
+                      : <span className="news__thumb--ph" />}
+                  </span>
                   <span className="news__date">{n.date}</span>
                   <span className="news__cat">{n.cat}</span>
                   <span className="news__title">{n.title}</span>

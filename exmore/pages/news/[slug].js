@@ -36,12 +36,21 @@ export default function NewsArticle({ item }) {
         </div>
       </section>
 
-      <section className="section" style={{ paddingTop: 44 }}>
+      <section className="section" style={{ paddingTop: 40 }}>
         <div className="container">
+          {item.cover && (
+            <img className="article__cover" src={item.cover} alt="" width="1200" height="675" />
+          )}
           <article className="article">
             {item.body.map((b, i) => {
               if (b.h2) return <h2 key={i} className="article__h2">{b.h2}</h2>;
               if (b.q) return <p key={i} className="article__q">── {b.q}</p>;
+              if (b.img) return (
+                <figure key={i} className="article__figure">
+                  <img src={b.img} alt={b.cap || ''} loading="lazy" />
+                  {b.cap && <figcaption>{b.cap}</figcaption>}
+                </figure>
+              );
               return <p key={i} className="article__p">{b.p}</p>;
             })}
           </article>
