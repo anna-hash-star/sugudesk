@@ -151,6 +151,8 @@ img { max-width: 100%; display: block; }
 .service__media { border-radius: 18px; overflow: hidden; min-height: 220px; background: linear-gradient(135deg, var(--brand), var(--teal)); display: grid; place-items: center; color: #fff; padding: 30px; }
 .service__media--soft { background: linear-gradient(135deg, #2a3f57, #16324f); }
 .service__media h4 { font-size: 22px; margin: 0; font-weight: 800; text-align: center; line-height: 1.5; }
+.service__media--img { background: none; padding: 0; min-height: 0; display: block; }
+.service__media--img img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 /* ---------- News ---------- */
 .news { display: grid; gap: 4px; margin-top: 40px; }

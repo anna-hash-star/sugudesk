@@ -15,7 +15,7 @@ export const CAREERS_URL = 'https://herp.careers/v1/exmore12';
 export const NAV = [
   { href: '/#about', label: '私たちについて', type: 'anchor' },
   { href: '/#services', label: '事業内容', type: 'anchor' },
-  { href: '/message', label: '代表メッセージ', type: 'page' },
+  { href: '/message/', label: '代表メッセージ', type: 'page' },
   { href: '/#news', label: 'ニュース', type: 'anchor' },
   { href: '/#company', label: '会社情報', type: 'anchor' },
   { href: CAREERS_URL, label: '採用情報', type: 'external' },

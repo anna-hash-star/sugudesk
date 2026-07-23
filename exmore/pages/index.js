@@ -86,9 +86,11 @@ export default function Home() {
                 問い合わせに24時間自動で回答します。患者さまの不安・疑問を解消しながら、
                 受付・窓口業務の負担を軽減し、患者体験の向上を実現します。
               </p>
-              <a href="#contact" className="btn btn--primary">サービスの詳細 <span className="btn__arrow">→</span></a>
+              <a href="https://www.sugudesk.com/" target="_blank" rel="noopener noreferrer" className="btn btn--primary">サービスサイトを見る <span className="btn__arrow">→</span></a>
             </div>
-            <div className="service__media"><h4>SuguDesk<br />AI FAQ Chat</h4></div>
+            <div className="service__media service__media--img">
+              <img src="/solution-sugudesk.png" alt="SuguDesk：医療機関向けAI FAQチャットのイメージ" width="1000" height="760" />
+            </div>
           </div>
 
           <div className="service reveal">
@@ -102,7 +104,9 @@ export default function Home() {
               </p>
               <a href="#contact" className="btn btn--ghost">お問い合わせ</a>
             </div>
-            <div className="service__media service__media--soft"><h4>Healthcare<br />Literacy Program</h4></div>
+            <div className="service__media service__media--img">
+              <img src="/solution-training.png" alt="ヘルスケアリテラシー研修のイメージ" width="1000" height="760" />
+            </div>
           </div>
 
           <p className="lede" style={{ marginTop: 30 }}>
@@ -143,7 +147,7 @@ export default function Home() {
               ))}
             </tbody>
           </table>
-          <a href="/message" className="btn btn--ghost" style={{ marginTop: 30 }}>
+          <a href="/message/" className="btn btn--ghost" style={{ marginTop: 30 }}>
             代表メッセージを読む <span className="btn__arrow">→</span>
           </a>
         </div>
