@@ -1,0 +1,10 @@
+# 旧STUDIOサイトのURL → 新サイトのURL（SEO資産の引き継ぎ用）
+# 形式:  <旧パス>  <新パス>  301
+# 新しい対応を追加するときは、この下に1行ずつ足してください。
+
+/aboutus              /message/            301
+
+# 旧ニュース記事（STUDIOの /posts/<id>）→ 新ニュース記事
+/posts/4fgVbex4       /news/poc-award/     301
+# /posts/jqSogNNH     ←エバラ or シード（確認待ち）
+# /posts/WMaEPT1H     ←エバラ or シード（確認待ち）
