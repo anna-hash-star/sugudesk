@@ -18,7 +18,7 @@ export const GA_ID = 'G-345Q3LN9NL';
 
 // Google Search Console のHTMLタグ確認用トークン（content="..." の値だけ）
 // Search Console → プロパティ追加 → URLプレフィックス → HTMLタグ → content の値をここに貼る
-export const GSC_VERIFICATION = '';
+export const GSC_VERIFICATION = 'u8SLxGiqy80t2yPVphUQ9OZM-syeezL-udNZvPZWX2A';
 
 // -------- ヘッダー / フッターのナビゲーション --------
 // type: 'anchor'（トップ内リンク）/ 'page'（別ページ）/ 'external'（外部リンク）
