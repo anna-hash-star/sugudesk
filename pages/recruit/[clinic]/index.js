@@ -33,11 +33,33 @@ function Hero() {
   const { clinic, jobs, hasTour, slug } = useClinic();
   const { openChat } = useRecruitChat();
   const base = `/recruit/${slug}`;
+  const softPink = clinic.heroDecor === 'soft-pink';
   return (
-    <section className="relative overflow-hidden">
-      {/* 背景の装飾（ゆっくり漂う） */}
-      <div className="rc-drift absolute -top-24 -right-24 w-96 h-96 rounded-full bg-rc-teal-soft/70 blur-3xl" aria-hidden="true" />
-      <div className="rc-drift absolute top-64 -left-32 w-80 h-80 rounded-full bg-rc-sand/80 blur-3xl" style={{ animationDelay: '-7s' }} aria-hidden="true" />
+    <section className={`relative overflow-hidden ${softPink ? 'rc-hero-soft' : ''}`}>
+      {softPink ? (
+        // ファーストビューの淡いピンク装飾：白に近い地色＋左下の淡い円・曲線・規則ドット。
+        // 写真（右）には重ねず、可読性を邪魔しない範囲で配置。スマホではドット/リングを非表示に。
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden" aria-hidden="true">
+          {/* 左下：ごく淡いピンクの円（にじみ） */}
+          <div className="rc-drift absolute -bottom-44 -left-40 w-[38rem] h-[38rem] rounded-full"
+               style={{ background: 'radial-gradient(closest-side, rgba(243,200,218,0.30), rgba(243,200,218,0))' }} />
+          <div className="rc-drift absolute bottom-2 left-16 w-72 h-72 rounded-full"
+               style={{ animationDelay: '-6s', background: 'radial-gradient(closest-side, rgba(247,220,232,0.45), rgba(247,220,232,0))' }} />
+          {/* 曲線：淡いローズの細いリング（左下） */}
+          <div className="absolute -bottom-28 left-2 w-[26rem] h-[26rem] rounded-full border border-[#F3C8DA] opacity-30 hidden md:block" />
+          {/* 規則的な小ドット（左下・少量） */}
+          <div className="rc-hero-dots absolute bottom-10 left-6 w-44 h-24 opacity-[0.35] hidden md:block" />
+          {/* 濃いローズのアクセントドット（少量） */}
+          <div className="absolute bottom-[4.6rem] left-[3.4rem] w-1.5 h-1.5 rounded-full bg-rc-teal opacity-70 hidden md:block" />
+          <div className="absolute bottom-[3.1rem] left-[6.1rem] w-1 h-1 rounded-full bg-rc-teal opacity-50 hidden md:block" />
+        </div>
+      ) : (
+        <>
+          {/* 背景の装飾（ゆっくり漂う） */}
+          <div className="rc-drift absolute -top-24 -right-24 w-96 h-96 rounded-full bg-rc-teal-soft/70 blur-3xl" aria-hidden="true" />
+          <div className="rc-drift absolute top-64 -left-32 w-80 h-80 rounded-full bg-rc-sand/80 blur-3xl" style={{ animationDelay: '-7s' }} aria-hidden="true" />
+        </>
+      )}
 
       <div className="relative max-w-6xl mx-auto px-4 md:px-6 pt-12 md:pt-20 pb-14 md:pb-24 grid md:grid-cols-[1.1fr_1fr] gap-10 items-center">
         <div>
@@ -99,7 +121,9 @@ function Hero() {
             scene={clinic.heroScene || 'staff'}
             src={clinic.photos?.hero}
             ratio="aspect-[4/5] md:aspect-[4/4.6]"
-            className="shadow-xl shadow-rc-teal/10"
+            className={softPink
+              ? '!rounded-[28px] shadow-[0_22px_48px_-20px_rgba(190,150,170,0.45)]'
+              : 'shadow-xl shadow-rc-teal/10'}
           />
         </div>
       </div>

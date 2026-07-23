@@ -46,6 +46,18 @@
   --color-rc-ink-soft: #7A6B73;  /* 補助テキスト */
 }
 
+/* ファーストビューの淡いピンク装飾（clinic.heroDecor='soft-pink' のとき Hero が付与）。
+   白に近い地色＋規則ドット。濃いローズ等のアクセントは Hero 側でインライン指定。 */
+.rc-hero-soft { background-color: #FFF7FA; }
+.rc-hero-dots {
+  background-image: radial-gradient(#F3C8DA 1.5px, transparent 1.6px);
+  background-size: 16px 16px;
+}
+@media (max-width: 767px) {
+  /* スマホは装飾を弱める（地色をより白に寄せる。ドット/リングは Hero 側で非表示） */
+  .rc-hero-soft { background-color: #FFFAFC; }
+}
+
 html {
   scroll-behavior: smooth;
 }
