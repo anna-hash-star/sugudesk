@@ -91,15 +91,6 @@ img { max-width: 100%; display: block; }
 .hero__lead { max-width: 620px; color: var(--muted); font-size: 17px; margin: 0 auto 36px; }
 .hero__actions { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
 
-/* コンセプトの3ステップ（順に点灯） */
-.concept { list-style: none; display: flex; align-items: center; justify-content: center; gap: 16px; padding: 0; margin: 48px 0 0; flex-wrap: wrap; }
-.concept__step { display: inline-flex; align-items: center; gap: 9px; font-weight: 700; color: var(--ink); font-size: 15px; }
-.concept__dot { width: 11px; height: 11px; border-radius: 50%; background: var(--brand); animation: pulseDot 3s ease-in-out infinite; }
-.concept li:nth-child(3) .concept__dot { background: var(--teal); animation-delay: 1s; }
-.concept li:nth-child(5) .concept__dot { background: var(--violet); animation-delay: 2s; }
-@keyframes pulseDot { 0%,100% { box-shadow: 0 0 0 0 rgba(26,95,208,.45); } 50% { box-shadow: 0 0 0 9px rgba(26,95,208,0); } }
-.concept__arrow { color: #9fb1c2; font-weight: 700; }
-
 /* ---------- ページヘッダー（下層ページ）---------- */
 .pagehead { position: relative; padding: 128px 0 44px; background: linear-gradient(180deg, var(--soft), #fff); border-bottom: 1px solid var(--line); }
 .pagehead__title { font-size: clamp(30px, 5vw, 44px); font-weight: 800; color: var(--ink); margin: 6px 0 0; }
@@ -222,7 +213,7 @@ img { max-width: 100%; display: block; }
 .js .reveal.is-visible { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
   .js .reveal { opacity: 1; transform: none; transition: none; }
-  .hero__ring, .hero__orb, .concept__dot { animation: none !important; }
+  .hero__ring, .hero__orb { animation: none !important; }
 }
 
 /* ---------- Responsive ---------- */
