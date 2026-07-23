@@ -143,36 +143,9 @@ export default function Home() {
               ))}
             </tbody>
           </table>
-        </div>
-      </section>
-
-      {/* ---------- Message（ティーザー→別ページへ／会社概要の下に配置）---------- */}
-      <section className="section section--soft">
-        <div className="container">
-          <p className="eyebrow">Message</p>
-          <h2 className="h2">「もっと早く知っていたら」を、<br />なくしたい。</h2>
-          <div className="founder">
-            <div className="founder__photo reveal">
-              <img src="/ceo.jpg" alt="代表取締役 CEO 根来 杏奈" width="1000" height="1200" />
-            </div>
-            <div className="founder__body reveal">
-              <p>
-                「もっと早く知っていたら」「時間を巻き戻せたら」——人生の中で、そう感じる瞬間は
-                きっと誰にでもあると思います。私にとってそれは、自分に不妊治療が必要だと知った日でした。
-              </p>
-              <p>
-                からだのこと、キャリア、家族、将来の選択。本来つながっているべきものが分断され、
-                知る機会や選択肢に気づけないまま時間だけが過ぎていく——。その課題に、当事者として
-                向き合いたいと考えています。
-              </p>
-              <div className="founder__sign">
-                <b>代表取締役 CEO　根来 杏奈</b>
-              </div>
-              <a href="/message" className="btn btn--ghost" style={{ marginTop: 24 }}>
-                代表メッセージを読む <span className="btn__arrow">→</span>
-              </a>
-            </div>
-          </div>
+          <a href="/message" className="btn btn--ghost" style={{ marginTop: 30 }}>
+            代表メッセージを読む <span className="btn__arrow">→</span>
+          </a>
         </div>
       </section>
 
