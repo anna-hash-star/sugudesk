@@ -34,112 +34,111 @@ function Hero() {
   const { openChat } = useRecruitChat();
   const base = `/recruit/${slug}`;
   const softPink = clinic.heroDecor === 'soft-pink';
-  return (
-    <section className={`relative overflow-hidden ${softPink ? 'rc-hero-soft' : ''}`}>
-      {softPink ? (
-        // ファーストビューの淡いピンク装飾：白に近い地色＋左下の淡い円・曲線・規則ドット。
-        // 写真（右）には重ねず、可読性を邪魔しない範囲で配置。スマホではドット/リングを非表示に。
+
+  const heroText = (
+    <>
+      <p className="rc-hero-in text-[14px] tracking-[0.2em] text-rc-teal font-bold">{clinic.shortName} 採用サイト</p>
+      {(() => {
+        const lines = clinic.tagline.split('\n');
+        return (
+          <h1
+            className={`rc-hero-in rc-mincho font-semibold leading-[1.4] mt-4 text-rc-ink ${
+              lines.length > 1 ? 'text-[21px] md:text-[38px]' : 'text-[34px] md:text-5xl'
+            }`}
+            style={{ textWrap: lines.length > 1 ? undefined : 'balance', '--rc-delay': '120ms' }}
+          >
+            {lines.map(l => <span key={l} className="block">{l}</span>)}
+          </h1>
+        );
+      })()}
+      <p className="rc-hero-in mt-5 text-[17px] leading-8 text-rc-ink-soft max-w-xl" style={{ '--rc-delay': '240ms' }}>{clinic.lead}</p>
+
+      <div className="rc-hero-in flex flex-wrap gap-2 mt-6" style={{ '--rc-delay': '340ms' }} aria-label="働きやすさの要点">
+        {clinic.badges.map(b => (
+          <span key={b} className="text-[14px] font-medium bg-white border border-rc-sand rounded-full px-3.5 py-1.5 text-rc-ink">
+            {b}
+          </span>
+        ))}
+      </div>
+
+      <div className="rc-hero-in flex flex-wrap gap-2 mt-4" style={{ '--rc-delay': '420ms' }} aria-label="募集中の職種">
+        {jobs.map(j => (
+          <Link key={j.slug} href={`${base}/jobs/${j.slug}`}
+            className="text-[14px] font-bold text-rc-teal bg-rc-teal-soft rounded-full px-3.5 py-1.5 hover:bg-rc-teal hover:text-white transition-colors">
+            {j.pending ? `${j.title}（求人準備中）` : `${j.title} 募集中`}
+          </Link>
+        ))}
+      </div>
+
+      <div className="rc-hero-in flex flex-wrap items-center gap-3 mt-8" style={{ '--rc-delay': '500ms' }}>
+        <Link href={`${base}/entry`}
+          className="bg-rc-teal text-white font-bold text-[17px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
+          応募する
+        </Link>
+        {hasTour && (
+          <Link href={`${base}/flow`}
+            className="border-2 border-rc-teal text-rc-teal font-bold text-[17px] rounded-full px-7 py-3 hover:bg-rc-teal-soft transition-colors">
+            まず見学する
+          </Link>
+        )}
+        {!clinic.chatWidget && (
+          <button onClick={() => openChat()}
+            className="inline-flex items-center gap-1.5 text-[16px] font-bold text-rc-teal underline underline-offset-4 decoration-rc-teal/40 hover:decoration-rc-teal transition-colors">
+            <ChatIcon className="w-4 h-4" /> 匿名で相談する
+          </button>
+        )}
+      </div>
+    </>
+  );
+
+  if (softPink) {
+    // ファーストビュー全体に、ゆっくり浮遊して重なり合う淡いピンクの円を配置（文字の下も含む）。
+    // mix-blend-multiply により重なった所だけ少し濃くなる。文字は中央寄せのブロックで左寄り過ぎを回避。
+    return (
+      <section className="relative overflow-hidden rc-hero-soft">
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden" aria-hidden="true">
-          {/* 左下：ごく淡いピンクの円（にじみ） */}
-          <div className="rc-drift absolute -bottom-44 -left-40 w-[38rem] h-[38rem] rounded-full"
-               style={{ background: 'radial-gradient(closest-side, rgba(243,200,218,0.30), rgba(243,200,218,0))' }} />
-          <div className="rc-drift absolute bottom-2 left-16 w-72 h-72 rounded-full"
-               style={{ animationDelay: '-6s', background: 'radial-gradient(closest-side, rgba(247,220,232,0.45), rgba(247,220,232,0))' }} />
-          {/* 曲線：淡いローズの細いリング（左下） */}
-          <div className="absolute -bottom-28 left-2 w-[26rem] h-[26rem] rounded-full border border-[#F3C8DA] opacity-30 hidden md:block" />
-          {/* 規則的な小ドット（左下・少量） */}
-          <div className="rc-hero-dots absolute bottom-10 left-6 w-44 h-24 opacity-[0.35] hidden md:block" />
-          {/* 濃いローズのアクセントドット（少量） */}
-          <div className="absolute bottom-[4.6rem] left-[3.4rem] w-1.5 h-1.5 rounded-full bg-rc-teal opacity-70 hidden md:block" />
-          <div className="absolute bottom-[3.1rem] left-[6.1rem] w-1 h-1 rounded-full bg-rc-teal opacity-50 hidden md:block" />
+          <span className="rc-orb rc-orb-a absolute -left-24 -top-16 w-[34rem] h-[34rem] rounded-full"
+                style={{ background: 'radial-gradient(closest-side, rgba(247,220,232,0.75), rgba(247,220,232,0))' }} />
+          <span className="rc-orb rc-orb-b absolute left-[34%] -top-24 w-[30rem] h-[30rem] rounded-full"
+                style={{ background: 'radial-gradient(closest-side, rgba(243,200,218,0.55), rgba(243,200,218,0))' }} />
+          <span className="rc-orb rc-orb-c absolute right-[-6%] top-2 w-[38rem] h-[38rem] rounded-full"
+                style={{ background: 'radial-gradient(closest-side, rgba(247,220,232,0.7), rgba(247,220,232,0))' }} />
+          <span className="rc-orb rc-orb-b absolute left-[6%] bottom-[-8rem] w-[32rem] h-[32rem] rounded-full"
+                style={{ background: 'radial-gradient(closest-side, rgba(243,200,218,0.5), rgba(243,200,218,0))' }} />
+          <span className="rc-orb rc-orb-a absolute right-[22%] bottom-[-6rem] w-[26rem] h-[26rem] rounded-full"
+                style={{ background: 'radial-gradient(closest-side, rgba(247,220,232,0.55), rgba(247,220,232,0))' }} />
+          {/* 細いリング（曲線）と規則ドット（PCのみ・控えめ） */}
+          <span className="absolute right-[14%] top-[16%] w-[18rem] h-[18rem] rounded-full border border-[#F3C8DA] opacity-40 hidden md:block" />
+          <span className="rc-hero-dots absolute bottom-8 left-6 w-40 h-24 opacity-30 hidden md:block" />
+          {/* 濃いローズの小アクセント（少量） */}
+          <span className="rc-orb-c absolute right-[26%] top-[46%] w-2.5 h-2.5 rounded-full bg-rc-teal opacity-40 hidden md:block" />
+          <span className="rc-orb-a absolute left-[18%] bottom-[22%] w-2 h-2 rounded-full bg-rc-teal opacity-30 hidden md:block" />
         </div>
-      ) : (
-        <>
-          {/* 背景の装飾（ゆっくり漂う） */}
-          <div className="rc-drift absolute -top-24 -right-24 w-96 h-96 rounded-full bg-rc-teal-soft/70 blur-3xl" aria-hidden="true" />
-          <div className="rc-drift absolute top-64 -left-32 w-80 h-80 rounded-full bg-rc-sand/80 blur-3xl" style={{ animationDelay: '-7s' }} aria-hidden="true" />
-        </>
-      )}
+
+        <div className="relative z-10 max-w-3xl mx-auto px-6 md:px-10 pt-14 md:pt-24 pb-16 md:pb-28">
+          {heroText}
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="relative overflow-hidden">
+      {/* 背景の装飾（ゆっくり漂う） */}
+      <div className="rc-drift absolute -top-24 -right-24 w-96 h-96 rounded-full bg-rc-teal-soft/70 blur-3xl" aria-hidden="true" />
+      <div className="rc-drift absolute top-64 -left-32 w-80 h-80 rounded-full bg-rc-sand/80 blur-3xl" style={{ animationDelay: '-7s' }} aria-hidden="true" />
 
       <div className="relative max-w-6xl mx-auto px-4 md:px-6 pt-12 md:pt-20 pb-14 md:pb-24 grid md:grid-cols-[1.1fr_1fr] gap-10 items-center">
-        <div>
-          <p className="rc-hero-in text-[14px] tracking-[0.2em] text-rc-teal font-bold">{clinic.shortName} 採用サイト</p>
-          {(() => {
-            const lines = clinic.tagline.split('\n');
-            return (
-              <h1
-                className={`rc-hero-in rc-mincho font-semibold leading-[1.4] mt-4 text-rc-ink ${
-                  lines.length > 1 ? 'text-[21px] md:text-[38px]' : 'text-[34px] md:text-5xl'
-                }`}
-                style={{ textWrap: lines.length > 1 ? undefined : 'balance', '--rc-delay': '120ms' }}
-              >
-                {lines.map(l => <span key={l} className="block">{l}</span>)}
-              </h1>
-            );
-          })()}
-          <p className="rc-hero-in mt-5 text-[17px] leading-8 text-rc-ink-soft max-w-lg" style={{ '--rc-delay': '240ms' }}>{clinic.lead}</p>
-
-          <div className="rc-hero-in flex flex-wrap gap-2 mt-6" style={{ '--rc-delay': '340ms' }} aria-label="働きやすさの要点">
-            {clinic.badges.map(b => (
-              <span key={b} className="text-[14px] font-medium bg-white border border-rc-sand rounded-full px-3.5 py-1.5 text-rc-ink">
-                {b}
-              </span>
-            ))}
-          </div>
-
-          <div className="rc-hero-in flex flex-wrap gap-2 mt-4" style={{ '--rc-delay': '420ms' }} aria-label="募集中の職種">
-            {jobs.map(j => (
-              <Link key={j.slug} href={`${base}/jobs/${j.slug}`}
-                className="text-[14px] font-bold text-rc-teal bg-rc-teal-soft rounded-full px-3.5 py-1.5 hover:bg-rc-teal hover:text-white transition-colors">
-                {j.pending ? `${j.title}（求人準備中）` : `${j.title} 募集中`}
-              </Link>
-            ))}
-          </div>
-
-          <div className="rc-hero-in flex flex-wrap items-center gap-3 mt-8" style={{ '--rc-delay': '500ms' }}>
-            <Link href={`${base}/entry`}
-              className="bg-rc-teal text-white font-bold text-[17px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
-              応募する
-            </Link>
-            {hasTour && (
-              <Link href={`${base}/flow`}
-                className="border-2 border-rc-teal text-rc-teal font-bold text-[17px] rounded-full px-7 py-3 hover:bg-rc-teal-soft transition-colors">
-                まず見学する
-              </Link>
-            )}
-            {!clinic.chatWidget && (
-              <button onClick={() => openChat()}
-                className="inline-flex items-center gap-1.5 text-[16px] font-bold text-rc-teal underline underline-offset-4 decoration-rc-teal/40 hover:decoration-rc-teal transition-colors">
-                <ChatIcon className="w-4 h-4" /> 匿名で相談する
-              </button>
-            )}
-          </div>
+        <div>{heroText}</div>
+        <div className="rc-hero-in max-w-md ml-auto w-full" style={{ '--rc-delay': '260ms' }}>
+          <Photo
+            label="受付・院内の写真"
+            scene={clinic.heroScene || 'staff'}
+            src={clinic.photos?.hero}
+            ratio="aspect-[4/5] md:aspect-[4/4.6]"
+            className="shadow-xl shadow-rc-teal/10"
+          />
         </div>
-        {softPink ? (
-          // やさしさのモチーフ：ゆっくり浮遊して重なり合う淡いピンクの円（受付写真の代わり）
-          <div className="rc-hero-in relative w-full max-w-md ml-auto aspect-[4/4.4] hidden md:block" style={{ '--rc-delay': '260ms' }} aria-hidden="true">
-            <span className="rc-orb rc-orb-a absolute left-[6%] top-[4%] w-[64%] h-[64%] rounded-full"
-                  style={{ background: 'radial-gradient(closest-side, rgba(247,220,232,0.9), rgba(247,220,232,0.12))' }} />
-            <span className="rc-orb rc-orb-b absolute right-[2%] top-[24%] w-[54%] h-[54%] rounded-full"
-                  style={{ background: 'radial-gradient(closest-side, rgba(243,200,218,0.85), rgba(243,200,218,0.1))' }} />
-            <span className="rc-orb rc-orb-c absolute left-[20%] bottom-[3%] w-[50%] h-[50%] rounded-full"
-                  style={{ background: 'radial-gradient(closest-side, rgba(247,220,232,0.8), rgba(247,220,232,0.08))' }} />
-            {/* 細いリング（曲線） */}
-            <span className="rc-orb rc-orb-b absolute left-[34%] top-[36%] w-[40%] h-[40%] rounded-full border border-[#F3C8DA]" style={{ mixBlendMode: 'normal', opacity: 0.5 }} />
-            {/* 濃いローズの小アクセント */}
-            <span className="rc-orb-c absolute right-[30%] bottom-[26%] w-2.5 h-2.5 rounded-full" style={{ background: 'rgba(194,76,126,0.45)' }} />
-          </div>
-        ) : (
-          <div className="rc-hero-in max-w-md ml-auto w-full" style={{ '--rc-delay': '260ms' }}>
-            <Photo
-              label="受付・院内の写真"
-              scene={clinic.heroScene || 'staff'}
-              src={clinic.photos?.hero}
-              ratio="aspect-[4/5] md:aspect-[4/4.6]"
-              className="shadow-xl shadow-rc-teal/10"
-            />
-          </div>
-        )}
       </div>
     </section>
   );
@@ -441,42 +440,58 @@ function Gallery() {
 
 /* 5. スタッフの声 */
 function Voices() {
-  const { voices } = useClinic();
+  const { voices, jobs, slug } = useClinic();
+  const base = `/recruit/${slug}`;
   if (!voices || voices.length === 0) return null;
   return (
     <section id="voice" className="max-w-6xl mx-auto px-4 md:px-6 py-14 md:py-20 scroll-mt-20">
       <div className="flex items-end justify-between gap-4">
         <Eyebrow en="スタッフの声" ja="先に働いている人の、正直な話。" />
         {voices.length > 1 && (
-          <span className="hidden md:inline text-[13px] text-rc-ink-soft mb-4 whitespace-nowrap">← 横にスクロール →</span>
+          <span className="md:hidden text-[13px] text-rc-ink-soft mb-4 whitespace-nowrap">← 横にスクロール →</span>
         )}
       </div>
-      {/* 横スクロールのカード（縦の間延びを避ける） */}
-      <div className="rc-hscroll -mx-4 md:-mx-6 px-4 md:px-6 mt-6 flex gap-5 overflow-x-auto snap-x snap-mandatory scroll-pl-4 md:scroll-pl-6">
-        {voices.map((v) => (
-          <article key={v.id} className="snap-start shrink-0 w-[86%] sm:w-[360px] rounded-2xl bg-white border border-rc-sand overflow-hidden flex flex-col">
-            {v.photo && <Photo label={v.photoLabel} scene={v.scene} src={v.photo} ratio="aspect-[4/3]" className="!rounded-none" />}
-            <div className="p-6 flex flex-col h-full">
-              <div className="text-[14px] text-rc-ink-soft">{v.role}・{v.years}</div>
-              <h3 className="rc-mincho text-[18px] text-rc-teal-dark leading-relaxed mt-2">「{v.headline || v.reason.slice(0, 34) + '…'}」</h3>
-              <dl className="mt-4 space-y-3 text-[15px] leading-relaxed">
-                <div>
-                  <dt className="font-bold text-rc-teal">入職の決め手</dt>
-                  <dd className="text-rc-ink-soft mt-0.5">{v.reason}</dd>
+      {/* スマホは横スクロール、PCは3カラムグリッド（1画面で収まるためスクロール不要） */}
+      <div className="rc-hscroll -mx-4 px-4 md:mx-0 md:px-0 mt-6 flex gap-5 overflow-x-auto snap-x snap-mandatory md:grid md:grid-cols-3 md:gap-6 md:overflow-visible">
+        {voices.map((v) => {
+          const job = jobs.find(j => j.slug === v.jobSlug);
+          const jobTitle = job ? job.title : v.role;
+          return (
+            <article key={v.id} className="snap-start shrink-0 w-[86%] sm:w-[360px] md:w-auto rounded-2xl bg-white border border-rc-sand overflow-hidden flex flex-col">
+              {v.photo && <Photo label={v.photoLabel} scene={v.scene} src={v.photo} ratio="aspect-[4/3]" className="!rounded-none" />}
+              <div className="p-6 flex flex-col h-full">
+                {/* 職種チップ：ひと目でどの職種の先輩か分かるように */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[13px] font-bold text-white bg-rc-teal rounded-full px-3 py-1">{jobTitle}</span>
+                  <span className="text-[13px] text-rc-ink-soft">{v.years}</span>
                 </div>
-                <div>
-                  <dt className="font-bold text-rc-teal">働いてみて</dt>
-                  <dd className="text-rc-ink-soft mt-0.5">{v.gap}</dd>
-                </div>
-              </dl>
-              <p className="mt-4 pt-4 border-t border-rc-sand text-[15px] text-rc-ink">
-                <span className="font-bold">応募を考えている方へ：</span>{v.message}
-              </p>
-            </div>
-          </article>
-        ))}
-        {/* 右端の余白（最後のカードが端にぴったり付かないように） */}
-        <span className="shrink-0 w-1" aria-hidden="true" />
+                <h3 className="rc-mincho text-[18px] text-rc-teal-dark leading-relaxed mt-3">「{v.headline || v.reason.slice(0, 34) + '…'}」</h3>
+                <dl className="mt-4 space-y-3 text-[15px] leading-relaxed">
+                  <div>
+                    <dt className="font-bold text-rc-teal">入職の決め手</dt>
+                    <dd className="text-rc-ink-soft mt-0.5">{v.reason}</dd>
+                  </div>
+                  <div>
+                    <dt className="font-bold text-rc-teal">働いてみて</dt>
+                    <dd className="text-rc-ink-soft mt-0.5">{v.gap}</dd>
+                  </div>
+                </dl>
+                <p className="mt-4 pt-4 border-t border-rc-sand text-[15px] text-rc-ink">
+                  <span className="font-bold">応募を考えている方へ：</span>{v.message}
+                </p>
+                {job && (
+                  <Link href={`${base}/jobs/${job.slug}`}
+                    className="mt-4 inline-flex items-center gap-1 text-[15px] font-bold text-rc-teal hover:text-rc-teal-dark transition-colors">
+                    {jobTitle}の詳細を見る
+                    <span aria-hidden="true">→</span>
+                  </Link>
+                )}
+              </div>
+            </article>
+          );
+        })}
+        {/* スマホで最後のカードが端に付かないための余白 */}
+        <span className="shrink-0 w-1 md:hidden" aria-hidden="true" />
       </div>
     </section>
   );
