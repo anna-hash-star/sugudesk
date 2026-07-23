@@ -1,0 +1,184 @@
+:root {
+  --navy: #0f2a43;
+  --blue: #1b6ec2;
+  --teal: #2bb3a3;
+  --ink: #1b2733;
+  --muted: #5b6b7a;
+  --tint: #f2f7fb;
+  --line: #e3ebf2;
+  --white: #ffffff;
+  --maxw: 1080px;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic",
+    "Segoe UI", system-ui, sans-serif;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration: none; }
+
+.container {
+  width: 100%;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Header */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: saturate(180%) blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+.header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+.logo {
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: 0.02em;
+  color: var(--navy);
+}
+.nav { display: flex; gap: 28px; }
+.nav a {
+  font-size: 14px;
+  color: var(--muted);
+  font-weight: 600;
+  transition: color 0.2s;
+}
+.nav a:hover { color: var(--blue); }
+
+/* Hero */
+.hero {
+  padding: 96px 0 88px;
+  background:
+    radial-gradient(1200px 400px at 80% -10%, rgba(43, 179, 163, 0.12), transparent),
+    linear-gradient(180deg, var(--tint), var(--white));
+}
+.hero__eyebrow {
+  color: var(--teal);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 13px;
+  margin: 0 0 16px;
+}
+.hero__title {
+  font-size: clamp(28px, 5vw, 46px);
+  line-height: 1.4;
+  color: var(--navy);
+  margin: 0 0 20px;
+  font-weight: 800;
+}
+.hero__sub {
+  max-width: 640px;
+  color: var(--muted);
+  font-size: 17px;
+  margin: 0 0 32px;
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  background: var(--blue);
+  color: #fff;
+  padding: 14px 30px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 15px;
+  transition: transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 8px 22px rgba(27, 110, 194, 0.25);
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(27, 110, 194, 0.32); }
+.btn--light { background: #fff; color: var(--navy); box-shadow: none; }
+
+/* Sections */
+.section { padding: 80px 0; }
+.section--tint { background: var(--tint); }
+.section--dark { background: var(--navy); color: #fff; }
+.section__label {
+  display: inline-block;
+  color: var(--blue);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+.section__label--light { color: var(--teal); }
+.section__title {
+  font-size: clamp(24px, 3.5vw, 34px);
+  color: inherit;
+  margin: 0 0 24px;
+  font-weight: 800;
+}
+.section--dark .section__title { color: #fff; }
+.section__text {
+  max-width: 720px;
+  color: var(--muted);
+  font-size: 16px;
+  margin: 0 0 16px;
+}
+.section--dark .section__text { color: #cdd8e2; }
+
+/* Cards */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  margin-top: 8px;
+}
+.card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 28px;
+  transition: transform 0.15s, box-shadow 0.2s;
+}
+.card:hover { transform: translateY(-4px); box-shadow: 0 14px 30px rgba(15, 42, 67, 0.08); }
+.card__title { color: var(--navy); font-size: 19px; margin: 0 0 12px; font-weight: 700; }
+.card__text { color: var(--muted); font-size: 15px; margin: 0; }
+
+/* Table */
+.table { width: 100%; max-width: 720px; border-collapse: collapse; }
+.table th, .table td {
+  text-align: left;
+  padding: 16px 12px;
+  border-bottom: 1px solid var(--line);
+  font-size: 15px;
+  vertical-align: top;
+}
+.table th { width: 160px; color: var(--navy); font-weight: 700; }
+.table td { color: var(--muted); }
+
+/* Footer */
+.footer {
+  background: #0a1f33;
+  color: #9fb2c4;
+  padding: 40px 0;
+}
+.footer .container { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.footer .logo { color: #fff; }
+.footer p { margin: 0; font-size: 13px; }
+
+@media (max-width: 640px) {
+  .nav { gap: 18px; }
+  .nav a { font-size: 13px; }
+  .hero { padding: 72px 0 64px; }
+  .section { padding: 56px 0; }
+  .table th { width: 110px; }
+}
