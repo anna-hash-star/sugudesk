@@ -221,7 +221,7 @@ function JobBody({ jobSlug }) {
       {/* クロージング */}
       <section className="max-w-3xl mx-auto px-4 md:px-6 py-12 md:py-16 text-center">
         <p className="rc-mincho text-xl text-rc-teal-dark mb-6">
-          {hasTour ? '迷っているなら、見学からで大丈夫です。' : '迷っているなら、お電話で聞くだけでも大丈夫です。'}
+          {hasTour ? '迷っているなら、見学からで大丈夫です。' : clinic.applyByPhone === false ? '迷っているなら、まずご相談だけでも大丈夫です。' : '迷っているなら、お電話で聞くだけでも大丈夫です。'}
         </p>
         <div className="flex justify-center">
           <JobCta job={job} />

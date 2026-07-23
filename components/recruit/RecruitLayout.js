@@ -90,6 +90,9 @@ function HeaderNav() {
             </>
           ) : (
             <>
+              {clinic.markIcon && (
+                <img src={asset(clinic.markIcon)} alt="" className="h-8 md:h-9 w-auto shrink-0" />
+              )}
               <span className="rc-mincho text-lg font-semibold text-rc-teal-dark tracking-wide">{clinic.shortName}</span>
               <span className="text-[13px] tracking-[0.12em] text-rc-ink-soft font-medium mt-1">採用サイト</span>
             </>
