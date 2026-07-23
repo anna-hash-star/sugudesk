@@ -154,6 +154,15 @@ img { max-width: 100%; display: block; }
 .service__media--img { background: none; padding: 0; min-height: 0; display: block; }
 .service__media--img img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
+/* その他の取り組み（記載のみ） */
+.more { margin-top: 30px; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 26px 30px; box-shadow: var(--shadow-sm); }
+.more__label { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .08em; color: var(--muted); background: var(--soft); padding: 5px 12px; border-radius: 999px; margin-bottom: 14px; }
+.more__list { margin: 0; padding-left: 20px; }
+.more__list li { color: var(--muted); font-size: 15px; margin: 0; }
+.more__list li b { color: var(--ink); }
+.more__note { margin: 14px 0 0; font-size: 14px; color: var(--muted); }
+.more__note a { color: var(--brand); font-weight: 700; }
+
 /* ---------- News ---------- */
 .news { display: grid; gap: 4px; margin-top: 40px; }
 .news__item { display: grid; grid-template-columns: 140px 110px 1fr auto; gap: 20px; align-items: center; padding: 22px 8px; border-bottom: 1px solid var(--line); transition: background .2s; }

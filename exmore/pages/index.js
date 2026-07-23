@@ -95,25 +95,33 @@ export default function Home() {
 
           <div className="service reveal">
             <div>
-              <span className="service__tag">法人向け 研修</span>
-              <h3>ヘルスケアリテラシー研修</h3>
+              <span className="service__tag">医療機関向け 採用代行</span>
+              <h3>SuguDesk 採用代行</h3>
               <p>
-                従業員の「知る・鍛える・支える」をヘルスケアの視点から支援。企業ごとに設計する
-                オーダーメイド型の研修で、生理・妊活・不妊治療・female領域などをテーマに、
-                一人ひとりが自分らしく働き続けられる組織づくりを支えます。
+                求人原稿の作成、媒体運用・スカウト送信、面接日程の調整、候補者へのリマインドまで、
+                医療機関の採用まわりの実務をまるごと代行します。必要な業務だけを月額で。
+                集患・事務などの業務代行にも対応しています。
               </p>
               <a href="#contact" className="btn btn--ghost">お問い合わせ</a>
             </div>
             <div className="service__media service__media--img">
-              <img src="/solution-training.png" alt="ヘルスケアリテラシー研修のイメージ" width="1000" height="760" />
+              <img src="/solution-recruit.png" alt="SuguDesk 採用代行：医療機関の採用まわりの実務を代行するイメージ" width="1000" height="760" />
             </div>
           </div>
 
-          <p className="lede" style={{ marginTop: 30 }}>
-            このほかにも、医療現場の負担を軽くし、人が人に向き合える時間をふやすための
-            取り組みを進めています。詳しくは
-            <a href="#contact" style={{ color: 'var(--brand)', fontWeight: 700 }}>お問い合わせ</a>ください。
-          </p>
+          {/* 研修は現在主力ではないため「記載のみ」 */}
+          <div className="more reveal">
+            <span className="more__label">その他の取り組み</span>
+            <ul className="more__list">
+              <li>
+                <b>ヘルスケアリテラシー研修（法人向け）</b>
+                ——従業員のヘルスケアリテラシーを高める、オーダーメイド型の研修。
+              </li>
+            </ul>
+            <p className="more__note">
+              詳しくは<a href="#contact">お問い合わせ</a>ください。
+            </p>
+          </div>
         </div>
       </section>
 
