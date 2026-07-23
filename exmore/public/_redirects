@@ -5,6 +5,6 @@
 /aboutus              /message/            301
 
 # 旧ニュース記事（STUDIOの /posts/<id>）→ 新ニュース記事
-/posts/4fgVbex4       /news/poc-award/     301
-# /posts/jqSogNNH     ←エバラ or シード（確認待ち）
-# /posts/WMaEPT1H     ←エバラ or シード（確認待ち）
+/posts/4fgVbex4       /news/poc-award/       301
+/posts/WMaEPT1H       /news/ebara-training/  301
+/posts/jqSogNNH       /news/seed-funding/    301

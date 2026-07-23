@@ -51,6 +51,13 @@ export default function NewsArticle({ item }) {
                   {b.cap && <figcaption>{b.cap}</figcaption>}
                 </figure>
               );
+              if (b.cta) return (
+                <p key={i} style={{ marginTop: 26 }}>
+                  <a href={b.cta.href} target="_blank" rel="noopener noreferrer" className="btn btn--ghost">
+                    {b.cta.label} <span className="btn__arrow">↗</span>
+                  </a>
+                </p>
+              );
               return <p key={i} className="article__p">{b.p}</p>;
             })}
           </article>
