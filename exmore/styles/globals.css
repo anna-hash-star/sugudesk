@@ -152,7 +152,7 @@ img { max-width: 100%; display: block; }
 .service__media--soft { background: linear-gradient(135deg, #2a3f57, #16324f); }
 .service__media h4 { font-size: 22px; margin: 0; font-weight: 800; text-align: center; line-height: 1.5; }
 .service__media--img { background: none; padding: 0; min-height: 0; display: block; }
-.service__media--img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.service__media--img img { width: 100%; height: auto; display: block; }
 
 /* その他の取り組み（記載のみ） */
 .more { margin-top: 30px; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 26px 30px; box-shadow: var(--shadow-sm); }
