@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { SITE_URL } from '../data/site';
+import { SITE_URL, GSC_VERIFICATION } from '../data/site';
 
 /**
  * 各ページの <head>（title / description / canonical / OGP / Twitter / 構造化データ）
@@ -34,6 +34,7 @@ export default function Seo({ title, description, path = '/', type = 'website', 
       <title>{title}</title>
       <meta name="description" content={description} />
       <meta name="keywords" content="エクスモア,株式会社エクスモア,exmore,株式会社exmore,医療DX,ヘルスケア,SuguDesk,採用代行,業務代行" />
+      {GSC_VERIFICATION && <meta name="google-site-verification" content={GSC_VERIFICATION} />}
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <link rel="canonical" href={url} />
       <link rel="icon" href="/favicon.svg" />

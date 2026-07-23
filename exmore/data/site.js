@@ -13,6 +13,13 @@ export const CAREERS_URL = 'https://herp.careers/v1/exmore12';
 // お問い合わせフォームの送信先（Formspree）
 export const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mrenajwb';
 
+// Google アナリティクス4 測定ID
+export const GA_ID = 'G-345Q3LN9NL';
+
+// Google Search Console のHTMLタグ確認用トークン（content="..." の値だけ）
+// Search Console → プロパティ追加 → URLプレフィックス → HTMLタグ → content の値をここに貼る
+export const GSC_VERIFICATION = '';
+
 // -------- ヘッダー / フッターのナビゲーション --------
 // type: 'anchor'（トップ内リンク）/ 'page'（別ページ）/ 'external'（外部リンク）
 export const NAV = [

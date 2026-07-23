@@ -1,4 +1,5 @@
 import { Html, Head, Main, NextScript } from 'next/document';
+import { GA_ID } from '../data/site';
 
 export default function Document() {
   return (
@@ -11,6 +12,18 @@ export default function Document() {
             __html: "document.documentElement.classList.add('js');",
           }}
         />
+
+        {/* Google Analytics 4 */}
+        {GA_ID && (
+          <>
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');`,
+              }}
+            />
+          </>
+        )}
       </Head>
       <body>
         <Main />
