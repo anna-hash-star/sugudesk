@@ -151,6 +151,7 @@ img { max-width: 100%; display: block; }
 .founder { display: grid; grid-template-columns: 300px 1fr; gap: 46px; align-items: start; margin-top: 40px; }
 .founder__photo { border-radius: 20px; overflow: hidden; box-shadow: var(--shadow); aspect-ratio: 3/4; background: linear-gradient(135deg, #dfeaf6, #e7f4f0); display: grid; place-items: center; }
 .founder__photo span { color: var(--muted); font-size: 13px; text-align: center; padding: 20px; }
+.founder__photo img { width: 100%; height: 100%; object-fit: cover; }
 .founder__body p { color: #3a4b5c; font-size: 16px; margin: 0 0 18px; }
 .founder__sign { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); }
 .founder__sign b { font-size: 17px; color: var(--ink); }

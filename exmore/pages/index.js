@@ -186,7 +186,7 @@ export default function Home() {
             <h2 className="h2">「もっと早く知っていたら」を、<br />なくしたい。</h2>
             <div className="founder">
               <div className="founder__photo reveal">
-                <span>代表写真<br />（public/ceo.jpg を配置）</span>
+                <img src="/ceo.jpg" alt="代表取締役 CEO 根来 杏奈" width="1000" height="1200" />
               </div>
               <div className="founder__body reveal">
                 <p>
