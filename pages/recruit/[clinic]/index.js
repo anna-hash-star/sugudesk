@@ -78,8 +78,13 @@ function Hero() {
         </Link>
         {diagnosis && (
           <Link href={`${base}#diagnosis`}
-            className="inline-flex items-center gap-1.5 border-2 border-rc-teal text-rc-teal font-bold text-[17px] rounded-full px-7 py-3 hover:bg-rc-teal-soft transition-colors">
-            <span aria-hidden="true">◐</span> マッチ度を確認する
+            className="inline-flex items-center gap-2 border-2 border-rc-teal text-rc-teal font-bold text-[17px] rounded-full px-7 py-3 hover:bg-rc-teal-soft transition-colors">
+            <svg aria-hidden="true" className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 12a8 8 0 1 0-3.05 6.28" />
+              <path d="M12 12l4-2.5" />
+              <circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none" />
+            </svg>
+            マッチ度を確認する
           </Link>
         )}
         {hasTour && (
