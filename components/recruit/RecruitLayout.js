@@ -68,13 +68,14 @@ function AdeBLogo() {
 }
 
 function HeaderNav() {
-  const { clinic, hasTour, slug } = useClinic();
+  const { clinic, hasTour, slug, voices, diagnosis } = useClinic();
   const { openChat } = useRecruitChat();
   const base = `/recruit/${slug}`;
   const nav = [
     { label: '数字で見る', href: `${base}#stats` },
+    ...(diagnosis ? [{ label: '相性診断', href: `${base}#diagnosis` }] : []),
     { label: '職種', href: `${base}#jobs` },
-    { label: 'スタッフの声', href: `${base}#voice` },
+    ...(voices && voices.length ? [{ label: 'スタッフの声', href: `${base}#voice` }] : []),
     { label: hasTour ? '見学・応募の流れ' : '応募の流れ', href: `${base}/flow` },
     { label: 'FAQ', href: `${base}#faq` },
   ];
@@ -89,8 +90,16 @@ function HeaderNav() {
                 {clinic.shortName}<span className="text-rc-teal">採用サイト</span>
               </span>
             </>
+          ) : clinic.logo ? (
+            <>
+              <img src={asset(clinic.logo)} alt={clinic.shortName} className="h-7 md:h-9 w-auto shrink-0" />
+              <span className="text-[13px] tracking-[0.12em] text-rc-ink-soft font-medium">採用サイト</span>
+            </>
           ) : (
             <>
+              {clinic.markIcon && (
+                <img src={asset(clinic.markIcon)} alt="" className="h-8 md:h-9 w-auto shrink-0" />
+              )}
               <span className="rc-mincho text-lg font-semibold text-rc-teal-dark tracking-wide">{clinic.shortName}</span>
               <span className="text-[13px] tracking-[0.12em] text-rc-ink-soft font-medium mt-1">採用サイト</span>
             </>
@@ -209,6 +218,9 @@ gtag('config', '${gaId}');`}
           <title>{pageTitle}</title>
           <meta name="description" content={description || clinic.lead} />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
+          {/* 検索避け：clinic.noindex のクリニックは検索エンジンにインデックスさせない。
+              クライアント承認前の非公開運用に使う。公開OKになったらデータ側の noindex を外す。 */}
+          {clinic.noindex && <meta name="robots" content="noindex, nofollow" key="robots" />}
           {canonical && <link rel="canonical" href={canonical} />}
           {/* 採用サイト専用ファビコン（クライアント提供のAdeB正式ロゴ・透過PNG）。
               SuguDesk本体の favicon.png を同じ key で上書きする。

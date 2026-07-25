@@ -106,7 +106,7 @@ export default function EntryPage({ bundle }) {
             </Link>
           </nav>
           <h1 className="rc-mincho text-3xl font-semibold">応募フォーム</h1>
-          {clinic.phone && (
+          {clinic.phone && clinic.applyByPhone !== false && (
             <p className="mt-4 rounded-xl bg-white border border-rc-sand px-4 py-3 text-[15px]">
               お電話でも応募できます：
               <a href={`tel:${clinic.phone}`} className="font-bold text-rc-teal mx-1" style={{ fontVariantNumeric: 'tabular-nums' }}>{clinic.phone}</a>
@@ -137,7 +137,7 @@ export default function EntryPage({ bundle }) {
         </nav>
         <h1 className="rc-mincho text-3xl font-semibold">{pageTitle}</h1>
         <p className="text-[16px] text-rc-ink-soft mt-3">入力は4項目・1分で完了します。（選考には履歴書・職務経歴書をご用意ください）</p>
-        {clinic.phone && (
+        {clinic.phone && clinic.applyByPhone !== false && (
           <p className="mt-4 rounded-xl bg-white border border-rc-sand px-4 py-3 text-[15px]">
             お電話でも応募できます：
             <a href={`tel:${clinic.phone}`} className="font-bold text-rc-teal mx-1" style={{ fontVariantNumeric: 'tabular-nums' }}>{clinic.phone}</a>

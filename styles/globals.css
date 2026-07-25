@@ -33,6 +33,41 @@
   --color-rc-ink-soft: #6D6568;  /* 補助テキスト ≈ rgba(0,0,0,0.56) */
 }
 
+/* ルナレディースクリニック：luna-dr.com のトーンに合わせた、やわらかく明るいローズピンク×
+   淡いラベンダー寄りの白。実サイトは全体に軽い（淡ピンク〜ラベンダーのグラデ面、明るい背景）ので、
+   面はしっかり明るく、ボタン等の主色は白文字が4.5:1を満たす範囲で最も軽やかなローズに調整。 */
+.theme-luna {
+  --color-rc-teal: #C24C7E;      /* ルナのローズピンク（白文字が4.5:1を満たす明るめの濃さ） */
+  --color-rc-teal-dark: #9A3A62; /* ホバー・ダーク面（フッター等） */
+  --color-rc-teal-soft: #FBEAF2; /* 淡いピンク〜ラベンダーの面（ヒーロー背景・グラデ） */
+  --color-rc-ivory: #FFFBFD;     /* 明るく軽い白背景 */
+  --color-rc-sand: #F3E7EE;      /* 罫線・やわらかい面 */
+  --color-rc-ink: #3A2B33;       /* 本文 */
+  --color-rc-ink-soft: #7A6B73;  /* 補助テキスト */
+}
+
+/* ファーストビューの淡いピンク装飾（clinic.heroDecor='soft-pink' のとき Hero が付与）。
+   白に近い地色＋規則ドット。濃いローズ等のアクセントは Hero 側でインライン指定。 */
+.rc-hero-soft { background-color: #FFF7FA; }
+.rc-hero-dots {
+  background-image: radial-gradient(#F3C8DA 1.5px, transparent 1.6px);
+  background-size: 16px 16px;
+}
+
+/* やさしさを表す「ゆっくり浮遊して重なり合う」淡いピンクの円。
+   mix-blend-multiply により、円が重なった部分だけ少し濃くなる＝重なりが見える。 */
+@keyframes rc-orb-a { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(14px,-16px) scale(1.06); } }
+@keyframes rc-orb-b { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-16px,13px) scale(1.08); } }
+@keyframes rc-orb-c { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(11px,15px) scale(0.94); } }
+.rc-orb { mix-blend-mode: multiply; will-change: transform; }
+.rc-orb-a { animation: rc-orb-a 9s ease-in-out infinite; }
+.rc-orb-b { animation: rc-orb-b 11s ease-in-out infinite; }
+.rc-orb-c { animation: rc-orb-c 13s ease-in-out infinite; }
+@media (max-width: 767px) {
+  /* スマホは装飾を弱める（地色をより白に寄せる。ドット/リングは Hero 側で非表示） */
+  .rc-hero-soft { background-color: #FFFAFC; }
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -80,4 +115,9 @@ html {
   .rc-hero-in { animation: none; }
   .rc-drift { animation: none; }
   .rc-pulse { animation: none; }
+  .rc-orb-a, .rc-orb-b, .rc-orb-c { animation: none; }
 }
+
+/* 横スクロールのカルーセル（先輩の声など）。スクロールバーは控えめに隠す */
+.rc-hscroll { scrollbar-width: none; -ms-overflow-style: none; }
+.rc-hscroll::-webkit-scrollbar { display: none; }
