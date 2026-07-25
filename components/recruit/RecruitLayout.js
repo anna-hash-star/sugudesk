@@ -218,6 +218,9 @@ gtag('config', '${gaId}');`}
           <title>{pageTitle}</title>
           <meta name="description" content={description || clinic.lead} />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
+          {/* 検索避け：clinic.noindex のクリニックは検索エンジンにインデックスさせない。
+              クライアント承認前の非公開運用に使う。公開OKになったらデータ側の noindex を外す。 */}
+          {clinic.noindex && <meta name="robots" content="noindex, nofollow" key="robots" />}
           {canonical && <link rel="canonical" href={canonical} />}
           {/* 採用サイト専用ファビコン（クライアント提供のAdeB正式ロゴ・透過PNG）。
               SuguDesk本体の favicon.png を同じ key で上書きする。
