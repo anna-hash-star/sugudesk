@@ -30,7 +30,7 @@ function Eyebrow({ en, ja }) {
 
 /* 1. ファーストビュー：勤務地・休日を即答し、CV3段（応募/見学/相談）を提示 */
 function Hero() {
-  const { clinic, jobs, hasTour, slug } = useClinic();
+  const { clinic, jobs, hasTour, slug, diagnosis } = useClinic();
   const { openChat } = useRecruitChat();
   const base = `/recruit/${slug}`;
   const softPink = clinic.heroDecor === 'soft-pink';
@@ -76,6 +76,12 @@ function Hero() {
           className="bg-rc-teal text-white font-bold text-[17px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
           応募する
         </Link>
+        {diagnosis && (
+          <Link href={`${base}#diagnosis`}
+            className="inline-flex items-center gap-1.5 border-2 border-rc-teal text-rc-teal font-bold text-[17px] rounded-full px-7 py-3 hover:bg-rc-teal-soft transition-colors">
+            <span aria-hidden="true">◐</span> マッチ度を確認する
+          </Link>
+        )}
         {hasTour && (
           <Link href={`${base}/flow`}
             className="border-2 border-rc-teal text-rc-teal font-bold text-[17px] rounded-full px-7 py-3 hover:bg-rc-teal-soft transition-colors">
