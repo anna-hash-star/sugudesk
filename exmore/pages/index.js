@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Layout from '../components/Layout';
 import Seo from '../components/Seo';
-import { COMPANY, CAREERS_URL, FORMSPREE_ENDPOINT } from '../data/site';
+import { COMPANY, CAREERS_URL } from '../data/site';
 import { NEWS_SORTED } from '../data/news';
 
 export default function Home() {
@@ -227,8 +227,9 @@ export default function Home() {
                 <p>お問い合わせいただきありがとうございます。<br />3営業日以内にご返信いたします。</p>
               </div>
             ) : (
-              <form className="form" action={FORMSPREE_ENDPOINT} method="POST" onSubmit={handleSubmit}>
-                <input type="hidden" name="_subject" value="exmore公式サイトからのお問い合わせ" />
+              <form className="form" action="/contact" method="POST" onSubmit={handleSubmit}>
+                {/* ハニーポット（bot対策・人には見えない） */}
+                <input type="text" name="_gotcha" tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }} />
                 <div className="field"><label>会社名<span className="req">*</span></label><input name="company" required placeholder="株式会社●●" /></div>
                 <div className="field"><label>お名前<span className="req">*</span></label><input name="name" required placeholder="山田 太郎" /></div>
                 <div className="field"><label>メールアドレス<span className="req">*</span></label><input type="email" name="email" required placeholder="xxx@example.com" /></div>
