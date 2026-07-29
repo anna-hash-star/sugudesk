@@ -80,9 +80,8 @@ function Hero() {
           <Link href={`${base}#diagnosis`}
             className="inline-flex items-center gap-2 border-2 border-rc-teal text-rc-teal font-bold text-[17px] rounded-full px-7 py-3 hover:bg-rc-teal-soft transition-colors">
             <svg aria-hidden="true" className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20 12a8 8 0 1 0-3.05 6.28" />
-              <path d="M12 12l4-2.5" />
-              <circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none" />
+              <path d="M12 3l1.8 4.9L18.7 9.6 13.8 11.4 12 16.3 10.2 11.4 5.3 9.6 10.2 7.9z" />
+              <path d="M18.5 15.5l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7z" />
             </svg>
             マッチ度を確認する
           </Link>
