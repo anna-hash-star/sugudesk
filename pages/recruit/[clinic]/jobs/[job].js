@@ -112,6 +112,15 @@ function JobBody({ jobSlug }) {
               </div>
             </div>
             <p className="rc-mincho text-xl md:text-[22px] text-rc-teal-dark mt-4 leading-relaxed">{job.catch}</p>
+            {job.location && (
+              <div className="mt-4 inline-flex items-center gap-1.5 text-[15px] font-bold text-rc-teal bg-rc-teal-soft rounded-full px-4 py-1.5">
+                <svg aria-hidden="true" className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 21s-6.5-5.4-6.5-10.5a6.5 6.5 0 1 1 13 0C18.5 15.6 12 21 12 21z" />
+                  <circle cx="12" cy="10.5" r="2.3" />
+                </svg>
+                勤務地：{job.location}
+              </div>
+            )}
             <p className="text-[16px] leading-7 text-rc-ink-soft mt-4 max-w-xl">{job.summary}</p>
             <div className="mt-7">
               <JobCta job={job} />

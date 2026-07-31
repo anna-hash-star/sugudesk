@@ -407,6 +407,15 @@ function JobsIndex() {
                   ))}
                 </div>
               </div>
+              {j.location && (
+                <div className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-bold text-rc-teal bg-rc-teal-soft rounded-full px-3 py-1">
+                  <svg aria-hidden="true" className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 21s-6.5-5.4-6.5-10.5a6.5 6.5 0 1 1 13 0C18.5 15.6 12 21 12 21z" />
+                    <circle cx="12" cy="10.5" r="2.3" />
+                  </svg>
+                  {j.location}
+                </div>
+              )}
               <p className="rc-mincho text-[17px] text-rc-teal-dark mt-3 leading-relaxed">{j.catch}</p>
               <p className="text-[15px] text-rc-ink-soft mt-3 leading-relaxed line-clamp-3">{j.summary}</p>
               <div className="mt-5 text-[15px] font-bold text-rc-teal flex items-center gap-1">
