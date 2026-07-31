@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import RecruitLayout, { Photo } from '../../../components/recruit/RecruitLayout';
 import { useRecruitChat, ChatIcon } from '../../../components/recruit/ChatWidget';
+import ApplyMatch from '../../../components/recruit/ApplyMatch';
 import { Reveal, CountUp } from '../../../components/recruit/Reveal';
 import { useClinic } from '../../../lib/recruit/clinic-context';
 import { asset } from '../../../lib/recruit/asset';
@@ -30,7 +31,7 @@ function Eyebrow({ en, ja }) {
 
 /* 1. ファーストビュー：勤務地・休日を即答し、CV3段（応募/見学/相談）を提示 */
 function Hero() {
-  const { clinic, jobs, hasTour, slug, diagnosis } = useClinic();
+  const { clinic, jobs, hasTour, slug, diagnosis, applyMatch } = useClinic();
   const { openChat } = useRecruitChat();
   const base = `/recruit/${slug}`;
   const softPink = clinic.heroDecor === 'soft-pink';
@@ -76,14 +77,14 @@ function Hero() {
           className="bg-rc-teal text-white font-bold text-[17px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
           応募する
         </Link>
-        {diagnosis && (
-          <Link href={`${base}#diagnosis`}
+        {(applyMatch || diagnosis) && (
+          <Link href={`${base}#${applyMatch ? 'match' : 'diagnosis'}`}
             className="inline-flex items-center gap-2 border-2 border-rc-teal text-rc-teal font-bold text-[17px] rounded-full px-7 py-3 hover:bg-rc-teal-soft transition-colors">
             <svg aria-hidden="true" className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 3l1.8 4.9L18.7 9.6 13.8 11.4 12 16.3 10.2 11.4 5.3 9.6 10.2 7.9z" />
               <path d="M18.5 15.5l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7z" />
             </svg>
-            マッチ度を確認する
+            {applyMatch ? '応募資格をチェック' : 'マッチ度を確認する'}
           </Link>
         )}
         {hasTour && (
@@ -659,6 +660,7 @@ export default function RecruitTop({ bundle }) {
       <Director />
       <Policies />
       <Signature />
+      <ApplyMatch />
       <Diagnosis />
       <JobsIndex />
       <Gallery />
