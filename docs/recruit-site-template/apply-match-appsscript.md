@@ -1,29 +1,26 @@
 # 応募マッチ → 採用担当メール＋スプレッドシート記録（Google Apps Script）
 
-「応募マッチ」の合格者が送信した応募内容を、**採用担当メールへ送信**し、同時に**スプレッドシートに追記**する受信スクリプトです。
+「応募マッチ」の合格者が送信した応募内容を、**採用担当メールへ送信**し、同時に**指定のスプレッドシートに追記**する受信スクリプトです。
 （`lib/recruit/clinics/<slug>.js` の `applyMatch.endpoint` に、デプロイして得たウェブアプリURLを設定します。）
 
 ## セットアップ手順
 
-1. [script.google.com](https://script.google.com/) で新規プロジェクトを作成し、下のコードを貼り付け
-2. `RECRUIT_EMAIL` を採用担当のメールアドレスに変更（既定 `anna.n@exmore.jp`）
-3. **まずエディタで `testRun` を実行**して動作確認＋権限承認する
+1. [script.google.com](https://script.google.com/) で新規プロジェクトを作成し、下のコードを貼り付け（既存プロジェクトなら全置換）
+2. `RECRUIT_EMAIL` と `LOG_SHEET_ID` を確認（下記は設定済み）
+3. **エディタで `testRun` を実行**して動作確認＋権限承認
    - 関数のドロップダウンで `testRun` を選び「実行」
-   - 「承認が必要です」→ 自分のGoogleアカウントで許可（Gmail送信・スプレッドシート作成の権限）
-   - 「このアプリは確認されていません」と出たら「**詳細**」→「**（プロジェクト名）に移動（安全ではないページ）**」→ 許可（自分のスクリプトなので安全）
-   - 実行後、Drive に「**ルナ応募マッチ 受信ログ**」というシートが作成され、テスト行が入り、テストメールが届けばOK（実行ログにシートURLが出ます）
-4. デプロイ →「新しいデプロイ」→ 種類「ウェブアプリ」／実行ユーザー「**自分**」／アクセス「**全員**」→ デプロイ → **ウェブアプリURL**をコピー
-5. そのURLを `applyMatch.endpoint` に設定（開発側で反映）
-
-> ⚠️ **コードを直したら必ず「デプロイを管理」→ 鉛筆（編集）→ バージョン「新バージョン」→ デプロイ**。
-> これをしないと `/exec` は旧コードのままで、送信しても何も起きません（届かない一番の原因）。
-> 受信が来ているかは Apps Script の「**実行数（Executions）**」で確認できます。
+   - 「承認が必要です」→ 自分のGoogleアカウントで許可（**Gmail送信・スプレッドシート**の権限）
+   - 「このアプリは確認されていません」→「**詳細**」→「**（プロジェクト名）に移動**」→ 許可（自分のスクリプトなので安全）
+   - 指定スプレッドシートに**テスト行**が入り、**テストメール**が届けばOK
+4. デプロイ →「デプロイを管理」→ 鉛筆（編集）→ バージョン「**新バージョン**」→ デプロイ
+   - ※コードを直したら必ず「新バージョン」で再デプロイ。しないと `/exec` は旧コードのまま＝**届かない一番の原因**
+   - URL（`/exec`）は変わらないので、LP側の設定変更は不要
 
 ## コード
 
 ```javascript
-const RECRUIT_EMAIL = 'anna.negoro@exmore.jp'; // ← 採用担当のメールアドレス
-const SHEET_NAME = 'ルナ応募マッチ 受信ログ';
+const RECRUIT_EMAIL = 'anna.negoro@exmore.jp';                      // 採用担当メール
+const LOG_SHEET_ID  = '1qW52ROqyndGQzK_XAczLKrGIUQRGO6dgt6tYdHmBjv0'; // 記録先スプレッドシートID
 
 function doPost(e) {
   try {
@@ -41,7 +38,7 @@ function handleSubmission(data) {
   var answers = data.answers || [];
   var answersFlat = answers.map(function (q) { return q.q + '→' + q.a; }).join(' / ');
 
-  // 1) スプレッドシートに1行追記（Driveの「ルナ応募マッチ 受信ログ」に自動保存）
+  // 1) スプレッドシートに1行追記（先頭タブ）
   var sheet = getLogSheet();
   sheet.appendRow([new Date(), (data.job && data.job.label) || '', data.result || '', data.fulfillment || '',
     a.name || '', a.email || '', a.tel || '', a.note || '', answersFlat, data.submittedFrom || '']);
@@ -63,19 +60,13 @@ function handleSubmission(data) {
   });
 }
 
-// 受信ログ用スプレッドシートを取得（無ければ作成してIDを記憶）
+// 記録先スプレッドシート（先頭タブ）。ヘッダーが無ければ1行目に作成。
 function getLogSheet() {
-  var props = PropertiesService.getScriptProperties();
-  var id = props.getProperty('LOG_SHEET_ID');
-  var ss = null;
-  if (id) { try { ss = SpreadsheetApp.openById(id); } catch (e) { ss = null; } }
-  if (!ss) {
-    ss = SpreadsheetApp.create(SHEET_NAME);
-    props.setProperty('LOG_SHEET_ID', ss.getId());
-    ss.getActiveSheet().appendRow(['日時', '職種', '判定', '充足度', 'お名前', 'メール', '電話', 'ひとこと', '回答', '送信元']);
-    Logger.log('受信ログ シートを作成: ' + ss.getUrl());
+  var sheet = SpreadsheetApp.openById(LOG_SHEET_ID).getSheets()[0];
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(['日時', '職種', '判定', '充足度', 'お名前', 'メール', '電話', 'ひとこと', '回答', '送信元']);
   }
-  return ss.getActiveSheet();
+  return sheet;
 }
 
 // ▼エディタで実行して動作確認＋権限承認する用（Webからの送信前に一度実行）
@@ -88,11 +79,11 @@ function testRun() {
     answers: [{ q: '婦人科経験', a: 'あり' }, { q: '就業時期', a: '1ヶ月以内' }],
     submittedFrom: 'editor-test',
   });
-  var url = SpreadsheetApp.openById(PropertiesService.getScriptProperties().getProperty('LOG_SHEET_ID')).getUrl();
-  Logger.log('OK：テスト完了。受信ログ シート = ' + url);
+  Logger.log('OK：テスト完了。シートに1行追記＋メール送信しました。');
 }
 ```
 
 ## メモ
 - LP側は CORS プリフライトを避けるため `text/plain` + `no-cors` で POST します（レスポンスは読まない）。
-- 個人情報は合格者のみが入力し、送信先は上記メール＋受信ログシートのみ。
+- `LOG_SHEET_ID` のスプレッドシートは、デプロイするGoogleアカウントが編集できる必要があります。
+- 個人情報は合格者のみが入力し、送信先は上記メール＋指定スプレッドシートのみ。
