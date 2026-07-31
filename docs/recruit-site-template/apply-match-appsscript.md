@@ -31,6 +31,7 @@ function doPost(e) {
     handleSubmission(data);
     return ContentService.createTextOutput(JSON.stringify({ ok: true })).setMimeType(ContentService.MimeType.JSON);
   } catch (err) {
+    Logger.log('doPost error: ' + err + '\n' + (err && err.stack)); // 実行ログに失敗理由を残す
     return ContentService.createTextOutput(JSON.stringify({ ok: false, error: String(err) })).setMimeType(ContentService.MimeType.JSON);
   }
 }
