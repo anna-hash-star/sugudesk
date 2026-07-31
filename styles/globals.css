@@ -128,6 +128,31 @@ html {
   to { opacity: 1; transform: none; }
 }
 .rc-appear { animation: rc-appear 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* 合格演出：ポップイン＋🎉バウンド＋紙吹雪 */
+@keyframes rc-pop {
+  0% { opacity: 0; transform: scale(0.85); }
+  60% { transform: scale(1.03); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.rc-pop { animation: rc-pop 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@keyframes rc-bounce {
+  0%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-10px); }
+  60% { transform: translateY(-4px); }
+}
+.rc-bounce { display: inline-block; animation: rc-bounce 1s ease 0.15s 2; }
+@keyframes rc-confetti {
+  0% { opacity: 0; transform: translateY(-6px) rotate(0deg); }
+  12% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(150px) rotate(340deg); }
+}
+.rc-confetti {
+  position: absolute; top: 0; width: 8px; height: 13px; border-radius: 2px;
+  animation: rc-confetti 1.7s ease-out forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .rc-appear { animation: none; }
+  .rc-appear, .rc-pop, .rc-bounce, .rc-confetti { animation: none; }
+  .rc-confetti { display: none; }
 }

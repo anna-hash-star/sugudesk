@@ -2,64 +2,76 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useClinic } from '../../lib/recruit/clinic-context';
 
-// 応募マッチ：職種選択 → 必須ゲート（合否）→ プロフィール質問 → 合格者のみ応募入力 → 採用担当メールへ送信。
+// 紙吹雪（合格演出）。ランダムを使わず固定配置でチラつき・ハイドレーション差異を防ぐ。
+const CONFETTI = [
+  { left: '6%', bg: '#C24C7E', delay: '0s', dur: '1.5s' },
+  { left: '18%', bg: '#F3C8DA', delay: '.12s', dur: '1.7s' },
+  { left: '30%', bg: '#E8C36B', delay: '.05s', dur: '1.6s' },
+  { left: '42%', bg: '#C24C7E', delay: '.2s', dur: '1.8s' },
+  { left: '54%', bg: '#F7DCE8', delay: '.08s', dur: '1.5s' },
+  { left: '66%', bg: '#E8C36B', delay: '.16s', dur: '1.7s' },
+  { left: '78%', bg: '#F3C8DA', delay: '.02s', dur: '1.6s' },
+  { left: '90%', bg: '#C24C7E', delay: '.22s', dur: '1.8s' },
+];
+
+// 応募マッチ：職種選択 → 事前質問（合否に影響しない）→ 必須ゲート（合否）→ 合格者はその場で応募入力。
 // 回答するたびに下へ入力ブロックが積み上がる（プログレッシブ開示）UIで、応募のハードルを下げる。
 export default function ApplyMatch() {
   const { applyMatch, clinic, slug } = useClinic();
   const base = `/recruit/${slug}`;
   const [started, setStarted] = useState(false);
   const [jobKey, setJobKey] = useState(null);
-  const [gateAns, setGateAns] = useState([]);        // ゲート回答（option）
-  const [failInfo, setFailInfo] = useState(null);    // { reason, redirect: [] }
-  const [profileAns, setProfileAns] = useState([]);  // プロフィール回答（option）
+  const [preAns, setPreAns] = useState([]);          // 事前質問の回答
+  const [gateAns, setGateAns] = useState([]);        // ゲート回答（合否）
+  const [failInfo, setFailInfo] = useState(null);    // { reason }
   const [form, setForm] = useState({});
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState('idle');      // idle | submitting | done | error
   const bottomRef = useRef(null);
 
-  // 新しいブロックが出るたびに最下部を視界に入れる
   useEffect(() => {
     if (started) bottomRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-  }, [started, jobKey, gateAns.length, failInfo, profileAns.length, status]);
+  }, [started, jobKey, preAns.length, gateAns.length, failInfo, status]);
 
   if (!applyMatch) return null;
   const jobs = applyMatch.jobs || [];
   const job = jobs.find(j => j.key === jobKey) || null;
+  const pre = job?.pre || [];
+  const gates = job?.gates || [];
 
-  const gatesDone = job && !failInfo && gateAns.length === job.gates.length;
+  const preDone = job && preAns.length === pre.length;
+  const gatesDone = preDone && !failInfo && gateAns.length === gates.length;
   const passed = Boolean(gatesDone);
-  const hasProfile = passed && job.profile && job.profile.length > 0;
-  const profileDone = passed && (!hasProfile || profileAns.length === job.profile.length);
-  const readyToApply = profileDone;
+  const readyToApply = passed;
 
-  // 医師は最初のプロフィール回答で常勤/非常勤の詳細slugが決まる
-  const effectiveSlug = (job && job.key === 'doctor' && profileAns[0]?.slug) ? profileAns[0].slug : (job?.slug || '');
+  // 医師は最初の事前回答で常勤/非常勤の詳細slugが決まる
+  const effectiveSlug = (job && job.key === 'doctor' && preAns[0]?.slug) ? preAns[0].slug : (job?.slug || '');
 
-  // 充足度（人事向け）
+  // 充足度（人事向け・事前質問の pts 合計から算出）
   const fulfillment = (() => {
     if (!passed || !job.fulfillment) return null;
-    const pts = profileAns.reduce((s, a) => s + (a?.pts || 0), 0);
+    const pts = preAns.reduce((s, a) => s + (a?.pts || 0), 0);
     const lvl = job.fulfillment.find(f => pts >= f.min);
     return lvl ? lvl.level : null;
   })();
 
   const selectJob = (k) => {
-    setJobKey(k); setGateAns([]); setFailInfo(null); setProfileAns([]);
+    setJobKey(k); setPreAns([]); setGateAns([]); setFailInfo(null);
     setForm({}); setErrors({}); setStatus('idle');
   };
   const restart = () => { setStarted(true); selectJob(null); };
 
+  const answerPre = (idx, opt) => {
+    const next = preAns.slice(0, idx); next[idx] = opt; setPreAns(next);
+    setGateAns([]); setFailInfo(null); setStatus('idle');
+  };
   const answerGate = (idx, opt) => {
     const next = gateAns.slice(0, idx); next[idx] = opt; setGateAns(next);
-    setFailInfo(opt.pass === false ? { reason: opt.reason, redirect: opt.redirect || [] } : null);
-    setProfileAns([]); setStatus('idle');
+    setFailInfo(opt.pass === false ? { reason: opt.reason } : null);
+    setStatus('idle');
   };
-  const answerProfile = (idx, opt) => {
-    const next = profileAns.slice(0, idx); next[idx] = opt; setProfileAns(next);
-  };
-  // 過去のゲート/プロフィール回答をやり直す（そのステップ以降を破棄）
-  const editGate = (idx) => { setGateAns(gateAns.slice(0, idx)); setFailInfo(null); setProfileAns([]); setStatus('idle'); };
-  const editProfile = (idx) => { setProfileAns(profileAns.slice(0, idx)); setStatus('idle'); };
+  const editPre = (idx) => { setPreAns(preAns.slice(0, idx)); setGateAns([]); setFailInfo(null); setStatus('idle'); };
+  const editGate = (idx) => { setGateAns(gateAns.slice(0, idx)); setFailInfo(null); setStatus('idle'); };
 
   const validate = () => {
     const e = {};
@@ -75,8 +87,8 @@ export default function ApplyMatch() {
     const errs = validate(); setErrors(errs);
     if (Object.keys(errs).length) return;
     const answers = [
-      ...gateAns.map((a, i) => ({ q: job.gates[i].q, a: a.label })),
-      ...profileAns.map((a, i) => ({ q: job.profile[i].q, a: a.label })),
+      ...preAns.map((a, i) => ({ q: pre[i].q, a: a.label })),
+      ...gateAns.map((a, i) => ({ q: gates[i].q, a: a.label })),
     ];
     const payload = {
       clinic: slug,
@@ -91,27 +103,21 @@ export default function ApplyMatch() {
     setStatus('submitting');
     try {
       if (applyMatch.endpoint) {
-        // Apps Script ウェブアプリへ送信（CORSプリフライトを避けるため text/plain + no-cors）
         await fetch(applyMatch.endpoint, {
           method: 'POST',
           mode: 'no-cors',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(payload),
         });
-        setStatus('done');
-      } else {
-        // 送信先未設定時は、その職種の応募フォームを開くフォールバック
-        const url = job.applyFormUrl || clinic.applyFormUrl;
-        if (url && typeof window !== 'undefined') window.open(url, '_blank', 'noopener,noreferrer');
-        setStatus('done');
       }
+      setStatus('done');
     } catch {
       setStatus('error');
     }
   };
 
-  const currentGateIdx = (job && !failInfo) ? gateAns.length : -1;
-  const currentProfileIdx = hasProfile ? profileAns.length : -1;
+  const currentPreIdx = job ? preAns.length : -1;
+  const currentGateIdx = (preDone && !failInfo) ? gateAns.length : -1;
 
   return (
     <section id="match" className="bg-rc-teal-soft/50 border-y border-rc-sand scroll-mt-20">
@@ -151,15 +157,28 @@ export default function ApplyMatch() {
                 <SummaryRow label="職種" value={job.label} onEdit={restart} />
               )}
 
-              {/* ゲート（回答済みは要約、現在は質問） */}
-              {job && gateAns.map((a, i) => (
-                <SummaryRow key={`g${i}`} label={`Q${i + 1}`} value={a.label} onEdit={() => editGate(i)} />
+              {/* 事前質問（合否に影響しない） */}
+              {job && preAns.map((a, i) => (
+                <SummaryRow key={`pre${i}`} label={`Q${i + 1}`} value={a.label} onEdit={() => editPre(i)} />
               ))}
-              {currentGateIdx >= 0 && currentGateIdx < job.gates.length && (
+              {currentPreIdx >= 0 && currentPreIdx < pre.length && (
                 <QuestionBlock
-                  label={`STEP 2 ・ 応募資格`}
-                  q={job.gates[currentGateIdx].q}
-                  options={job.gates[currentGateIdx].options}
+                  label="STEP 2 ・ あなたについて"
+                  q={pre[currentPreIdx].q}
+                  options={pre[currentPreIdx].options}
+                  onPick={(opt) => answerPre(currentPreIdx, opt)}
+                />
+              )}
+
+              {/* ゲート（合否） */}
+              {preDone && gateAns.map((a, i) => (
+                <SummaryRow key={`g${i}`} label={`必須${i + 1}`} value={a.label} onEdit={() => editGate(i)} />
+              ))}
+              {currentGateIdx >= 0 && currentGateIdx < gates.length && (
+                <QuestionBlock
+                  label="STEP 3 ・ 応募資格の確認"
+                  q={gates[currentGateIdx].q}
+                  options={gates[currentGateIdx].options}
                   onPick={(opt) => answerGate(currentGateIdx, opt)}
                 />
               )}
@@ -176,51 +195,29 @@ export default function ApplyMatch() {
                 </div>
               )}
 
-              {/* 合格バナー */}
+              {/* 合格（大きく・うれしく・動的に） */}
               {passed && (
-                <div className="rounded-xl border-2 border-rc-teal/40 bg-rc-teal-soft/60 p-5 rc-appear">
-                  <div className="inline-flex items-center gap-2 text-rc-teal-dark font-bold text-[16px]">
-                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-rc-teal text-white text-[14px]">✓</span>
-                    合格：応募資格を満たしています
+                <div className="relative overflow-hidden rounded-2xl border-2 border-rc-teal/40 bg-gradient-to-b from-rc-teal-soft to-white px-5 py-8 text-center rc-pop">
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-40" aria-hidden="true">
+                    {CONFETTI.map((c, i) => (
+                      <span key={i} className="rc-confetti"
+                        style={{ left: c.left, background: c.bg, animationDelay: c.delay, animationDuration: c.dur }} />
+                    ))}
                   </div>
-                  <p className="text-[15px] text-rc-ink mt-2 leading-relaxed">{job.passMessage}</p>
-                  <Link href={`${base}/jobs/${effectiveSlug}`} className="inline-block mt-2 text-[14px] font-bold text-rc-teal underline underline-offset-4 hover:text-rc-teal-dark">
-                    {job.label}の募集要項を見る →
-                  </Link>
+                  <div className="relative">
+                    <div className="text-[46px] leading-none rc-bounce">🎉</div>
+                    <div className="rc-mincho text-[30px] md:text-[40px] font-bold text-rc-teal-dark mt-2">{applyMatch.passTitle}</div>
+                    <p className="text-[17px] md:text-[18px] font-bold text-rc-ink mt-1">{applyMatch.passSub}</p>
+                    <p className="text-[14px] text-rc-ink-soft mt-3 max-w-md mx-auto leading-relaxed">{job.passMessage}</p>
+                    <Link href={`${base}/jobs/${effectiveSlug}`} className="inline-block mt-3 text-[14px] font-bold text-rc-teal underline underline-offset-4 hover:text-rc-teal-dark">
+                      {job.label}の募集要項を見る →
+                    </Link>
+                  </div>
                 </div>
               )}
 
-              {/* プロフィール質問（回答済みは要約、現在は質問） */}
-              {passed && hasProfile && profileAns.map((a, i) => (
-                <SummaryRow key={`p${i}`} label={`Q${i + 1}`} value={a.label} onEdit={() => editProfile(i)} />
-              ))}
-              {passed && currentProfileIdx >= 0 && currentProfileIdx < job.profile.length && (
-                <QuestionBlock
-                  label={`STEP 3 ・ あなたについて`}
-                  q={job.profile[currentProfileIdx].q}
-                  options={job.profile[currentProfileIdx].options}
-                  onPick={(opt) => answerProfile(currentProfileIdx, opt)}
-                />
-              )}
-
-              {/* 応募（合格者のみ）。送信先(endpoint)未設定時は、その職種の応募フォームへ確実に繋ぐ */}
-              {readyToApply && status !== 'done' && !applyMatch.endpoint && (job.applyFormUrl || clinic.applyFormUrl) && (
-                <div className="rounded-xl border border-rc-teal/30 bg-white p-5 md:p-6 rc-appear">
-                  <div className="text-[14px] font-bold text-rc-teal">STEP 4 ・ 応募</div>
-                  <p className="text-[14px] text-rc-ink-soft mt-1 leading-relaxed">応募条件を満たしています。下のボタンから応募フォームへ進み、送信を完了してください（1分ほどで完了します）。</p>
-                  <a href={job.applyFormUrl || clinic.applyFormUrl} target="_blank" rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 mt-4 bg-rc-teal text-white font-bold text-[17px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
-                    応募フォームへ進む
-                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                    </svg>
-                  </a>
-                  <p className="text-[12px] text-rc-ink-soft mt-3 leading-relaxed">{applyMatch.disclaimer}</p>
-                </div>
-              )}
-
-              {/* 応募入力（合格者のみ／送信先設定済みのときは その場で入力→採用担当メールへ） */}
-              {readyToApply && status !== 'done' && applyMatch.endpoint && (
+              {/* 応募入力（合格者のみ・その場で氏名/連絡先） */}
+              {readyToApply && status !== 'done' && (
                 <form onSubmit={submit} className="rounded-xl border border-rc-teal/30 bg-white p-5 md:p-6 rc-appear" noValidate>
                   <div className="text-[14px] font-bold text-rc-teal">STEP 4 ・ 応募入力</div>
                   <p className="text-[14px] text-rc-ink-soft mt-1 leading-relaxed">{applyMatch.applyLead}</p>
