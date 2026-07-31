@@ -22,7 +22,7 @@
 ## コード
 
 ```javascript
-const RECRUIT_EMAIL = 'anna.n@exmore.jp'; // ← 採用担当のメールアドレス
+const RECRUIT_EMAIL = 'anna.negoro@exmore.jp'; // ← 採用担当のメールアドレス
 const SHEET_NAME = 'ルナ応募マッチ 受信ログ';
 
 function doPost(e) {
