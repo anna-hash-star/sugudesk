@@ -219,8 +219,7 @@ export default function ApplyMatch() {
                       <div className="rc-mincho text-[30px] md:text-[40px] font-bold text-rc-teal-dark">{applyMatch.passTitle}</div>
                     </div>
                     <p className="text-[17px] md:text-[18px] font-bold text-rc-ink mt-2">{applyMatch.passSub}</p>
-                    <p className="text-[14px] text-rc-ink-soft mt-3 max-w-md mx-auto leading-relaxed">{job.passMessage}</p>
-                    <Link href={`${base}/jobs/${effectiveSlug}`} className="inline-block mt-3 text-[14px] font-bold text-rc-teal underline underline-offset-4 hover:text-rc-teal-dark">
+                    <Link href={`${base}/jobs/${effectiveSlug}`} className="inline-block mt-4 text-[14px] font-bold text-rc-teal underline underline-offset-4 hover:text-rc-teal-dark">
                       {job.label}の募集要項を見る →
                     </Link>
                   </div>
