@@ -53,9 +53,10 @@ function JobCta({ job }) {
   const { clinic, slug } = useClinic();
   const { openChat } = useRecruitChat();
   const base = `/recruit/${slug}`;
+  const applyUrl = job.applyFormUrl || clinic.applyFormUrl;
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <Link href={clinic.applyFormUrl && !job.pending ? '#apply' : `${base}/entry?job=${job.slug}`}
+      <Link href={applyUrl && !job.pending ? '#apply' : `${base}/entry?job=${job.slug}`}
         className="bg-rc-teal text-white font-bold text-[17px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
         {job.pending ? `${job.title}の求人について問い合わせる` : `${job.title}に応募する`}
       </Link>
@@ -218,12 +219,13 @@ function JobBody({ jobSlug }) {
         </div>
       </section>
 
-      {/* 応募フォーム（Googleフォームを設定している場合のみ、この職種ページに直接埋め込む） */}
-      {clinic.applyFormUrl && !job.pending && (
+      {/* 応募フォーム（Googleフォームを設定している場合のみ、この職種ページに直接埋め込む）。
+          職種別の applyFormUrl があればそれを、無ければクリニック共通のフォームを使う。 */}
+      {(job.applyFormUrl || clinic.applyFormUrl) && !job.pending && (
         <section id="apply" className="max-w-2xl mx-auto px-4 md:px-6 py-12 md:py-16 scroll-mt-20">
           <h2 className="rc-mincho text-2xl font-semibold text-center">{job.title}に応募する</h2>
           <p className="text-[15px] text-rc-ink-soft text-center mt-2">下のフォームからご応募ください。</p>
-          <div className="mt-6"><ApplyForm /></div>
+          <div className="mt-6"><ApplyForm url={job.applyFormUrl || clinic.applyFormUrl} /></div>
         </section>
       )}
 

@@ -94,6 +94,10 @@ export default function EntryPage({ bundle }) {
     );
   }
 
+  // 職種ページから ?job=xxx で来た場合は、その職種専用の応募フォームを優先（無ければクリニック共通）
+  const activeJob = jobs.find(j => j.slug === router.query.job);
+  const applyUrl = activeJob?.applyFormUrl || clinic.applyFormUrl;
+
   // 自作フォーム/Googleフォームを設定している場合は、そのフォームを表示（従来の簡易フォームは使わない）
   if (clinic.applyForm || clinic.applyFormUrl) {
     return (
@@ -113,7 +117,12 @@ export default function EntryPage({ bundle }) {
               （{clinic.recruitContact}）
             </p>
           )}
-          <div className="mt-6"><ApplyForm /></div>
+          {activeJob && (
+            <p className="mt-4 inline-flex items-center gap-1.5 text-[15px] font-bold text-rc-teal bg-rc-teal-soft rounded-full px-4 py-1.5">
+              希望職種：{activeJob.title}
+            </p>
+          )}
+          <div className="mt-6"><ApplyForm url={applyUrl} /></div>
         </section>
       </RecruitLayout>
     );
