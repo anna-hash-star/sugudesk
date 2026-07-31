@@ -206,15 +206,8 @@ export default function ApplyMatch() {
                   </div>
                   <div className="relative">
                     <div className="flex items-center justify-center gap-2.5">
-                      <svg className="rc-bounce shrink-0" width="42" height="42" viewBox="0 0 48 48" aria-hidden="true">
-                        <path d="M7 41 L25 23 L31 29 Z" fill="#C24C7E" />
-                        <path d="M7 41 L13 35 L16 38 Z" fill="#ffffff" opacity="0.5" />
-                        <path d="M27 22 C 33 12, 40 9, 44 9" fill="none" stroke="#F3C8DA" strokeWidth="2.2" strokeLinecap="round" />
-                        <path d="M30 26 C 37 20, 42 19, 45 20" fill="none" stroke="#C24C7E" strokeWidth="2" strokeLinecap="round" opacity="0.7" />
-                        <circle cx="33" cy="11" r="2.3" fill="#E8C36B" />
-                        <circle cx="42" cy="15" r="1.7" fill="#C24C7E" />
-                        <rect x="24" y="9" width="3.4" height="3.4" rx="0.7" fill="#F3C8DA" transform="rotate(18 25.7 10.7)" />
-                        <rect x="39" y="26" width="3" height="3" rx="0.6" fill="#E8C36B" transform="rotate(24 40.5 27.5)" />
+                      <svg className="rc-bounce shrink-0" width="40" height="40" viewBox="0 -960 960 960" fill="#D16D6A" aria-hidden="true">
+                        <path d="m80-80 186-520 337 333L80-80Zm101-101 314-112-203-204-111 316Zm376-264-34-34 240-240q32-32 81-32.5t81 31.5l17 17-34 34-19-19q-19-19-44-19.5T800-688L557-445ZM398-600l-34-34 30-30q23-23 21.5-52.5T394-766l-28-28 34-34 26 26q35 35 34.5 87.5T425-627l-27 27Zm81 77-34-34 152-152q19-19 18.5-48.5T596-806l-61-61 34-34 63 63q31 32 32 80.5T633-677L479-523Zm158 159-34-34 47-47q35-35 84-36t84 34l51 51-34 34-52-52q-23-23-48-23t-48 23l-50 50ZM181-181Z" />
                       </svg>
                       <div className="rc-mincho text-[30px] md:text-[40px] font-bold text-rc-teal-dark">{applyMatch.passTitle}</div>
                     </div>
