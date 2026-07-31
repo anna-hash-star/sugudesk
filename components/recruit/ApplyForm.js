@@ -7,12 +7,13 @@ import RecruitApplyForm from './RecruitApplyForm';
 //   ファイルアップロード質問の無いフォーム向け＝Googleフォーム/Tally等）。
 // - 既定：別タブで開く「応募フォームを開く」ボタン。formrun のように iframe直埋めを拒否する
 //   フォームや、ファイル添付でログインを挟むフォームでも確実に動く。
-export default function ApplyForm({ height = 1400 }) {
+export default function ApplyForm({ height = 1400, url: urlOverride }) {
   const { clinic } = useClinic();
   // 自作の応募フォーム（履歴書アップロード付き・Apps Script送信）を最優先で使う
   if (clinic.applyForm) return <RecruitApplyForm />;
 
-  const url = clinic.applyFormUrl;
+  // 職種ごとに応募フォームを分ける場合は url を渡す（無ければクリニック共通の applyFormUrl）。
+  const url = urlOverride || clinic.applyFormUrl;
   if (!url) return null;
 
   if (clinic.applyFormInline) {
