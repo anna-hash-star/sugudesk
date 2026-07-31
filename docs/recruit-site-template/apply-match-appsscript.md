@@ -17,7 +17,7 @@
 
 ```javascript
 // 応募マッチ 受信 → 採用担当へメール転送
-const RECRUIT_EMAIL = 'saiyo@example.com'; // ← 採用担当のメールアドレスに変更
+const RECRUIT_EMAIL = 'anna.n@exmore.jp'; // ← 採用担当のメールアドレス（正式決定後に差し替え）
 
 function doPost(e) {
   try {

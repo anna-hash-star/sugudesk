@@ -164,31 +164,14 @@ export default function ApplyMatch() {
                 />
               )}
 
-              {/* 不合格 */}
+              {/* 応募条件を満たさない場合（「不合格」の語は使わず、条件ベースで穏当に。誘導はしない） */}
               {failInfo && (
-                <div className="rounded-xl border-2 border-rc-apricot/50 bg-rc-apricot/5 p-5 rc-appear">
-                  <div className="inline-flex items-center gap-2 text-rc-apricot font-bold text-[15px]">
-                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-rc-apricot text-white text-[13px]">×</span>
+                <div className="rounded-xl border border-rc-sand bg-rc-ivory p-5 rc-appear">
+                  <div className="inline-flex items-center gap-2 text-rc-ink font-bold text-[15px]">
+                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-rc-ink-soft text-white text-[13px]">!</span>
                     {applyMatch.failTitle}
                   </div>
-                  <p className="text-[15px] text-rc-ink mt-2 leading-relaxed">{applyMatch.failLead}</p>
-                  <p className="text-[14px] text-rc-ink-soft mt-1">{failInfo.reason}</p>
-                  {failInfo.redirect && failInfo.redirect.length > 0 && (
-                    <div className="mt-4">
-                      <p className="text-[14px] font-bold text-rc-ink">未経験OKのこちらなら、今すぐ応募できます：</p>
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {failInfo.redirect.map(k => {
-                          const rj = jobs.find(j => j.key === k);
-                          return rj ? (
-                            <button key={k} onClick={() => selectJob(k)}
-                              className="text-[15px] font-bold text-rc-teal bg-rc-teal-soft rounded-full px-4 py-2 hover:bg-rc-teal hover:text-white transition-colors">
-                              {rj.label}で試す
-                            </button>
-                          ) : null;
-                        })}
-                      </div>
-                    </div>
-                  )}
+                  <p className="text-[14px] text-rc-ink-soft mt-2 leading-relaxed">{failInfo.reason}</p>
                   <button onClick={restart} className="mt-4 text-[13px] text-rc-ink-soft hover:text-rc-teal underline underline-offset-4">職種を選び直す</button>
                 </div>
               )}
@@ -220,8 +203,24 @@ export default function ApplyMatch() {
                 />
               )}
 
-              {/* 応募入力（合格者のみ） */}
-              {readyToApply && status !== 'done' && (
+              {/* 応募（合格者のみ）。送信先(endpoint)未設定時は、その職種の応募フォームへ確実に繋ぐ */}
+              {readyToApply && status !== 'done' && !applyMatch.endpoint && (job.applyFormUrl || clinic.applyFormUrl) && (
+                <div className="rounded-xl border border-rc-teal/30 bg-white p-5 md:p-6 rc-appear">
+                  <div className="text-[14px] font-bold text-rc-teal">STEP 4 ・ 応募</div>
+                  <p className="text-[14px] text-rc-ink-soft mt-1 leading-relaxed">応募条件を満たしています。下のボタンから応募フォームへ進み、送信を完了してください（1分ほどで完了します）。</p>
+                  <a href={job.applyFormUrl || clinic.applyFormUrl} target="_blank" rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 mt-4 bg-rc-teal text-white font-bold text-[17px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
+                    応募フォームへ進む
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                    </svg>
+                  </a>
+                  <p className="text-[12px] text-rc-ink-soft mt-3 leading-relaxed">{applyMatch.disclaimer}</p>
+                </div>
+              )}
+
+              {/* 応募入力（合格者のみ／送信先設定済みのときは その場で入力→採用担当メールへ） */}
+              {readyToApply && status !== 'done' && applyMatch.endpoint && (
                 <form onSubmit={submit} className="rounded-xl border border-rc-teal/30 bg-white p-5 md:p-6 rc-appear" noValidate>
                   <div className="text-[14px] font-bold text-rc-teal">STEP 4 ・ 応募入力</div>
                   <p className="text-[14px] text-rc-ink-soft mt-1 leading-relaxed">{applyMatch.applyLead}</p>
