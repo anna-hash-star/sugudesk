@@ -219,8 +219,25 @@ export default function ApplyMatch() {
                 </div>
               )}
 
-              {/* 応募入力（合格者のみ・その場で氏名/連絡先） */}
-              {readyToApply && status !== 'done' && (
+              {/* 送信先(endpoint)が未設定のときは、応募の取りこぼしを防ぐため既存の応募フォームへ確実に接続する。
+                  endpoint を設定すると、下の「その場で入力→メール送信」に自動で切り替わる。 */}
+              {readyToApply && status !== 'done' && !applyMatch.endpoint && (job.applyFormUrl || clinic.applyFormUrl) && (
+                <div className="rounded-xl border border-rc-teal/30 bg-white p-5 md:p-6 rc-appear">
+                  <div className="text-[14px] font-bold text-rc-teal">STEP 4 ・ 応募</div>
+                  <p className="text-[14px] text-rc-ink-soft mt-1 leading-relaxed">応募条件を満たしています。下のボタンから応募フォームへ進み、氏名・ご連絡先を入力して送信してください。応募後に採用担当からご連絡をいたします。</p>
+                  <a href={job.applyFormUrl || clinic.applyFormUrl} target="_blank" rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 mt-4 bg-rc-teal text-white font-bold text-[17px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
+                    応募フォームへ進む
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                    </svg>
+                  </a>
+                  <p className="text-[12px] text-rc-ink-soft mt-3 leading-relaxed">{applyMatch.disclaimer}</p>
+                </div>
+              )}
+
+              {/* 応募入力（合格者のみ・その場で氏名/連絡先／endpoint設定済みのみ） */}
+              {readyToApply && status !== 'done' && applyMatch.endpoint && (
                 <form onSubmit={submit} className="rounded-xl border border-rc-teal/30 bg-white p-5 md:p-6 rc-appear" noValidate>
                   <div className="text-[14px] font-bold text-rc-teal">STEP 4 ・ 応募入力</div>
                   <p className="text-[14px] text-rc-ink-soft mt-1 leading-relaxed whitespace-pre-line">{applyMatch.applyLead}</p>
