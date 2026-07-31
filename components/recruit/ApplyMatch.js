@@ -205,9 +205,20 @@ export default function ApplyMatch() {
                     ))}
                   </div>
                   <div className="relative">
-                    <div className="text-[46px] leading-none rc-bounce">🎉</div>
-                    <div className="rc-mincho text-[30px] md:text-[40px] font-bold text-rc-teal-dark mt-2">{applyMatch.passTitle}</div>
-                    <p className="text-[17px] md:text-[18px] font-bold text-rc-ink mt-1">{applyMatch.passSub}</p>
+                    <div className="flex items-center justify-center gap-2.5">
+                      <svg className="rc-bounce shrink-0" width="42" height="42" viewBox="0 0 48 48" aria-hidden="true">
+                        <path d="M7 41 L25 23 L31 29 Z" fill="#C24C7E" />
+                        <path d="M7 41 L13 35 L16 38 Z" fill="#ffffff" opacity="0.5" />
+                        <path d="M27 22 C 33 12, 40 9, 44 9" fill="none" stroke="#F3C8DA" strokeWidth="2.2" strokeLinecap="round" />
+                        <path d="M30 26 C 37 20, 42 19, 45 20" fill="none" stroke="#C24C7E" strokeWidth="2" strokeLinecap="round" opacity="0.7" />
+                        <circle cx="33" cy="11" r="2.3" fill="#E8C36B" />
+                        <circle cx="42" cy="15" r="1.7" fill="#C24C7E" />
+                        <rect x="24" y="9" width="3.4" height="3.4" rx="0.7" fill="#F3C8DA" transform="rotate(18 25.7 10.7)" />
+                        <rect x="39" y="26" width="3" height="3" rx="0.6" fill="#E8C36B" transform="rotate(24 40.5 27.5)" />
+                      </svg>
+                      <div className="rc-mincho text-[30px] md:text-[40px] font-bold text-rc-teal-dark">{applyMatch.passTitle}</div>
+                    </div>
+                    <p className="text-[17px] md:text-[18px] font-bold text-rc-ink mt-2">{applyMatch.passSub}</p>
                     <p className="text-[14px] text-rc-ink-soft mt-3 max-w-md mx-auto leading-relaxed">{job.passMessage}</p>
                     <Link href={`${base}/jobs/${effectiveSlug}`} className="inline-block mt-3 text-[14px] font-bold text-rc-teal underline underline-offset-4 hover:text-rc-teal-dark">
                       {job.label}の募集要項を見る →
@@ -220,7 +231,7 @@ export default function ApplyMatch() {
               {readyToApply && status !== 'done' && (
                 <form onSubmit={submit} className="rounded-xl border border-rc-teal/30 bg-white p-5 md:p-6 rc-appear" noValidate>
                   <div className="text-[14px] font-bold text-rc-teal">STEP 4 ・ 応募入力</div>
-                  <p className="text-[14px] text-rc-ink-soft mt-1 leading-relaxed">{applyMatch.applyLead}</p>
+                  <p className="text-[14px] text-rc-ink-soft mt-1 leading-relaxed whitespace-pre-line">{applyMatch.applyLead}</p>
                   <div className="mt-5 space-y-4">
                     {applyMatch.applyFields.map(f => (
                       <div key={f.key}>
