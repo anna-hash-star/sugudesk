@@ -121,3 +121,13 @@ html {
 /* 横スクロールのカルーセル（先輩の声など）。スクロールバーは控えめに隠す */
 .rc-hscroll { scrollbar-width: none; -ms-overflow-style: none; }
 .rc-hscroll::-webkit-scrollbar { display: none; }
+
+/* 応募マッチ：回答するたびに下へ現れるブロックのふわっと登場 */
+@keyframes rc-appear {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+.rc-appear { animation: rc-appear 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .rc-appear { animation: none; }
+}
