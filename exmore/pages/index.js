@@ -123,7 +123,7 @@ export default function Home() {
                 その他、求人原稿の作成、媒体運用・スカウト送信、面接日程の調整、候補者へのリマインドまで、
                 医療機関の採用まわりを、お困りごとに合わせて採用のプロフェッショナルが柔軟に支援します。
               </p>
-              <a href="#contact" className="btn btn--ghost">お問い合わせ</a>
+              <a href="https://saiyo.sugudesk.com/" target="_blank" rel="noopener noreferrer" className="btn btn--primary">サービスサイトを見る <span className="btn__arrow">→</span></a>
             </div>
             <div className="service__media service__media--img">
               <img src="/solution-recruit.jpg" alt="SuguDesk 採用代行：医療機関の採用まわりを支援するイメージ" width="1200" height="960" />
