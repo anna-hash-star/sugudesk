@@ -28,8 +28,8 @@ export default function Layout({ children }) {
     <>
       <header className="header">
         <div className="container header__inner">
-          <a href="/" className="brand" onClick={() => setOpen(false)}>
-            <span className="brand__mark" />exmore
+          <a href="/" className="brand" onClick={() => setOpen(false)} aria-label="exmore ホームへ">
+            <img src="/logo.png" alt="exmore" className="brand__logo" width="570" height="96" />
           </a>
           <nav className={`nav ${open ? 'open' : ''}`}>
             {NAV.map((n) => (
@@ -51,7 +51,7 @@ export default function Layout({ children }) {
         <div className="container">
           <div className="footer__top">
             <div>
-              <span className="brand brand--light"><span className="brand__mark" />exmore</span>
+              <span className="brand brand--light"><img src="/logo-white.png" alt="exmore" className="brand__logo brand__logo--light" width="570" height="96" /></span>
               <p style={{ maxWidth: 320, marginTop: 14, fontSize: 13.5 }}>
                 誰もが安心して医療にアクセスできる社会をつくる。このビジョンに共感いただける
                 メンバーを募集しています。
