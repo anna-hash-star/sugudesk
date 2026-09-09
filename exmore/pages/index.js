@@ -100,17 +100,17 @@ export default function Home() {
 
           <div className="service reveal">
             <div>
-              <span className="service__tag">医療機関向け AI</span>
+              <span className="service__tag">医療機関向け AIチャットボット</span>
               <h3>SuguDesk</h3>
               <p>
-                医療機関向けのAI FAQチャット。診療時間・料金の目安・アクセスなど、患者さまからの
-                問い合わせに24時間自動で回答します。患者さまの不安・疑問を解消しながら、
+                医療機関向けAIチャットボット「SuguDesk」の開発・提供。診療時間・料金の目安・アクセスなど、
+                患者さまからの問い合わせに24時間自動で回答します。患者さまの不安・疑問を解消しながら、
                 受付・窓口業務の負担を軽減し、患者体験の向上を実現します。
               </p>
               <a href="https://www.sugudesk.com/" target="_blank" rel="noopener noreferrer" className="btn btn--primary">サービスサイトを見る <span className="btn__arrow">→</span></a>
             </div>
             <div className="service__media service__media--img">
-              <img src="/solution-ai.jpg" alt="SuguDesk：医療機関向けAI FAQチャットのイメージ" width="1200" height="900" />
+              <img src="/solution-ai.jpg" alt="SuguDesk：医療機関向けAIチャットボットのイメージ" width="1200" height="900" />
             </div>
           </div>
 
@@ -197,7 +197,14 @@ export default function Home() {
           <table className="table">
             <tbody>
               {COMPANY.map(([k, v]) => (
-                <tr key={k}><th>{k}</th><td>{v}</td></tr>
+                <tr key={k}>
+                  <th>{k}</th>
+                  <td>
+                    {Array.isArray(v)
+                      ? v.map((line, i) => <span key={i} style={{ display: 'block' }}>{line}</span>)
+                      : v}
+                  </td>
+                </tr>
               ))}
             </tbody>
           </table>
