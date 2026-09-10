@@ -87,8 +87,7 @@ export default function RecruitApplyForm() {
     if (jobOptions.length > 0 && !form.job) er.job = '希望職種をお選びください';
     if (!form.start) er.start = '勤務開始可能日をお選びください';
     if (!form.times.length) er.times = '連絡のつきやすい時間帯をお選びください';
-    if (!resume) er.resume = '履歴書を添付してください';
-    if (!cv) er.cv = '職務経歴書を添付してください';
+    // 履歴書・職務経歴書は任意（添付があればサイズのみ検証）
     [['resume', resume], ['cv', cv]].forEach(([k, f]) => {
       if (f && f.size > MAX_MB * 1024 * 1024) er[k] = `ファイルは${MAX_MB}MB以内にしてください`;
     });
@@ -195,11 +194,11 @@ export default function RecruitApplyForm() {
       </div>
 
       <div>
-        <Label>履歴書<Req /></Label>
+        <Label>履歴書<Opt /></Label>
         <FileField id="af-resume" file={resume} onPick={setResume} error={errors.resume} />
       </div>
       <div>
-        <Label>職務経歴書<Req /></Label>
+        <Label>職務経歴書<Opt /></Label>
         <FileField id="af-cv" file={cv} onPick={setCv} error={errors.cv} />
       </div>
 
