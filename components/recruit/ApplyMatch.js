@@ -17,7 +17,7 @@ const CONFETTI = [
 // 応募マッチ：職種選択 → 事前質問（合否に影響しない）→ 必須ゲート（合否）→ 合格者はその場で応募入力。
 // 回答するたびに下へ入力ブロックが積み上がる（プログレッシブ開示）UIで、応募のハードルを下げる。
 export default function ApplyMatch() {
-  const { applyMatch, clinic, slug } = useClinic();
+  const { applyMatch, clinic, slug, jobs: siteJobs } = useClinic();
   const base = `/recruit/${slug}`;
   const [started, setStarted] = useState(false);
   const [jobKey, setJobKey] = useState(null);
@@ -46,6 +46,8 @@ export default function ApplyMatch() {
 
   // 医師は最初の事前回答で常勤/非常勤の詳細slugが決まる
   const effectiveSlug = (job && job.key === 'doctor' && preAns[0]?.slug) ? preAns[0].slug : (job?.slug || '');
+  // 職種別の応募フォーム：選択職種に対応する求人（jobs）の applyFormUrl を使う（無ければクリニック共通）
+  const formUrl = (siteJobs || []).find(j => j.slug === effectiveSlug)?.applyFormUrl || clinic.applyFormUrl;
 
   // 充足度（人事向け・事前質問の pts 合計から算出）
   const fulfillment = (() => {
@@ -221,11 +223,11 @@ export default function ApplyMatch() {
 
               {/* 送信先(endpoint)が未設定のときは、応募の取りこぼしを防ぐため既存の応募フォームへ確実に接続する。
                   endpoint を設定すると、下の「その場で入力→メール送信」に自動で切り替わる。 */}
-              {readyToApply && status !== 'done' && !applyMatch.endpoint && (job.applyFormUrl || clinic.applyFormUrl) && (
+              {readyToApply && status !== 'done' && !applyMatch.endpoint && formUrl && (
                 <div className="rounded-xl border border-rc-teal/30 bg-white p-5 md:p-6 rc-appear">
                   <div className="text-[14px] font-bold text-rc-teal">STEP 4 ・ 応募</div>
                   <p className="text-[14px] text-rc-ink-soft mt-1 leading-relaxed">応募条件を満たしています。下のボタンから応募フォームへ進み、氏名・ご連絡先を入力して送信してください。応募後に採用担当からご連絡をいたします。</p>
-                  <a href={job.applyFormUrl || clinic.applyFormUrl} target="_blank" rel="noopener noreferrer"
+                  <a href={formUrl} target="_blank" rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 mt-4 bg-rc-teal text-white font-bold text-[17px] rounded-full px-8 py-3.5 hover:bg-rc-teal-dark transition-colors shadow-md shadow-rc-teal/25">
                     応募フォームへ進む
                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
