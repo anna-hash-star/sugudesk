@@ -122,6 +122,9 @@ html {
 .rc-hscroll { scrollbar-width: none; -ms-overflow-style: none; }
 .rc-hscroll::-webkit-scrollbar { display: none; }
 
+/* 日本語の折り返しを文節単位で自然にする（対応ブラウザのみ有効・非対応は通常折り返しにフォールバック） */
+.rc-jp { word-break: auto-phrase; line-break: strict; }
+
 /* 応募マッチ：回答するたびに下へ現れるブロックのふわっと登場 */
 @keyframes rc-appear {
   from { opacity: 0; transform: translateY(10px); }
