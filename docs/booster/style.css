@@ -15,6 +15,7 @@ p { margin: 0 0 7pt; }
 ul { margin: 0 0 7pt; padding-left: 1.6em; }
 li { margin: 0 0 1pt; }
 table.keep { break-inside: avoid; }
+.pb { break-before: page; }
 table { width: 100%; border-collapse: collapse; margin: 6pt 0 14pt; font-size: 10pt; line-height: 1.6; }
 th, td { border: 1px solid #d5dde6; padding: 5pt 10pt; vertical-align: top; text-align: left; }
 table.effort th, table.effort td { padding: 3pt 10pt; }
@@ -22,4 +23,6 @@ th { background: #e8eef6; font-weight: bold; }
 tr { break-inside: avoid; }
 td.num, th.num { text-align: right; white-space: nowrap; }
 tr.total td { font-weight: bold; background: #f3f6f9; }
+tr.group td { font-weight: bold; background: #f7f9fb; color: #2b3a48; }
+tr.subtotal td { font-weight: bold; background: #fafbfc; }
 .note { margin-top: 6pt; }
