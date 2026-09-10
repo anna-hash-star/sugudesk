@@ -20,11 +20,15 @@ function breakAtComma(text) {
   ));
 }
 
-function Eyebrow({ en, ja }) {
+function Eyebrow({ en, ja, size = 'text-[22px] md:text-[32px]', nowrap = false }) {
+  // ja に改行(\n)が含まれる場合は、その位置で明示改行（全幅で有効）。
+  // nowrap=true のときはデスクトップで1行に収める（読点での自動改行は行わない）。
+  const hardBreak = typeof ja === 'string' && ja.includes('\n');
+  const content = (nowrap || hardBreak) ? ja : breakAtComma(ja);
   return (
     <div className="mb-4">
       <div className="text-[14px] tracking-[0.16em] text-rc-teal font-bold">{en}</div>
-      <h2 className="rc-mincho text-[22px] md:text-[32px] font-semibold text-rc-ink mt-1.5 leading-snug">{breakAtComma(ja)}</h2>
+      <h2 className={`rc-mincho ${size} font-semibold text-rc-ink mt-1.5 leading-snug ${hardBreak ? 'whitespace-pre-line ' : ''}${nowrap ? 'md:whitespace-nowrap' : ''}`}>{content}</h2>
     </div>
   );
 }
@@ -175,7 +179,7 @@ function Stats() {
                   <span className="text-base ml-0.5">{s.unit}</span>
                 </div>
                 <div className="text-[15px] font-bold mt-2">{s.label}</div>
-                {s.note && <div className="text-[13px] text-rc-ink-soft mt-1">{s.note}</div>}
+                {s.note && <div className="text-[13px] text-rc-ink-soft mt-1 whitespace-pre-line">{s.note}</div>}
               </div>
             </Reveal>
           ))}
@@ -198,7 +202,7 @@ function Director() {
         </div>
       </Reveal>
       <Reveal delay={140}>
-        <Eyebrow en={`${director.title}メッセージ`} ja={director.headline} />
+        <Eyebrow en={`${director.title}メッセージ`} ja={director.headline} size="text-[22px] md:text-[27px]" nowrap />
         <div className="space-y-5 text-[17px] leading-8 text-rc-ink max-w-xl">
           {director.message.map((p, i) => <p key={i}>{p}</p>)}
         </div>

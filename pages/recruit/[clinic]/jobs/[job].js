@@ -122,7 +122,7 @@ function JobBody({ jobSlug }) {
                 勤務地：{job.location}
               </div>
             )}
-            <p className="text-[16px] leading-7 text-rc-ink-soft mt-4 max-w-xl">{job.summary}</p>
+            <p className="rc-jp text-[16px] leading-7 text-rc-ink-soft mt-4 max-w-xl">{job.summary}</p>
             <div className="mt-7">
               <JobCta job={job} />
             </div>
